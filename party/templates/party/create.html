@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block content %}
+
+    <form action="POST">
+        {% csrf_token %}
+        <label for="event_name"><b>Event Name</b></label>
+        <input type="text" placeholder="Enter Event Name" name="event_name" required>
+        <button id="genbutton">Generate Name</button>
+        <button type="Submit">Create New Event</button>
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="{% static 'js/home.js' %}"></script>
+{% endblock %}
+

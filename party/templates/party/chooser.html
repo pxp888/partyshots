@@ -3,16 +3,13 @@
 
 
 {% block content %}
-    <div>
-        <ul>
-            <li>
-                <a href="{% url 'create' %}">Create New</a>
-            </li>
-            <li>
-                <a href="{% url 'chooser' %}">View Existing</a>
-            </li>
-        </ul>
-    </div>
+
+    <form action="POST">
+        {% csrf_token %}
+        <label for="event_name"><b>Event Name</b></label>
+        <input type="text" placeholder="Enter Event Name" name="event_name" required>
+        <button id="findbutton">find</button>
+    </form>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="{% static 'js/home.js' %}"></script>

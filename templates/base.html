@@ -1,4 +1,5 @@
 {% load static %}
+{% url 'home' as home_url %}
 
 <!DOCTYPE html>
 <html class="h-100" lang="en">
@@ -21,7 +22,7 @@
 
 <body>
     <div>
-        <h1>partyShots</h1>
+        <a class="logo" href="{% url 'home' %}">partyShots</a>
     </div>
     <hr>
     

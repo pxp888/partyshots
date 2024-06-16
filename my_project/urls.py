@@ -21,6 +21,9 @@ from party import views as party_views
 
 urlpatterns = [
     path('', party_views.homepage, name='home'),
+    path('create', party_views.create, name='create'),
+    path('chooser', party_views.chooser, name='chooser'),
+    path('viewer', party_views.viewer, name='viewer'),
     path('about', about_views.about, name='about'),
     path('admin/', admin.site.urls),
 ]

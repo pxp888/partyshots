@@ -7,3 +7,22 @@ def homepage(request):
     }
     return render(request, 'party/home.html', context)
 
+def create(request):
+    context = {
+
+    }
+    return render(request, 'party/create.html', context)
+
+
+def chooser(request):
+    context = {
+
+    }
+    return render(request, 'party/chooser.html', context)
+
+def viewer(request):
+    context = {
+
+    }
+    return render(request, 'party/viewer.html', context)
+
