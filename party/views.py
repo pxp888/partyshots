@@ -101,11 +101,14 @@ def getParty(request):
     name = request.POST.get('name')
     party = Party.objects.get(name=name)
     photos = Photo.objects.filter(party=party)
-
+    phlist = []
+    for photo in photos:
+        phlist.append(photo.link)
     
     response = {
         'action': 'getParty',
         'name': name,
+        'photos': phlist,
     }
     return JsonResponse(response)
 

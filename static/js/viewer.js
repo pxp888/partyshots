@@ -1,6 +1,8 @@
 const csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
 const partyLabel = $('#partyLabel')
 const partyname = localStorage.getItem('partyname');
+const photolist = $('#photolist');
+const addButton = $('#addButton');
 
 
 if (!partyname) {
@@ -17,7 +19,17 @@ else {
 }
 
 
+function addButtonClicked(event) {
+    event.preventDefault();
+    
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    
+}
 
+
+addButton.click(addButtonClicked);
 
 
 

@@ -20,6 +20,7 @@ from about import views as about_views
 from party import views as party_views
 
 urlpatterns = [
+    path("accounts/", include("allauth.urls")),
     path('', party_views.homepage, name='home'),
     path('create', party_views.create, name='create'),
     path('chooser', party_views.chooser, name='chooser'),

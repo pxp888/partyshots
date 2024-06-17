@@ -29,9 +29,11 @@ class Photo(models.Model):
 class Tag(models.Model):
     id = models.AutoField(primary_key=True)
     photo = models.ForeignKey(Photo, on_delete=models.CASCADE)
-    data = models.TextField()
+    party = models.ForeignKey(Party, on_delete=models.CASCADE)
+    key= models.CharField(max_length=100)
+    value = models.TextField()
 
     def __str__(self):
         return str(self.party.name) + ' - ' + str(self.tag)
-    
-    
+
+

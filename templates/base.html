@@ -1,5 +1,10 @@
 {% load static %}
+
 {% url 'home' as home_url %}
+{% url 'account_login' as login_url %}
+{% url 'account_signup' as signup_url %}
+{% url 'account_logout' as logout_url %}
+
 
 <!DOCTYPE html>
 <html class="h-100" lang="en">
@@ -15,7 +20,7 @@
 
 
     <!-- <link rel="stylesheet" href="{% static 'css/base.css' %}"> -->
-    <!-- <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}" /> -->
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}" />
     {% block head %}
     {% endblock head %}
 </head>
@@ -23,6 +28,19 @@
 <body>
     <div>
         <a class="logo" href="{% url 'home' %}">partyShots</a>
+        {% if user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link {% if request.path == logout_url %}active{% endif %}" aria-current="page" href="{% url 'account_logout' %}">Logout</a>
+            </li>
+        {% else %}
+            <li class="nav-item">
+                <a class="nav-link {% if request.path == signup_url %}active{% endif %}" aria-current="page"
+                    href="{% url 'account_signup' %}">Register</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.path == login_url %}active{% endif %}" aria-current="page" href="{% url 'account_login' %}">Login</a>
+            </li>
+        {% endif %}
     </div>
     <hr>
     
