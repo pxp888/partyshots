@@ -1,13 +1,10 @@
 const csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
 
-function test() {
-    ajaxPost({ 
-        'action': 'test' 
-    },
-        function(response) {
-        say(response);
-    });
+const viewEventButton = $("#viewEventButton");
+const event_id = $("#event_id");
+
+function viewEvent(event) {
+	event.preventDefault();
 }
 
-test();
-
+viewEventButton.click(viewEvent);

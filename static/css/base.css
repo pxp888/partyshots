@@ -1,0 +1,30 @@
+body {
+    margin: 0;
+}
+
+.topbar {
+	background-color: #bcd3eb;
+	border-bottom: 1px solid #122233;
+	padding: 0.5rem;
+
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: baseline;
+}
+
+.topbar ul {
+    list-style-type: none;
+    display: flex;
+    flex-direction: row;
+}
+
+.topbar ul li {
+    margin-right: 1rem;
+}
+
+.logo {
+    font-size: 1.5rem;
+    text-decoration: none;
+}
+

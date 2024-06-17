@@ -1,17 +1,36 @@
-{% extends "base.html" %}
-{% load static %}
+{% extends "base.html" %} {% load static %} {% block head %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}" />
+{% endblock %} {% block content %}
 
+<div class="msgDiv">
+	<p id="msgline">Hello</p>
+</div>
 
-{% block content %}
-    <p>View Event : </p>
-    <form action="POST">
-        {% csrf_token %}
-        <input type="text" name="event_id" id="event_id" placeholder="Event ID">
-        <input type="submit" value="View Event">
-    </form>
+<div class="sectionDiv">
+	<form action="POST">
+		{% csrf_token %}
+		<label for="event_id">View Event: </label>
+		<input type="text" name="event_id" id="event_id" placeholder="Event ID" />
+		<button id="viewEventButton">View Event</button>
+	</form>
+</div>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script src="{% static 'js/base.js' %}"></script>
-    <script src="{% static 'js/home.js' %}"></script>
+{% if user.is_authenticated %}
+<div id="adderDiv" class="sectionDiv">
+	<button id="addButton">Add Files</button>
+	<ul></ul>
+	<input type="text" id="descriptionLine" placeholder="Description" />
+	<button id="submitFilesButton">Submit Files</button>
+</div>
+{% endif %}
+
+<div id="showDiv"></div>
+
+<script
+	src="https://code.jquery.com/jquery-3.7.1.min.js"
+	integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+	crossorigin="anonymous"
+></script>
+<script src="{% static 'js/base.js' %}"></script>
+<script src="{% static 'js/home.js' %}"></script>
 {% endblock %}
-

@@ -22,6 +22,6 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path('admin/', admin.site.urls),
     path('', party_views.homepage, name='home'),
-    path('data/', party_views.data, name='data')
+    path('data/', party_views.data, name='data'),
 ]
 
