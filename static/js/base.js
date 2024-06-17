@@ -6,7 +6,7 @@ function ajaxPost(data, successfunc) {
 
     $.ajax({
         type: 'POST',
-        url: '/',
+        url: '/data',
         data: data,
         headers: { 'X-CSRFToken': csrfToken, },
         success: function(response) {
