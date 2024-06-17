@@ -3,10 +3,21 @@
 
 
 {% block content %}
+    <form action="POST">
+        {% csrf_token %}
+    </form>
+    
+    <div>
+        <h1>
+            <p id="partyLabel">Event not found</p>
+        </h1>
+    </div>
 
-    <p>viewer</p>
+    
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script src="{% static 'js/home.js' %}"></script>
+    <script src="{% static 'js/base.js' %}"></script>
+    <script src="{% static 'js/viewer.js' %}"></script>
+
 {% endblock %}
 

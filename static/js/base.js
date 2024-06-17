@@ -1,8 +1,5 @@
 const say = (...msgs) => console.log(...msgs);
 
-const csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
-
-say('csrfToken:', csrfToken);
 
 // This is a convenience function for AJAX calls.  
 function ajaxPost(data, successfunc) {
