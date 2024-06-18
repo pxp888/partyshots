@@ -3,7 +3,8 @@ body {
 }
 
 .topbar {
-	background-color: #bcd3eb;
+	background-color: #3e4246;
+    color: white;
 	border-bottom: 1px solid #122233;
 	padding: 0.5rem;
 
@@ -19,12 +20,31 @@ body {
     flex-direction: row;
 }
 
-.topbar ul li {
+.topbar ul li a {
     margin-right: 1rem;
+    text-decoration: none;
+    color: white;
 }
 
 .logo {
     font-size: 1.5rem;
     text-decoration: none;
+    color: white;
 }
 
+.hidden {
+	display: none;
+}
+
+.sectionDiv {
+	border-radius: 0.5rem;
+	background-color: rgb(189, 189, 189);
+	color: black;
+	padding: 0.5rem;
+	margin: 0.5rem;
+}
+
+.vertical {
+    display: flex;
+    flex-direction: column;
+}

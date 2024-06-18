@@ -12,21 +12,12 @@
 
 		<!-- Google Fonts CSS -->
 		<link rel="preconnect" href="https://fonts.gstatic.com" />
-		<link
-			href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap"
-			rel="stylesheet"
-		/>
-		<link
-			href="https://fonts.googleapis.com/css2?family=Lato:wght@300;700&display=swap"
-			rel="stylesheet"
-		/>
+		<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet"/>
+		<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;700&display=swap" rel="stylesheet"/>
 
 		<link rel="stylesheet" href="{% static 'css/base.css' %}" />
-		<link
-			rel="icon"
-			type="image/x-icon"
-			href="{% static 'images/favicon.ico' %}"
-		/>
+		<link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}" />
+
 		{% block head %} 
 		{% endblock head %}
 	</head>
@@ -34,6 +25,11 @@
 	<body>
 		<div class="topbar">
 			<a class="logo" href="{% url 'home' %}">partyShots</a>
+
+			<div>
+				<input type="text" id="searchLine" placeholder="Event ID">
+				<button id="searchButton">Go</button>
+			</div>
 
 			{% if user.is_authenticated %}
 			<ul>

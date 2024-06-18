@@ -1,36 +1,44 @@
-{% extends "base.html" %} {% load static %} {% block head %}
-<link rel="stylesheet" href="{% static 'css/style.css' %}" />
-{% endblock %} {% block content %}
+{% extends "base.html" %} 
+{% load static %} 
 
-<div class="msgDiv">
-	<p id="msgline">Hello</p>
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}" />
+{% endblock %} 
+
+
+{% block content %}
+
+<form action="POST">
+	{% csrf_token %}
+</form>
+
+<div id="mainArea">
+	{% if user.is_authenticated %}
+	<div class="sectionDiv vertical" id="createEventDiv">
+		<h2>Create New Event</h2>
+		<input id="nameLine" type="text" placeholder="Event Name">
+		<button id="randomizeNameButton">Randomize Name</button>
+		<input id="descriptionLine" type="text" placeholder="Description">
+		<button id="submitButton">Submit</button>
+	</div>
+	
+
+	<div class="sectionDiv" id="eventList">	
+		<div class="eventDiv demo">
+			<img src="{% static 'images/blankimage.png' %}" alt="blank">
+			<p class="nameLabel">Name</p>
+			<p class="descriptionLabel">Description</p>
+			<p class="ownerLabel">Owner</p>
+			<p class="createdLabel">Created</p>
+		</div>
+	</div>
+	{% endif %}
+	
+	
 </div>
 
-<div class="sectionDiv">
-	<form action="POST">
-		{% csrf_token %}
-		<label for="event_id">View Event: </label>
-		<input type="text" name="event_id" id="event_id" placeholder="Event ID" />
-		<button id="viewEventButton">View Event</button>
-	</form>
-</div>
 
-{% if user.is_authenticated %}
-<div id="adderDiv" class="sectionDiv">
-	<button id="addButton">Add Files</button>
-	<ul></ul>
-	<input type="text" id="descriptionLine" placeholder="Description" />
-	<button id="submitFilesButton">Submit Files</button>
-</div>
-{% endif %}
-
-<div id="showDiv"></div>
-
-<script
-	src="https://code.jquery.com/jquery-3.7.1.min.js"
-	integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-	crossorigin="anonymous"
-></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script src="{% static 'js/base.js' %}"></script>
 <script src="{% static 'js/home.js' %}"></script>
 {% endblock %}
