@@ -1,0 +1,75 @@
+{% extends "base.html" %} 
+{% load static %} 
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}" />
+{% endblock %} 
+
+
+{% block content %}
+
+<form action="POST">
+	{% csrf_token %}
+</form>
+
+
+<div id="mainArea">
+	<div id="albumArea">
+
+		{% if user.is_authenticated %}
+		<div id="createArea" class="sectionDiv">
+			<input type="text" id="createNameLine" placeholder="Album Name">
+			<button id="createAlbumButton">Create</button>
+		</div>
+		{% endif %}
+
+		<div id="albumList" class="sectionDiv listview">
+			<div class="album demo">
+				<img src="{% static 'images/blankimage.png' %}" alt="blank" class="abimage">
+				<p class="abcode">Code</p>
+				<p class="abname">Name</p>
+				<p class="abuser">User</p>
+				<p class="abdate">Created</p>
+			</div>
+		</div>
+	</div>
+
+	<hr>
+
+	<div id="shotArea">
+		<div id="abinfo" class="sectionDiv">
+			<p class="abcode">Code</p>
+			<p class="abname">Name</p>
+			<p class="abuser">User</p>
+			<p class="abdate">Created</p>
+			{% if user.is_authenticated %}
+			<button id="absubButton">Subscribe</button>
+			{% endif %}
+		</div>
+
+		{% if user.is_authenticated %}
+		<div id="addArea" class="sectionDiv">
+			<input type="text" id="imdesc" placeholder="Description">
+			<input type="file" id="imfile" accept="image/*" multiple>
+		</div>
+		{% endif %}
+
+		<div id="shotList" class="sectionDiv listview">
+			<div class="shot demo">
+				<img src="{% static 'images/blankimage.png' %}" alt="blank" class="shimage">
+				<p class="shdesc">Description</p>
+				<p class="shuser">User</p>
+				<p class="shdate">Created</p>
+			</div>
+		</div>
+		
+	</div>
+
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="{% static 'js/base.js' %}"></script>
+<script src="{% static 'js/shots.js' %}"></script>
+
+{% endblock %}

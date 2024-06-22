@@ -7,13 +7,14 @@
 }
 
 
-#eventList {
+.listview {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
 }
 
 .demo {
-display: none;
+	display: none;
+	background-color: rgb(58, 62, 92);
 }
 
