@@ -12,6 +12,7 @@ import random
 import string
 import io 
 import os 
+import time 
 
 
 funcs = {}
@@ -79,6 +80,7 @@ def getAlbum(request):
         'user': album.user.username,
         'created_at': album.created_at,
         'thumbnail': album.thumbnail,
+        'timestamp': album.created_at.timestamp(),
     }
     return JsonResponse(response)
 

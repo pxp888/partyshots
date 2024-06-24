@@ -37,6 +37,7 @@ function getAlbum(code) {
         bum.find('.abcode').text(response.code);
         bum.find('.abname').text(response.name);
         bum.find('.abdate').text(response.created_at);
+        bum.find('.abts').text(response.timestamp);
         $('#albumList').append(bum);
         bum.click(function() {
             viewAlbum(response.code);
@@ -72,8 +73,15 @@ function getThumb(photoid) {
         thumb.find('.shuser').text(response.user);
         thumb.find('.shdate').text(response.created);
         thumb.find('.shid').text(data.photoid);
-        $('#shotList').append(thumb);
         thumb.click(viewBig);
+        $('#shotList').append(thumb);
+        
+        let shots = $('.shot').not('.demo');
+        if (shots.length === 0) {
+            $('#shotList').append(thumb);
+            return;
+        }
+        
     });
 }
 
