@@ -92,7 +92,7 @@ def getThumb(request):
     msg = {
         'ecode': 0,
         'photoid': photoid,
-        'link': 'http://localhost:8001/thumbs/' + str(photoid) + '.jpg',
+        'link': photo.tlink,
         'user': user,
         'created': created,
     }
@@ -135,14 +135,16 @@ def processPhoto(target, meta):
         image = Image.open(image_bytes_io)
         thumb = image.resize((300, 300))
 
-        if (type(thumb)==Image.Image):
-            path='imagestore/thumbs/' + str(photo.id) + '.jpg'
-            thumb.save(path)
+        path='imagestore/thumbs/' + str(photo.id) + '.jpg'
+        thumb.save(path)
 
-            tlink = 'http://localhost:8001/thumbs/' + str(photo.id) + '.jpg'
-            if album.thumbnail is None:
-                album.thumbnail = tlink
-                album.save()
+        tlink = 'http://localhost:8001/thumbs/' + str(photo.id) + '.jpg'
+        photo.tlink = tlink
+        photo.save()
+
+        if album.thumbnail is None:
+            album.thumbnail = tlink
+            album.save()
 
     except Exception as e:
         print('thumbnail error', e)

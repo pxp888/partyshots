@@ -18,6 +18,7 @@ class Photo(models.Model):
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     album = models.ForeignKey(Album, on_delete=models.CASCADE)
     link = models.TextField()
+    tlink = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     filename = models.TextField()
 

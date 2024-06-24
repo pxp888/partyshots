@@ -21,6 +21,7 @@ function createAlbum(event) {
             return;
         }
         getAlbum(response['code']);
+        viewAlbum(response['code']);
     });
 }
 
