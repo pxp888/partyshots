@@ -22,3 +22,8 @@ function ajaxPost(data, successfunc) {
 }
 
 
+function md5(blob) {
+    const hash = CryptoJS.MD5(blob);
+    return hash.toString(CryptoJS.enc.Hex);
+}
+

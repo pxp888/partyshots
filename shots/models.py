@@ -44,10 +44,3 @@ class Subs(models.Model):
         return str(self.album.name) + ' - ' + str(self.user.username)
 
 
-class Blobs(models.Model):
-    id = models.AutoField(primary_key=True)
-    key = models.ForeignKey(Photo, on_delete=models.CASCADE)
-    value = models.TextField()
-    
-    def __str__(self):
-        return str(self.key)

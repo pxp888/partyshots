@@ -4,3 +4,5 @@ dbase.db
 wiresyncclient.log
 db.sqlite3
 
+imagestore/
+

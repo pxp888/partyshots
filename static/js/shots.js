@@ -20,6 +20,7 @@ function createAlbum(event) {
             alert(msg);
             return;
         }
+        getAlbum(response['code']);
     });
 }
 
@@ -54,6 +55,20 @@ function getAlbums() {
 }
 
 
+function getThumb(photoid) {
+    let data = {
+        'action': 'getThumb',
+        'photoid': photoid,
+    };
+    ajaxPost(data, function(response) {
+        let thumb = $('.shot.demo').clone().removeClass('demo');
+        thumb.find('.shimage').attr('src', response.link);
+        thumb.find('.shuser').text(response.user);
+        thumb.find('.shdate').text(response.created);
+        $('#shotList').append(thumb);
+    });
+}
+
 
 function viewAlbum(event) {
     event.preventDefault();
@@ -65,53 +80,68 @@ function viewAlbum(event) {
     abinfo.find('.abuser').text($(this).closest('.album').find('.abuser').text());
     abinfo.find('.abdate').text($(this).closest('.album').find('.abdate').text());
 
-    data = {
-        'action': 'getPhotos',
+    let data = {
+        'action': 'getThumbs',
         'code': code,
     };
     ajaxPost(data, function(response) {
-        say(response);
+        $('.shot').not('.demo').remove();
+        let thumbs = response['thumbs'];
+        for (let i = 0; i < thumbs.length; i++) {
+            getThumb(thumbs[i]);
+        }
     });
 }
 
 
 
 
+
 function uploadFile(file) {
+    const chunkSize = 1024 * 1024;
+    const filename = file.name;
+
     let reader = new FileReader();
     reader.onload = function(e) {
-        $('#shotArea').show();
-        $('#shotArea').attr('src', e.target.result);
-        let abcode = $('#abinfo').find('.abcode').text();
-        let imdesc = $('#imdesc').val();
-        let data = {
-            'action': 'addPhoto',
-            'code': abcode,
-            'imdesc': imdesc,
-            'blob': e.target.result,
-            'filename': file.name,
-        };
-        ajaxPost(data, function(response) {
-            if (response['ecode'] !== 0 ){
-                let msg = response['Error'];
-                alert(msg);
-                return;
-            }
-        });
+        let blob = e.target.result;
+        let hash = md5(blob);
+        let size = blob.length;
+        let chunks = Math.ceil(size / chunkSize);
+        for (let i = 0; i < chunks; i++) {
+            let start = i * chunkSize;
+            let end = Math.min(size, start + chunkSize);
+            let data = blob.slice(start, end);
+            let msg = {
+                'action': 'addPhoto',
+                'code': $('#abinfo').find('.abcode').text(),
+                'chunk': i,
+                'chunks': chunks,
+                'data': data,
+                'filename': filename,
+                'hash': hash,
+            };
+            ajaxPost(msg, function(response) {
+                if (response.ecode === 1) {
+                    code = response.photoid;
+                    getThumb(code);
+                }
+            });
+        }
     };
     reader.readAsDataURL(file);
+    $('#imfile').val('');
 }
 
 
 function filesPicked(event) {
     const imdesc = $('#imdesc');
-    if (imdesc.val() === '') {
-        alert('Please enter a description or label');
-        return;
-    }
+    // if (imdesc.val() === '') {
+    //     alert('Please enter a description or label');
+    //     return;
+    // }
 
     let abcode = $('#abinfo').find('.abcode').text();
-    if (abcode === '') {
+    if (abcode.length < 10) {
         alert('Please select an album');
         return;
     }
@@ -127,6 +157,5 @@ $('#createAlbumButton').on('click', createAlbum);
 $('#imfile').on('change', filesPicked);
 
 
-// $('#shotArea').hide();
 getAlbums();
 

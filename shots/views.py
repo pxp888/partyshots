@@ -1,14 +1,22 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse
+from django.contrib.auth.models import User
 from .models import Album, Photo, Tag, Subs
 
 import boto3
 from botocore.exceptions import ClientError
 
+from PIL import Image
+import base64 
 import random
 import string
+import io 
+import pickle
 
 funcs = {}
+
+incoming = {}
+
 
 def homepage(request):
     context = {}
@@ -21,7 +29,7 @@ def data(request):
         try:
             return funcs[action](request)
         except KeyError:
-            response = {'Key Error': True,}
+            response = {'Key Error': action,}
             return JsonResponse(response)
     return JsonResponse({'Error': 'No POST data sent.'})
 
@@ -33,7 +41,7 @@ def createAlbum(request):
         code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=32))
         if Album.objects.filter(code=code).count() == 0:
             break
-    
+
     n = Album.objects.filter(name=name, user=user).count()
     if n > 0:
         response = {'Error': 'Album already exists.', 'ecode': 1 }
@@ -74,51 +82,107 @@ def getAlbum(request):
     return JsonResponse(response)
 
 
-def getPhotos(request):
-    user = request.user
-    code = request.POST.get('code')
-    album = get_object_or_404(Album, code=code)
-    photos = Photo.objects.filter(album=album)
-    pics = []
-    for photo in photos:
-        pics.append(photo.id)
-    response = {
-        'photos': pics,
+def getThumb(request):
+    photoid = request.POST.get('photoid')
+    photo = get_object_or_404(Photo, id=photoid)
+    user = photo.user.username
+    created = photo.created_at
+
+    msg = {
+        'ecode': 0,
+        'photoid': photoid,
+        'link': 'http://localhost:8001/thumbs/' + str(photoid) + '.jpg',
+        'user': user,
+        'created': created,
     }
-    return JsonResponse(response)
+    return JsonResponse(msg)
 
 
-def getPhoto(request):
-    user = request.user
-    id = request.POST.get('id')
-    photo = get_object_or_404(Photo, id=id)
-    response = {
-        'id': photo.id,
-        'album': photo.album.code,
-        'user': photo.user.username,
-        'link': photo.link,
-        'created_at': photo.created_at,
-    }
-    return JsonResponse(response)
+def makeThumbnail(data):
+    try:
+        mt, encoded = data.split(',', 1)
+        decoded = base64.b64decode(encoded)
+        
+        image_bytes_io = io.BytesIO(decoded)
+        image = Image.open(image_bytes_io)
+        thumbnail = image.resize((300, 300))
+
+        return thumbnail
+    except Exception as e:
+        print(e)
+        return None
+
+
+def processPhoto(target, meta):
+    data = ''.join(target)
+    
+    user = User.objects.get(username=meta['user'])
+    album = Album.objects.get(code=meta['album'])
+
+    photo = Photo.objects.create(user=user, album=album, filename=meta['filename'])
+    photo.save()
+
+    thumb = makeThumbnail(data)
+    if thumb:
+        path='imagestore/thumbs/' + str(photo.id) + '.jpg'
+        thumb.save(path)
+
+    path='imagestore/original/' + str(photo.id)
+    with open(path, 'wb') as f:
+        pickle.dump((meta, data), f)    
+    return photo.id
 
 
 def addPhoto(request):
-    user = request.user
+    user = request.user.username
     code = request.POST.get('code')
     album = get_object_or_404(Album, code=code)
+    chunk = int(request.POST.get('chunk'))
+    chunks = int(request.POST.get('chunks'))
     filename = request.POST.get('filename')
-    blob = request.POST.get('blob')
+    data = request.POST.get('data')
+    hash = request.POST.get('hash')
 
-    link = ''
-    
-    photo = Photo.objects.create(user=user, album=album, link=link, filename=filename)
-    photo.save()
+    if hash not in incoming:
+        target = [None] * chunks
+        meta = {
+            'hash': hash,
+            'filename': filename,
+            'chunks': chunks,
+            'album': album.code,
+            'user': user,
+            'count': 0,
+            }
+        incoming[hash] = [target, meta]
+    else:
+        target, meta = incoming[hash]
 
-    print('added:' ,filename)
-    
+    target[chunk] = data
+    meta['count'] += 1
+    if meta['count'] == chunks:
+        photoid = processPhoto(target, meta)
+        del incoming[hash]
+        response = {
+            'ecode': 1,
+            'photoid': photoid,
+        }
+        return JsonResponse(response)
+
     response = {
-        'photoid': photo.id,
         'ecode': 0,
+    }
+    return JsonResponse(response)
+
+
+def getThumbs(request):
+    code = request.POST.get('code')
+    album = get_object_or_404(Album, code=code)
+    photos = Photo.objects.filter(album=album)
+    thumbs = []
+    for photo in photos:
+        thumbs.append(photo.id)
+    response = {
+        'thumbs': thumbs,
     }
     return JsonResponse(response)
 
@@ -126,8 +190,7 @@ def addPhoto(request):
 funcs['createAlbum'] = createAlbum
 funcs['getAlbum'] = getAlbum
 funcs['getAlbums'] = getAlbums
-funcs['getPhotos'] = getPhotos
-funcs['getPhoto'] = getPhoto
 funcs['addPhoto'] = addPhoto
-
+funcs['getThumb'] = getThumb
+funcs['getThumbs'] = getThumbs
 
