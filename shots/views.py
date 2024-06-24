@@ -78,6 +78,7 @@ def getAlbum(request):
         'code': album.code,
         'user': album.user.username,
         'created_at': album.created_at,
+        'thumbnail': album.thumbnail,
     }
     return JsonResponse(response)
 
@@ -137,8 +138,16 @@ def processPhoto(target, meta):
         if (type(thumb)==Image.Image):
             path='imagestore/thumbs/' + str(photo.id) + '.jpg'
             thumb.save(path)
+
+            tlink = 'http://localhost:8001/thumbs/' + str(photo.id) + '.jpg'
+            if album.thumbnail is None:
+                album.thumbnail = tlink
+                album.save()
+
     except Exception as e:
         print('thumbnail error', e)
+
+
 
     # save original
     path='imagestore/original/' + str(photo.id) + '/'

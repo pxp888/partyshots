@@ -40,6 +40,9 @@ function getAlbum(code) {
         bum.click(function() {
             viewAlbum(response.code);
         });
+        if (response.thumbnail!==null) {
+            bum.find('.abimage').attr('src', response.thumbnail);
+        }
     });
 }
 

@@ -7,6 +7,7 @@ class Album(models.Model):
     name = models.TextField()
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+    thumbnail = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.name
