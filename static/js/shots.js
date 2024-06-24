@@ -178,9 +178,21 @@ function filesPicked(event) {
 }
 
 
+function albumCodeEntered(event) {
+    event.preventDefault();
+    let code = $('#searchLine').val();
+    if (code === '') {
+        alert('Please enter an album code');
+        return;
+    }
+    getAlbum(code);
+}
+
+
+
 $('#createAlbumButton').on('click', createAlbum);
 $('#imfile').on('change', filesPicked);
-
+$('#searchButton').on('click', albumCodeEntered);
 
 getAlbums();
 
