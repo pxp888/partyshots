@@ -37,7 +37,9 @@ function getAlbum(code) {
         bum.find('.abname').text(response.name);
         bum.find('.abdate').text(response.created_at);
         $('#albumList').append(bum);
-        bum.click(viewAlbum);
+        bum.click(function() {
+            viewAlbum(response.code);
+        });
     });
 }
 
@@ -72,32 +74,35 @@ function getThumb(photoid) {
 }
 
 
-function viewAlbum(event) {
-    event.preventDefault();
-    let code = $(this).closest('.album').find('.abcode').text();
-
-    const abinfo = $('#abinfo');
-    abinfo.find('.abcode').text($(this).closest('.album').find('.abcode').text());
-    abinfo.find('.abname').text($(this).closest('.album').find('.abname').text());
-    abinfo.find('.abuser').text($(this).closest('.album').find('.abuser').text());
-    abinfo.find('.abdate').text($(this).closest('.album').find('.abdate').text());
-
+function viewAlbum(code) {
     let data = {
-        'action': 'getThumbs',
+        'action': 'getAlbum',
         'code': code,
     };
     ajaxPost(data, function(response) {
-        if (response.ecode !== 0) {
-            let msg = response.Error;
-            alert(msg);
-            return;
-        }
+        const abinfo = $('#abinfo');
+        abinfo.find('.abcode').text(response.code);
+        abinfo.find('.abname').text(response.name);
+        abinfo.find('.abuser').text(response.user);
+        abinfo.find('.abdate').text(response.created_at);
 
-        $('.shot').not('.demo').remove();
-        let thumbs = response['thumbs'];
-        for (let i = 0; i < thumbs.length; i++) {
-            getThumb(thumbs[i]);
-        }
+        let data = {
+            'action': 'getThumbs',
+            'code': code,
+        };
+        ajaxPost(data, function(response) {
+            if (response.ecode !== 0) {
+                let msg = response.Error;
+                alert(msg);
+                return;
+            }
+
+            $('.shot').not('.demo').remove();
+            let thumbs = response['thumbs'];
+            for (let i = 0; i < thumbs.length; i++) {
+                getThumb(thumbs[i]);
+            }
+        });
     });
 }
 
@@ -185,7 +190,7 @@ function albumCodeEntered(event) {
         alert('Please enter an album code');
         return;
     }
-    getAlbum(code);
+    viewAlbum(code);
 }
 
 

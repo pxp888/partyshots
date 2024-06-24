@@ -26,8 +26,8 @@
 		<div id="albumList" class="sectionDiv listview">
 			<div class="album demo">
 				<img src="{% static 'images/blankimage.png' %}" alt="blank" class="abimage">
-				<p class="abcode">Code</p>
 				<p class="abname">Name</p>
+				<p class="abcode">Code</p>
 				<p class="abuser">User</p>
 				<p class="abdate">Created</p>
 			</div>
@@ -35,10 +35,10 @@
 	</div>
 
 
-	<div id="shotArea">
+	<div id="shotArea" class="sectionDiv">
 		<div id="abinfo" class="sectionDiv">
-			<p class="abcode">Code</p>
 			<p class="abname">Name</p>
+			<p class="abcode">Code</p>
 			<p class="abuser">User</p>
 			<p class="abdate">Created</p>
 			{% if user.is_authenticated %}
