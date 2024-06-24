@@ -11,10 +11,10 @@ import base64
 import random
 import string
 import io 
-import pickle
+import os 
+
 
 funcs = {}
-
 incoming = {}
 
 
@@ -98,19 +98,22 @@ def getThumb(request):
     return JsonResponse(msg)
 
 
-def makeThumbnail(data):
-    try:
-        mt, encoded = data.split(',', 1)
-        decoded = base64.b64decode(encoded)
-        
-        image_bytes_io = io.BytesIO(decoded)
-        image = Image.open(image_bytes_io)
-        thumbnail = image.resize((300, 300))
+def getPhoto(request):
+    photoid = request.POST.get('photoid')
+    photo = get_object_or_404(Photo, id=photoid)
+    user = photo.user.username
+    created = photo.created_at
+    filename = photo.filename
 
-        return thumbnail
-    except Exception as e:
-        print(e)
-        return None
+    msg = {
+        'ecode': 0,
+        'photoid': photoid,
+        'link': photo.link,
+        'user': user,
+        'created': created,
+        'filename': filename,
+    }
+    return JsonResponse(msg)
 
 
 def processPhoto(target, meta):
@@ -118,18 +121,36 @@ def processPhoto(target, meta):
     
     user = User.objects.get(username=meta['user'])
     album = Album.objects.get(code=meta['album'])
-
-    photo = Photo.objects.create(user=user, album=album, filename=meta['filename'])
+    filename = meta['filename']
+    photo = Photo.objects.create(user=user, album=album, filename=filename)
     photo.save()
 
-    thumb = makeThumbnail(data)
-    if thumb:
-        path='imagestore/thumbs/' + str(photo.id) + '.jpg'
-        thumb.save(path)
+    mt, encoded = data.split(',', 1)
+    decoded = base64.b64decode(encoded)
 
-    path='imagestore/original/' + str(photo.id)
+    # create thumbnail
+    try:
+        image_bytes_io = io.BytesIO(decoded)
+        image = Image.open(image_bytes_io)
+        thumb = image.resize((300, 300))
+
+        if (type(thumb)==Image.Image):
+            path='imagestore/thumbs/' + str(photo.id) + '.jpg'
+            thumb.save(path)
+    except Exception as e:
+        print('thumbnail error', e)
+
+    # save original
+    path='imagestore/original/' + str(photo.id) + '/'
+    if not os.path.exists(path):
+        os.makedirs(path)
+    path += filename
     with open(path, 'wb') as f:
-        pickle.dump((meta, data), f)    
+        f.write(decoded)
+
+    link = 'http://localhost:8001/original/' + str(photo.id) +'/' + filename
+    photo.link = link
+    photo.save()
     return photo.id
 
 
@@ -176,12 +197,17 @@ def addPhoto(request):
 
 def getThumbs(request):
     code = request.POST.get('code')
-    album = get_object_or_404(Album, code=code)
+    album = Album.objects.get(code=code)
+    if album is None:
+        response = {'ecode': 1, 'Error': 'Album not found.'}
+        return JsonResponse(response)
+    
     photos = Photo.objects.filter(album=album)
     thumbs = []
     for photo in photos:
         thumbs.append(photo.id)
     response = {
+        'ecode': 0,
         'thumbs': thumbs,
     }
     return JsonResponse(response)
@@ -193,4 +219,4 @@ funcs['getAlbums'] = getAlbums
 funcs['addPhoto'] = addPhoto
 funcs['getThumb'] = getThumb
 funcs['getThumbs'] = getThumbs
-
+funcs['getPhoto'] = getPhoto

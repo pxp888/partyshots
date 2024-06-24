@@ -65,7 +65,9 @@ function getThumb(photoid) {
         thumb.find('.shimage').attr('src', response.link);
         thumb.find('.shuser').text(response.user);
         thumb.find('.shdate').text(response.created);
+        thumb.find('.shid').text(data.photoid);
         $('#shotList').append(thumb);
+        thumb.click(viewBig);
     });
 }
 
@@ -85,6 +87,12 @@ function viewAlbum(event) {
         'code': code,
     };
     ajaxPost(data, function(response) {
+        if (response.ecode !== 0) {
+            let msg = response.Error;
+            alert(msg);
+            return;
+        }
+
         $('.shot').not('.demo').remove();
         let thumbs = response['thumbs'];
         for (let i = 0; i < thumbs.length; i++) {
@@ -94,7 +102,23 @@ function viewAlbum(event) {
 }
 
 
+function viewBig(event) {
+    event.preventDefault();
+    let code = $(this).closest('.shot').find('.shid').text();
+    let data = {
+        'action': 'getPhoto',
+        'photoid': code,
+    };
+    ajaxPost(data, function(response) {
+        if (response.ecode !== 0) {
+            let msg = response.Error;
+            alert(msg);
+            return;
+        }
 
+        $('#bigImage').attr('src', response.link);
+    });
+}
 
 
 function uploadFile(file) {
@@ -105,6 +129,8 @@ function uploadFile(file) {
     reader.onload = function(e) {
         let blob = e.target.result;
         let hash = md5(blob);
+        say('test', blob.slice(0, 100))
+
         let size = blob.length;
         let chunks = Math.ceil(size / chunkSize);
         for (let i = 0; i < chunks; i++) {
@@ -129,16 +155,15 @@ function uploadFile(file) {
         }
     };
     reader.readAsDataURL(file);
-    $('#imfile').val('');
 }
 
 
 function filesPicked(event) {
     const imdesc = $('#imdesc');
-    // if (imdesc.val() === '') {
-    //     alert('Please enter a description or label');
-    //     return;
-    // }
+    if (imdesc.val() === '') {
+        alert('Please enter a description or label');
+        return;
+    }
 
     let abcode = $('#abinfo').find('.abcode').text();
     if (abcode.length < 10) {
