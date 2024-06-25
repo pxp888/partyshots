@@ -74,14 +74,8 @@ function getThumb(photoid) {
         thumb.find('.shdate').text(response.created);
         thumb.find('.shid').text(data.photoid);
         thumb.click(viewBig);
+        thumb.find('.shremove').click(removeShot);
         $('#shotList').append(thumb);
-        
-        let shots = $('.shot').not('.demo');
-        if (shots.length === 0) {
-            $('#shotList').append(thumb);
-            return;
-        }
-        
     });
 }
 
@@ -134,6 +128,25 @@ function viewBig(event) {
         }
 
         $('#bigImage').attr('src', response.link);
+    });
+}
+
+
+function removeShot(event) {
+    event.preventDefault();
+    let shotElement = $(this).closest('.shot');
+    let code = shotElement.find('.shid').text();
+    let data = {
+        'action': 'removePhoto',
+        'photoid': code,
+    };
+    ajaxPost(data, function(response) {
+        if (response.ecode !== 0) {
+            let msg = response.Error;
+            alert(msg);
+            return;
+        };
+        shotElement.remove();
     });
 }
 
