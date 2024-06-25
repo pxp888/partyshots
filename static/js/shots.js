@@ -361,18 +361,12 @@ function focusAlbums() {
 }
 
 function focusShots(event) {
-    let ok=0;
-    say('test', event.target.id);
-    if (event.target.id === 'searchButton'){
-        ok=1;
-    }
-    if (event.target.id === 'bigCloseButton'){
-        ok=1;
-    }
-    if (event.target.className === 'abimage'){
-        ok=1;
-    }
-    if (ok===1){
+    say(event.target);
+    let ok = false;
+    if (event.target.className === 'abimage'){ ok = true; }
+    if (event.target.id === 'searchButton'){ ok = true; }
+
+    if (ok) {
         $('#albumArea').hide();
         $('#shotArea').show();
         $('#bigArea').hide();
@@ -390,7 +384,6 @@ function focusBig(event) {
     }
 }
 
-
 document.addEventListener('keydown', function(event) {
     if (currentFocus === 'big') {
         if (event.key === 'ArrowRight') {
@@ -406,8 +399,15 @@ document.addEventListener('keydown', function(event) {
             currentFocus = 'shots';
         }
     }
+    else if (currentFocus === 'shots') {
+        if (event.key === 'Escape') {
+            $('#albumArea').show();
+            $('#shotArea').hide();
+            $('#bigArea').hide();
+            currentFocus = 'albums';
+        }
+    }
 });
-
 
 $('#albumList').click(focusShots);
 $('#shotList').click(focusBig);
