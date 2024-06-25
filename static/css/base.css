@@ -1,5 +1,6 @@
 body {
     margin: 0;
+    background-color: #212427;
 }
 
 .topbar {
@@ -20,8 +21,12 @@ body {
     flex-direction: row;
 }
 
+.topbar ul li {
+	margin-right: 1rem;
+	color: white;
+}
+
 .topbar ul li a {
-    margin-right: 1rem;
     text-decoration: none;
     color: white;
 }
@@ -38,7 +43,7 @@ body {
 
 .sectionDiv {
 	border-radius: 0.5rem;
-	background-color: rgb(189, 189, 189);
+	background-color: rgb(233, 233, 233);
 	color: black;
 	padding: 0.5rem;
 	margin: 0.5rem;
@@ -48,3 +53,4 @@ body {
     display: flex;
     flex-direction: column;
 }
+

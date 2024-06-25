@@ -14,7 +14,6 @@
 
 
 <div id="mainArea">
-	<div id="username" class="demo">{{ user.username }}</div>
 	<div id="albumArea">
 
 		{% if user.is_authenticated %}
@@ -24,8 +23,8 @@
 		</div>
 		{% endif %}
 
-		<div id="albumList" class="sectionDiv listview">
-			<div class="album demo">
+		<div id="albumList" class="listview">
+			<div class="album sectionDiv demo">
 				<img src="{% static 'images/blankimage.png' %}" alt="blank" class="abimage">
 				<p class="abname">Name</p>
 				<p class="abcode">Code</p>
@@ -58,8 +57,8 @@
 		</div>
 		{% endif %}
 
-		<div id="shotList" class="sectionDiv listview">
-			<div class="shot demo">
+		<div id="shotList" class="listview">
+			<div class="shot sectionDiv demo">
 				<img src="{% static 'images/blankimage.png' %}" alt="blank" class="shimage">
 				<p class="shdesc">Description</p>
 				<p class="shuser">User</p>
