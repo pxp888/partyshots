@@ -317,21 +317,27 @@ function focusAlbums() {
     $('#bigArea').hide();
 }
 
-function focusShots() {
+function focusShots(event) {
+    if (event.target.className === 'abremove') {return;}
+    if (event.target.parentElement.className === 'abremove') {return;}
+
     $('#albumArea').hide();
     $('#shotArea').show();
     $('#bigArea').hide();
 }
 
-function focusBig() {
-    $('#albumArea').hide();
-    $('#shotArea').hide();
-    $('#bigArea').show();
+function focusBig(event) {
+    let target = event.target.className;
+    if (target === 'shimage'){
+        $('#albumArea').hide();
+        $('#shotArea').hide();
+        $('#bigArea').show();
+    }
 }
 
 $('#albumList').click(focusShots);
 $('#shotList').click(focusBig);
-$('#bigImage').click(focusShots);
+$('#bigimdiv').click(focusShots);
 $('#showabsButton').click(focusAlbums);
 $('#searchButton').click(focusShots);
 focusAlbums();

@@ -236,14 +236,20 @@ def removePhoto(request):
     user = request.user
     photoid = request.POST.get('photoid')
     photo = get_object_or_404(Photo, id=photoid)
+    album = photo.album
 
     if photo.user == user:
         photo.delete()
         response = {'ecode': 0}
         return JsonResponse(response)
-    else:
-        response = {'ecode': 1, 'Error': 'This is not your photo.'}
+    
+    if album.user == user:
+        photo.delete()
+        response = {'ecode': 0}
         return JsonResponse(response)
+    
+    response = {'ecode': 1, 'Error': 'This is not your photo.'}
+    return JsonResponse(response)
 
 
 def removeAlbum(request):
