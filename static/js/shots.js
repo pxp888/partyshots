@@ -288,6 +288,33 @@ function subscribe(event) {
 }
 
 
+// The following functions handle item focus and which areas are showing
+function focusAlbums() {
+    $('#albumArea').show();
+    $('#shotArea').hide();
+    $('#bigArea').hide();
+}
+
+function focusShots() {
+    $('#albumArea').hide();
+    $('#shotArea').show();
+    $('#bigArea').hide();
+}
+
+function focusBig() {
+    $('#albumArea').hide();
+    $('#shotArea').hide();
+    $('#bigArea').show();
+}
+
+$('#albumList').click(focusShots);
+$('#shotList').click(focusBig);
+$('#bigImage').click(focusShots);
+$('#showabsButton').click(focusAlbums);
+$('#searchButton').click(focusShots);
+focusAlbums();
+
+
 $('#createAlbumButton').on('click', createAlbum);
 $('#imfile').on('change', filesPicked);
 $('#searchButton').on('click', albumCodeEntered);
