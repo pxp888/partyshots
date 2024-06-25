@@ -6,15 +6,22 @@
 	margin: 0.5rem;
 }
 
+
+.sectionDiv {
+	border-radius: 0.5rem;
+	background-color: rgb(233, 233, 233);
+	color: black;
+	padding: 0.5rem;
+	margin: 0.5rem;
+}
+
+
 .listview {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
-}
+	justify-content: center;
 
-.demo {
-	display: none;
-	background-color: rgb(58, 62, 92);
 }
 
 .abname {

@@ -349,11 +349,15 @@ function prevPic(event) {
 }
 
 
+// ----------------------   NAVIGATION FUNCTIONS  ----------------------
 // The following functions handle item focus and which areas are showing
+
+let currentFocus = 'albums';
 function focusAlbums() {
     $('#albumArea').show();
     $('#shotArea').hide();
     $('#bigArea').hide();
+    currentFocus = 'albums';
 }
 
 function focusShots(event) {
@@ -372,6 +376,7 @@ function focusShots(event) {
         $('#albumArea').hide();
         $('#shotArea').show();
         $('#bigArea').hide();
+        currentFocus = 'shots';
     }
 }
 
@@ -381,8 +386,28 @@ function focusBig(event) {
         $('#albumArea').hide();
         $('#shotArea').hide();
         $('#bigArea').show();
+        currentFocus = 'big';
     }
 }
+
+
+document.addEventListener('keydown', function(event) {
+    if (currentFocus === 'big') {
+        if (event.key === 'ArrowRight') {
+            nextPic(event);
+        }
+        if (event.key === 'ArrowLeft') {
+            prevPic(event);
+        }
+        if (event.key === 'Escape') {
+            $('#albumArea').hide();
+            $('#shotArea').show();
+            $('#bigArea').hide();
+            currentFocus = 'shots';
+        }
+    }
+});
+
 
 $('#albumList').click(focusShots);
 $('#shotList').click(focusBig);
@@ -392,6 +417,7 @@ $('#bigImage').click(nextPic);
 $('#nextButton').click(nextPic);
 $('#prevButton').click(prevPic);
 $('#bigCloseButton').click(focusShots);
+
 focusAlbums();
 
 
