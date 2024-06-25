@@ -1,6 +1,6 @@
 const csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
 
-
+// Create a new album object and view its contents
 function createAlbum(event) {
     event.preventDefault();
     let name = $('#createNameLine').val();
@@ -26,6 +26,7 @@ function createAlbum(event) {
 }
 
 
+// Get the shortcut for an album object
 function getAlbum(code) {
     let data = {
         'action': 'getAlbum',
@@ -53,6 +54,7 @@ function getAlbum(code) {
 }
 
 
+// Remove an album object
 function removeAlbum(event) {
     event.preventDefault();
     let albumElement = $(this).closest('.album');
@@ -72,6 +74,7 @@ function removeAlbum(event) {
 }
 
 
+// Get a list of albums that should be displayed. 
 function getAlbums() {
     let data = {
         'action': 'getAlbums',
@@ -85,6 +88,7 @@ function getAlbums() {
 }
 
 
+// Get the thumbnail for a photo object
 function getThumb(photoid) {
     let data = {
         'action': 'getThumb',
@@ -104,6 +108,7 @@ function getThumb(photoid) {
 }
 
 
+// View the contents of an album object
 function viewAlbum(code) {
     let data = {
         'action': 'getAlbum',
@@ -137,6 +142,7 @@ function viewAlbum(code) {
 }
 
 
+// View the full size image of a photo object
 function viewBig(event) {
     event.preventDefault();
     let code = $(this).closest('.shot').find('.shid').text();
@@ -156,6 +162,7 @@ function viewBig(event) {
 }
 
 
+// Remove a photo object
 function removeShot(event) {
     event.preventDefault();
     let shotElement = $(this).closest('.shot');
@@ -175,6 +182,7 @@ function removeShot(event) {
 }
 
 
+// Upload a single file to the server
 function uploadFile(file) {
     const chunkSize = 1024 * 1024;
     const filename = file.name;
@@ -226,6 +234,7 @@ function uploadFile(file) {
 }
 
 
+// Handle the file selection event
 function filesPicked(event) {
     const imdesc = $('#imdesc');
     if (imdesc.val() === '') {
@@ -248,6 +257,7 @@ function filesPicked(event) {
 }
 
 
+// View the album with the given code
 function albumCodeEntered(event) {
     event.preventDefault();
     let code = $('#searchLine').val();
@@ -259,6 +269,7 @@ function albumCodeEntered(event) {
 }
 
 
+// Subscribe to an album owned by another user
 function subscribe(event) {
     event.preventDefault();
     let code = $('#abinfo').find('.abcode').text();
