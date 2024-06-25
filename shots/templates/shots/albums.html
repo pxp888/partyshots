@@ -1,0 +1,58 @@
+{% extends "base.html" %} 
+{% load static %} 
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}" />
+{% endblock %} 
+
+
+{% block content %}
+
+<form action="POST">
+	{% csrf_token %}
+</form>
+
+
+<div id="mainArea">
+	<div id="albumArea">
+		{% if user.is_authenticated %}
+		<div id="createArea" class="sectionDiv">
+			<input type="text" id="createNameLine" placeholder="Album Name">
+			<button id="createAlbumButton">Create</button>
+		</div>
+		
+		{% else %}
+		<div id="landingArea">
+			<div>
+				<h1>Because we don't all have to take the picture.</h1>
+				<p>Sign in to create albums and upload images.</p>
+				<p>Anyone with the album code can browse an album, </p>
+				<p>but you must sign in to add to albums.</p>
+			</div>
+		</div>
+		{% endif %}
+
+		<div id="albumList" class="listview">
+			<div class="album sectionDiv demo">
+				<img src="{% static 'images/blankimage.png' %}" alt="blank" class="abimage">
+				<p class="abname">Name</p>
+				<p class="abcode">Code</p>
+				<p class="abuser">User</p>
+				<p class="abdate">Created</p>
+				<p class="abts">timestamp</p>
+				<!-- <div class="abremove"><p>Remove</p></div> -->
+                <button class="abremove btn">Remove</button>
+			</div>
+		</div>
+	</div>
+
+
+	
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+<script src="{% static 'js/base.js' %}"></script>
+<script src="{% static 'js/albums.js' %}"></script>
+
+{% endblock %}

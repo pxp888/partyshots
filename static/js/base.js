@@ -6,7 +6,7 @@ function ajaxPost(data, successfunc) {
 
     $.ajax({
         type: 'POST',
-        url: 'data/',
+        url: '/data/',
         data: data,
         headers: { 'X-CSRFToken': csrfToken, },
         success: function(response) {
@@ -27,3 +27,10 @@ function md5(blob) {
     return hash.toString(CryptoJS.enc.Hex);
 }
 
+function codeEntered(){
+    const code = $('#searchline').val();
+    say(code);
+    // window.location.href = '/browse/' + code;
+}
+
+$('#searchButton').click(codeEntered);

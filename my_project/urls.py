@@ -21,7 +21,9 @@ from shots import views as shots_views
 urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path('admin/', admin.site.urls),
-    path('', shots_views.homepage, name='home'),
+    path('', shots_views.albums, name='home'),
     path('data/', shots_views.data, name='data'),
+    path('albums/', shots_views.albums, name='albums'),
+    path('browse/<slug:slug>/', shots_views.browse, name='browse'),
 ]
 
