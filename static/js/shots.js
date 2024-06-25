@@ -360,18 +360,11 @@ function focusAlbums() {
     currentFocus = 'albums';
 }
 
-function focusShots(event) {
-    say(event.target);
-    let ok = false;
-    if (event.target.className === 'abimage'){ ok = true; }
-    if (event.target.id === 'searchButton'){ ok = true; }
-
-    if (ok) {
+function focusShots() {
         $('#albumArea').hide();
         $('#shotArea').show();
         $('#bigArea').hide();
         currentFocus = 'shots';
-    }
 }
 
 function focusBig(event) {
@@ -393,30 +386,26 @@ document.addEventListener('keydown', function(event) {
             prevPic(event);
         }
         if (event.key === 'Escape') {
-            $('#albumArea').hide();
-            $('#shotArea').show();
-            $('#bigArea').hide();
-            currentFocus = 'shots';
+            focusShots();
         }
     }
     else if (currentFocus === 'shots') {
         if (event.key === 'Escape') {
-            $('#albumArea').show();
-            $('#shotArea').hide();
-            $('#bigArea').hide();
-            currentFocus = 'albums';
+            focusAlbums();
         }
     }
 });
 
-$('#albumList').click(focusShots);
+
+
 $('#shotList').click(focusBig);
 $('#showabsButton').click(focusAlbums);
+$('#albumList').click(function(event) {    if (event.target.className === 'abimage') { focusShots(); }});
 $('#searchButton').click(focusShots);
+$('#bigCloseButton').click(focusShots);
 $('#bigImage').click(nextPic);
 $('#nextButton').click(nextPic);
 $('#prevButton').click(prevPic);
-$('#bigCloseButton').click(focusShots);
 
 focusAlbums();
 
