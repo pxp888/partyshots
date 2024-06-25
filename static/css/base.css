@@ -1,6 +1,12 @@
+:root {
+    --color1: #48456d;
+    --color2: #b8285c;
+}
+
 body {
     margin: 0;
     background-color: #212427;
+    font-family: Roboto;
 }
 
 .topbar {
@@ -13,6 +19,7 @@ body {
     justify-content: space-between;
     flex-direction: row;
     align-items: baseline;
+
 }
 
 .topbar ul {
@@ -53,7 +60,7 @@ body {
 }
 
 .btn {
-    background-color: #48456d;
+    background-color: var(--color1);
     color: white;
     padding: 0.5rem;
     border: none;
@@ -64,5 +71,27 @@ body {
 }
 
 .btn:hover {
-    background-color: #b8285c;
+    background-color: var(--color2);
+}
+
+
+#landingArea {
+    width: 100%;
+    height: 90vh;
+    background-image: url('../images/cover.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    position: relative;
+
+    font-family: Roboto;
+}
+
+#landingArea > div {
+    position: absolute;
+    top: 5%;
+    right: 10%;
+    padding: 3rem;
+    background-color: black;
+    opacity: 90%;
+    color: white;
 }

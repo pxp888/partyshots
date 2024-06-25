@@ -37,6 +37,7 @@
 #bigimdiv {
 	display: flex;
 	flex-direction: column;
+	background-color: rgb(37, 37, 37);
 }
 
 #bigimdiv > img {
