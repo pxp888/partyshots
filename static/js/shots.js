@@ -114,7 +114,6 @@ function getThumb(photoid) {
         thumb.find('.shdesc').text(response.description);
         thumb.click(viewBig);
         thumb.find('.shremove').click(removeShot);
-        // $('#shotList').append(thumb);
 
         let thumbs = $('.shot').not('.demo');
         for (let i = 0; i < thumbs.length; i++) {
@@ -153,7 +152,6 @@ function viewAlbum(code) {
                 alert(msg);
                 return;
             }
-
             $('.shot').not('.demo').remove();
             let thumbs = response['thumbs'];
             for (let i = 0; i < thumbs.length; i++) {
@@ -164,10 +162,16 @@ function viewAlbum(code) {
 }
 
 
-// View the full size image of a photo object
+// Handle thumbnail click event
 function viewBig(event) {
     event.preventDefault();
     let code = $(this).closest('.shot').find('.shid').text();
+    showBig(code);
+}
+
+
+// View the full size image of a photo object
+function showBig(code) {
     let data = {
         'action': 'getPhoto',
         'photoid': code,
@@ -178,8 +182,8 @@ function viewBig(event) {
             alert(msg);
             return;
         }
-
         $('#bigImage').attr('src', response.link);
+        $('#bigid').text(code);
     });
 }
 
@@ -281,7 +285,6 @@ function filesPicked(event) {
 
 // View the album with the given code
 function albumCodeEntered(event) {
-    event.preventDefault();
     let code = $('#searchLine').val();
     if (code === '') {
         alert('Please enter an album code');
@@ -310,6 +313,42 @@ function subscribe(event) {
 }
 
 
+// show the next image in the list
+function nextPic(event) {
+    event.preventDefault();
+    let code = $('#bigid').text();
+    let codes = $('.shot').not('.demo').find('.shid');
+    let codelist = [];
+    for (let i = 0; i < codes.length; i++) {
+        codelist.push(codes[i].innerText);
+    }
+    let index = codelist.indexOf(code);
+    if (index === codelist.length - 1) {
+        return;
+    }
+    let next = codelist[index + 1];
+    showBig(next);
+}
+
+
+// show the previous image in the list
+function prevPic(event) {
+    event.preventDefault();
+    let code = $('#bigid').text();
+    let codes = $('.shot').not('.demo').find('.shid');
+    let codelist = [];
+    for (let i = 0; i < codes.length; i++) {
+        codelist.push(codes[i].innerText);
+    }
+    let index = codelist.indexOf(code);
+    if (index === 0) {
+        return;
+    }
+    let prev = codelist[index - 1];
+    showBig(prev);
+}
+
+
 // The following functions handle item focus and which areas are showing
 function focusAlbums() {
     $('#albumArea').show();
@@ -318,12 +357,22 @@ function focusAlbums() {
 }
 
 function focusShots(event) {
-    if (event.target.className === 'abremove') {return;}
-    if (event.target.parentElement.className === 'abremove') {return;}
-
-    $('#albumArea').hide();
-    $('#shotArea').show();
-    $('#bigArea').hide();
+    let ok=0;
+    say('test', event.target.id);
+    if (event.target.id === 'searchButton'){
+        ok=1;
+    }
+    if (event.target.id === 'bigCloseButton'){
+        ok=1;
+    }
+    if (event.target.className === 'abimage'){
+        ok=1;
+    }
+    if (ok===1){
+        $('#albumArea').hide();
+        $('#shotArea').show();
+        $('#bigArea').hide();
+    }
 }
 
 function focusBig(event) {
@@ -337,9 +386,12 @@ function focusBig(event) {
 
 $('#albumList').click(focusShots);
 $('#shotList').click(focusBig);
-$('#bigimdiv').click(focusShots);
 $('#showabsButton').click(focusAlbums);
 $('#searchButton').click(focusShots);
+$('#bigImage').click(nextPic);
+$('#nextButton').click(nextPic);
+$('#prevButton').click(prevPic);
+$('#bigCloseButton').click(focusShots);
 focusAlbums();
 
 
