@@ -38,13 +38,36 @@ function getAlbum(code) {
         bum.find('.abname').text(response.name);
         bum.find('.abdate').text(response.created_at);
         bum.find('.abts').text(response.timestamp);
+        bum.find('.abremove').click(removeAlbum);
+        
         $('#albumList').append(bum);
+        
         bum.click(function() {
             viewAlbum(response.code);
         });
+
         if (response.thumbnail!==null) {
             bum.find('.abimage').attr('src', response.thumbnail);
         }
+    });
+}
+
+
+function removeAlbum(event) {
+    event.preventDefault();
+    let albumElement = $(this).closest('.album');
+    let code = albumElement.find('.abcode').text();
+    let data = {
+        'action': 'removeAlbum',
+        'code': code,
+    };
+    ajaxPost(data, function(response) {
+        if (response.ecode !== 0) {
+            let msg = response.Error;
+            alert(msg);
+            return;
+        };
+        albumElement.remove();
     });
 }
 

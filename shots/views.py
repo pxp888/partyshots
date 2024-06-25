@@ -239,6 +239,20 @@ def removePhoto(request):
         return JsonResponse(response)
 
 
+def removeAlbum(request):
+    user = request.user
+    code = request.POST.get('code')
+    album = get_object_or_404(Album, code=code)
+
+    if album.user == user:
+        album.delete()
+        response = {'ecode': 0}
+        return JsonResponse(response)
+    else:
+        response = {'ecode': 1, 'Error': 'This is not your album.'}
+        return JsonResponse(response)
+    
+
 funcs['createAlbum'] = createAlbum
 funcs['getAlbum'] = getAlbum
 funcs['getAlbums'] = getAlbums
@@ -247,3 +261,5 @@ funcs['getThumb'] = getThumb
 funcs['getThumbs'] = getThumbs
 funcs['getPhoto'] = getPhoto
 funcs['removePhoto'] = removePhoto
+funcs['removeAlbum'] = removeAlbum
+
