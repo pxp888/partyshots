@@ -6,7 +6,6 @@
 	margin: 0.5rem;
 }
 
-
 .listview {
 	display: flex;
 	flex-direction: row;
@@ -17,4 +16,15 @@
 	display: none;
 	background-color: rgb(58, 62, 92);
 }
+
+.abname {
+	font-family: Roboto;
+	font-size:1.2rem;
+}
+
+.abcode {
+	font-family: Ubuntu Sans Mono;
+	font-size: .8rem;
+}
+
 

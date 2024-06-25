@@ -39,7 +39,7 @@ function getAlbum(code) {
         bum.find('.abdate').text(response.created_at);
         bum.find('.abts').text(response.timestamp);
         bum.find('.abremove').click(removeAlbum);
-        
+
         $('#albumList').append(bum);
         
         bum.click(function() {
@@ -96,6 +96,7 @@ function getThumb(photoid) {
         thumb.find('.shuser').text(response.user);
         thumb.find('.shdate').text(response.created);
         thumb.find('.shid').text(data.photoid);
+        thumb.find('.shdesc').text(response.description);
         thumb.click(viewBig);
         thumb.find('.shremove').click(removeShot);
         $('#shotList').append(thumb);
@@ -203,6 +204,20 @@ function uploadFile(file) {
                 if (response.ecode === 1) {
                     code = response.photoid;
                     getThumb(code);
+
+                    let description = $('#imdesc').val();
+                    let data = {
+                        'action': 'addDescription',
+                        'code': code,
+                        'description': description,
+                    };
+                    ajaxPost(data, function(response) {
+                        if (response.ecode !== 0) {
+                            let msg = response.Error;
+                            alert(msg);
+                            return;
+                        }
+                    });
                 }
             });
         }
@@ -215,12 +230,14 @@ function filesPicked(event) {
     const imdesc = $('#imdesc');
     if (imdesc.val() === '') {
         alert('Please enter a description or label');
+        $('#imfile').val('');
         return;
     }
 
     let abcode = $('#abinfo').find('.abcode').text();
     if (abcode.length < 10) {
         alert('Please select an album');
+        $('#imfile').val('');
         return;
     }
 
@@ -242,10 +259,27 @@ function albumCodeEntered(event) {
 }
 
 
+function subscribe(event) {
+    event.preventDefault();
+    let code = $('#abinfo').find('.abcode').text();
+    let data = {
+        'action': 'subscribe',
+        'code': code,
+    };
+    ajaxPost(data, function(response) {
+        if (response.ecode !== 0) {
+            let msg = response.Error;
+            alert(msg);
+            return;
+        }
+        getAlbum(code);
+    });
+}
+
 
 $('#createAlbumButton').on('click', createAlbum);
 $('#imfile').on('change', filesPicked);
 $('#searchButton').on('click', albumCodeEntered);
-
+$('#absubButton').on('click', subscribe);
 getAlbums();
 

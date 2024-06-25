@@ -91,12 +91,19 @@ def getThumb(request):
     user = photo.user.username
     created = photo.created_at
 
+    tag = Tag.objects.filter(photo=photo, key='description')
+    if tag.count() > 0:
+        description = tag.last().value 
+    else:
+        description = ''
+
     msg = {
         'ecode': 0,
         'photoid': photoid,
         'link': photo.tlink,
         'user': user,
         'created': created,
+        'description': description,
     }
     return JsonResponse(msg)
 
@@ -248,10 +255,43 @@ def removeAlbum(request):
         album.delete()
         response = {'ecode': 0}
         return JsonResponse(response)
-    else:
-        response = {'ecode': 1, 'Error': 'This is not your album.'}
+    
+    sub = Subs.objects.filter(user=user, album=album)
+    if sub.count() > 0:
+        sub.delete()
+        response = {'ecode': 0}
+        return JsonResponse(response)
+
+
+def subscribe(request):
+    user = request.user
+    code = request.POST.get('code')
+    album = get_object_or_404(Album, code=code)
+    if album.user == user:
+        response = {'ecode': 1, 'Error': 'You cannot subscribe to your own album.'}
+        return JsonResponse(response)
+    sub = Subs.objects.create(user=user, album=album)
+    sub.save()
+    response = {'ecode': 0}
+    return JsonResponse(response)
+
+
+def addDescription(request):
+    user = request.user
+    code = request.POST.get('code')
+    description = request.POST.get('description')
+
+    photo = get_object_or_404(Photo, id=code)
+    if photo.user != user:
+        response = {'ecode': 1, 'Error': 'You cannot add description to this photo.'}
         return JsonResponse(response)
     
+    tag = Tag.objects.create(photo=photo, key='description', value=description)
+    tag.save()
+    
+    response = {'ecode': 0}
+    return JsonResponse(response)
+
 
 funcs['createAlbum'] = createAlbum
 funcs['getAlbum'] = getAlbum
@@ -262,4 +302,6 @@ funcs['getThumbs'] = getThumbs
 funcs['getPhoto'] = getPhoto
 funcs['removePhoto'] = removePhoto
 funcs['removeAlbum'] = removeAlbum
+funcs['subscribe'] = subscribe
+funcs['addDescription'] = addDescription
 

@@ -29,12 +29,11 @@ class Photo(models.Model):
 class Tag(models.Model):
     id = models.AutoField(primary_key=True)
     photo = models.ForeignKey(Photo, on_delete=models.CASCADE)
-    album = models.ForeignKey(Album, on_delete=models.CASCADE)
-    key= models.TextField()
-    value = models.TextField()
+    key= models.TextField(null=True, blank=True)
+    value = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return str(self.album.name) + ' - ' + str(self.id)
+        return str(self.id)
 
 
 class Subs(models.Model):
