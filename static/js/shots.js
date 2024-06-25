@@ -41,7 +41,7 @@ function getAlbum(code) {
         bum.find('.abts').text(response.timestamp);
         bum.find('.abremove').click(removeAlbum);
 
-        $('#albumList').append(bum);
+        // $('#albumList').append(bum);
         
         bum.click(function() {
             viewAlbum(response.code);
@@ -50,6 +50,17 @@ function getAlbum(code) {
         if (response.thumbnail!==null) {
             bum.find('.abimage').attr('src', response.thumbnail);
         }
+
+        let albums = $('.album').not('.demo');
+        for (let i = 0; i < albums.length; i++) {
+            let a = +$(albums[i]).find('.abts').text();
+            let b = +bum.find('.abts').text();
+            if (a > b) {
+                $(albums[i]).before(bum);
+                return;
+            }
+        }
+        $('#albumList').append(bum);
     });
 }
 
@@ -103,6 +114,17 @@ function getThumb(photoid) {
         thumb.find('.shdesc').text(response.description);
         thumb.click(viewBig);
         thumb.find('.shremove').click(removeShot);
+        // $('#shotList').append(thumb);
+
+        let thumbs = $('.shot').not('.demo');
+        for (let i = 0; i < thumbs.length; i++) {
+            let a = +$(thumbs[i]).find('.shid').text();
+            let b = +thumb.find('.shid').text();
+            if (a > b) {
+                $(thumbs[i]).before(thumb);
+                return;
+            }
+        }
         $('#shotList').append(thumb);
     });
 }
