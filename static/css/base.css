@@ -52,3 +52,17 @@ body {
     flex-direction: column;
 }
 
+.btn {
+    background-color: #48456d;
+    color: white;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    margin: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #b8285c;
+}

@@ -4,8 +4,8 @@
 {% load i18n %}
 
 {% block head %}
-	<link rel="stylesheet" href="{% static 'css/style.css' %}">
-	<link rel="stylesheet" href="{% static 'css/landing.css' %}">
+<link rel="stylesheet" href="{% static 'css/base.css' %}">
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
 {% endblock head %}
 
 
@@ -14,7 +14,7 @@
 
 {% block content %}
 
-<div class="container">
+<div class="sectionDiv">
   <div class="row">
     <div class="col-md-8 mt-3 offset-md-2">
       <h1>{% trans "Sign Up" %}</h1>      
@@ -25,7 +25,7 @@
 
 
 
-<div class="container">
+<div class="sectionDiv">
   <div class="row">
     <div class="col-md-8 mt-3 offset-md-2">
       <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
