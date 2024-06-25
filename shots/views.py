@@ -294,14 +294,22 @@ def addDescription(request):
 
 
 funcs['createAlbum'] = createAlbum
-funcs['getAlbum'] = getAlbum
 funcs['getAlbums'] = getAlbums
+funcs['getAlbum'] = getAlbum
 funcs['addPhoto'] = addPhoto
-funcs['getThumb'] = getThumb
 funcs['getThumbs'] = getThumbs
+funcs['getThumb'] = getThumb
 funcs['getPhoto'] = getPhoto
 funcs['removePhoto'] = removePhoto
 funcs['removeAlbum'] = removeAlbum
 funcs['subscribe'] = subscribe
 funcs['addDescription'] = addDescription
 
+
+# create storage paths, FOR TESTING ONLY
+path='imagestore/original/'
+if not os.path.exists(path):
+    os.makedirs(path)
+path='imagestore/thumbs/'
+if not os.path.exists(path):
+    os.makedirs(path)
