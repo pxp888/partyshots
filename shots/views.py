@@ -21,6 +21,8 @@ incoming = {}
 
 def albums(request):
     context = {}
+    if not request.user.is_authenticated:
+        return render(request, 'shots/landing.html', context)
     return render(request, 'shots/albums.html', context)
 
 
