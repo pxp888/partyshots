@@ -281,13 +281,35 @@ function checkAlbums() {
         let code = getSlug();
         if (bums.includes(code)) {
             $('#absubButton').hide();
+            $('#abremButton').show();
         }
         else {
             $('#absubButton').show();
+            $('#abremButton').hide();
         }
     });
+
+
 }
 
+
+function removeAlbum(event) {
+    event.preventDefault();
+    if (!confirm('Are you sure you want to remove this album?')) {return;}
+    let code = $('#abinfo').find('.abcode').text();
+    let data = {
+        'action': 'removeAlbum',
+        'code': code,
+    };
+    ajaxPost(data, function(response) {
+        if (response.ecode !== 0) {
+            let msg = response.Error;
+            alert(msg);
+            return;
+        };
+        window.location.href = '/';
+    });
+}
 
 
 document.addEventListener('keydown', function(event) {
@@ -315,10 +337,12 @@ $('#searchButton').on('click', albumCodeEntered);
 $('#absubButton').on('click', subscribe);
 $('#nextButton').on('click', nextPic);
 $('#prevButton').on('click', prevPic);
+$('#abremButton').on('click', removeAlbum);
 $('#showabsButton').on('click', function() {window.location.href = '/'});
 
 viewAlbum(getSlug());
 bigArea.hide();
+$('#abremButton').hide();
 checkAlbums();
 
 
