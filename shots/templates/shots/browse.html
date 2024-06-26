@@ -3,7 +3,8 @@
 
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/base.css' %}" />
-<link rel="stylesheet" href="{% static 'css/home.css' %}" />
+<!-- <link rel="stylesheet" href="{% static 'css/home.css' %}" /> -->
+<link rel="stylesheet" href="{% static 'css/browse.css' %}" />
 {% endblock %} 
 
 
@@ -17,13 +18,13 @@
 <div id="mainArea">
 	<div id="shotArea" class="">
 		<div id="abinfo" class="sectionDiv">
-			<button id="showabsButton">Back to Albums</button>
+			<button id="showabsButton" class="btn">Back to Albums</button>
 			<p class="abname">Name</p>
 			<p class="abcode">Code</p>
 			<p class="abuser">User</p>
 			<p class="abdate">Created</p>
 			{% if user.is_authenticated %}
-			<button id="absubButton">Subscribe</button>
+			<button id="absubButton" class="btn">Subscribe</button>
 			{% else %}
 			{% endif %}
 		</div>
@@ -36,13 +37,20 @@
 		{% endif %}
 
 		<div id="shotList" class="listview">
-			<div class="shot sectionDiv demo">
+			<div class="shot demo">
 				<img src="{% static 'images/blankimage.png' %}" alt="blank" class="shimage">
-				<p class="shdesc">Description</p>
-				<p class="shuser">User</p>
-				<p class="shdate">Created</p>
-				<p class="shid">image ID</p>
-				<!-- <div class="shremove"><p>Remove</p></div> -->
+				<div class="shotinfo">
+
+					<p class="shdesc">Description</p>
+					<p class="label">description</p>
+					
+					<p class="shuser">User</p>
+					<p class="label">user</p>
+
+					<p class="shdate">Created</p>
+					<p class="label">date </p>
+					<p class="shid demo">image ID</p>
+				</div>
 				<button class="shremove btn">Remove</button>
 			</div>
 		</div>

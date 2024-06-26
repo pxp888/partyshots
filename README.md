@@ -7,3 +7,4 @@
 - styling
 - video handling
 - download album functionality
+- drag drop add

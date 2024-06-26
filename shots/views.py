@@ -90,7 +90,7 @@ def getAlbum(request):
         'name': album.name,
         'code': album.code,
         'user': album.user.username,
-        'created_at': album.created_at,
+        'created_at': album.created_at.strftime('%Y-%m-%d %H:%M:%S'),
         'thumbnail': album.thumbnail,
         'timestamp': album.created_at.timestamp(),
     }
@@ -101,7 +101,8 @@ def getThumb(request):
     photoid = request.POST.get('photoid')
     photo = get_object_or_404(Photo, id=photoid)
     user = photo.user.username
-    created = photo.created_at
+    # created = photo.created_at
+    created = photo.created_at.strftime('%Y-%m-%d %H:%M:%S')
 
     tag = Tag.objects.filter(photo=photo, key='description')
     if tag.count() > 0:

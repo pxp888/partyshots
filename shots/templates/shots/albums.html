@@ -2,7 +2,7 @@
 {% load static %} 
 
 {% block head %}
-<link rel="stylesheet" href="{% static 'css/home.css' %}" />
+<link rel="stylesheet" href="{% static 'css/albums.css' %}" />
 {% endblock %} 
 
 
@@ -16,18 +16,27 @@
 <div id="mainArea">
 	<div id="albumArea">
 		<div id="createArea" class="sectionDiv">
+			<p>Create New Album</p>
 			<input type="text" id="createNameLine" placeholder="Album Name">
 			<button id="createAlbumButton">Create</button>
 		</div>
 
 		<div id="albumList" class="listview">
-			<div class="album sectionDiv demo">
+			<div class="album demo">
 				<img src="{% static 'images/blankimage.png' %}" alt="blank" class="abimage">
 				<p class="abname">Name</p>
+				<p class="label">name</p>
+
 				<p class="abcode">Code</p>
+				<p class="label">code</p>
+				
 				<p class="abuser">User</p>
+				<p class="label">user</p>
+
 				<p class="abdate">Created</p>
-				<p class="abts">timestamp</p>
+				<p class="label">created</p>
+
+				<p class="abts demo">timestamp</p>
 				<!-- <div class="abremove"><p>Remove</p></div> -->
                 <button class="abremove btn">Remove</button>
 			</div>

@@ -69,6 +69,7 @@ function getAlbum(code) {
 // Remove an album object
 function removeAlbum(event) {
     event.preventDefault();
+    if (!confirm('Are you sure you want to remove this album?')) {return;}
     let albumElement = $(this).closest('.album');
     let code = albumElement.find('.abcode').text();
     let data = {

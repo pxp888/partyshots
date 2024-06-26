@@ -16,7 +16,7 @@ function getThumb(photoid) {
         thumb.find('.shid').text(data.photoid);
         thumb.find('.shdesc').text(response.description);
         
-        thumb.find('.shimage').click(viewBig);
+        thumb.find('.shotinfo').click(viewBig);
         thumb.find('.shremove').click(removeShot);
 
         let thumbs = $('.shot').not('.demo');
@@ -102,6 +102,8 @@ function hideBig() {
 // Remove a photo object
 function removeShot(event) {
     event.preventDefault();
+    if (!confirm('Are you sure you want to delete this photo?')) {return;}
+    
     let shotElement = $(this).closest('.shot');
     let code = shotElement.find('.shid').text();
     let data = {
