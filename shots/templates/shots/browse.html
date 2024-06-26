@@ -17,21 +17,30 @@
 
 <div id="mainArea">
 	<div id="shotArea" class="">
+		<button id="showabsButton" class="btn">Back to Albums</button>
 		<div id="abinfo" class="sectionDiv">
-			<button id="showabsButton" class="btn">Back to Albums</button>
+			<p class="label">name</p>
 			<p class="abname">Name</p>
+
+			<p class="label">code</p>
 			<p class="abcode">Code</p>
+
+			<p class="label">user</p>
 			<p class="abuser">User</p>
+
+			<p class="label">created</p>
 			<p class="abdate">Created</p>
+
 			{% if user.is_authenticated %}
 			<button id="absubButton" class="btn">Subscribe</button>
-			{% else %}
 			{% endif %}
 		</div>
 
 		{% if user.is_authenticated %}
 		<div id="addArea" class="sectionDiv">
-			<input type="text" id="imdesc" placeholder="Description">
+			<p>Add Photos : </p>
+
+			<input type="text" id="imdesc" placeholder="Description (needed)">
 			<input type="file" id="imfile" accept="image/*" multiple>
 		</div>
 		{% endif %}
@@ -60,10 +69,10 @@
 		<div id="bigimdiv">
 			<img src="{% static 'images/blankimage.png' %}" alt="blank" id="bigImage">
 			<p id="bigid" class="demo"></p>
-			<div>
-				<button id="bigCloseButton">Close</button>
-				<button id="prevButton">Prev</button>
-				<button id="nextButton">Next</button>
+			<div id="bigButtons">
+				<button id="bigCloseButton" class="btn">Close</button>
+				<button id="prevButton" class="btn">Prev</button>
+				<button id="nextButton" class="btn">Next</button>
 			</div>
 		</div>
 	</div>

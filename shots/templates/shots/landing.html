@@ -2,7 +2,7 @@
 {% load static %} 
 
 {% block head %}
-<!-- <link rel="stylesheet" href="{% static 'css/home.css' %}" /> -->
+<link rel="stylesheet" href="{% static 'css/landing.css' %}" />
 {% endblock %} 
 
 
@@ -15,13 +15,22 @@
 
 <div id="mainArea">
     <div id="landingArea">
-        <div>
+        <div id="opener">
             <h1>Because we don't all have to take the picture.</h1>
             <p>Sign in to create albums and upload images.</p>
-            <p>Anyone with the album code can browse an album, </p>
+            <p>Anyone with the album code or album URL can browse an album, </p>
             <p>but you have to be signed in to create or add to albums.</p>
         </div>
+
+        <div id="info">
+            <div class="sectionDiv">
+                <h2>Important Information</h2>
+                <p>partyShots is intended to provide a centralized repository for sharing photographs, not long term storage.</p>
+                <p>All images are <strong>openly public</strong> to anyone with the album code, or the URL of the album.  There is no assumption of privacy.</p>
+            </div>
+        </div>
     </div>
+
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>

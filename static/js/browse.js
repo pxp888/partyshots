@@ -130,7 +130,6 @@ function uploadFile(file) {
     reader.onload = function(e) {
         let blob = e.target.result;
         let hash = md5(blob);
-        say('test', blob.slice(0, 100))
 
         let size = blob.length;
         let chunks = Math.ceil(size / chunkSize);
@@ -221,7 +220,8 @@ function subscribe(event) {
             alert(msg);
             return;
         }
-        getAlbum(code);
+        viewAlbum(code);
+        checkAlbums();
     });
 }
 
@@ -268,9 +268,26 @@ function getSlug() {
     let url = window.location.href;
     let parts = url.split('/');
     let slug = parts[parts.length - 2];
-    say(slug);
     return slug;
 }
+
+
+function checkAlbums() {
+    let data = {
+        'action': 'getAlbums',
+    };
+    ajaxPost(data, function(response) {
+        let bums = response['albums'];
+        let code = getSlug();
+        if (bums.includes(code)) {
+            $('#absubButton').hide();
+        }
+        else {
+            $('#absubButton').show();
+        }
+    });
+}
+
 
 
 document.addEventListener('keydown', function(event) {
@@ -302,3 +319,6 @@ $('#showabsButton').on('click', function() {window.location.href = '/'});
 
 viewAlbum(getSlug());
 bigArea.hide();
+checkAlbums();
+
+

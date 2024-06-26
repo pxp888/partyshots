@@ -1,13 +1,4 @@
 
-.abname {
-	font-family: Roboto;
-	font-size:1.2rem;
-}
-
-.abcode {
-	font-family: Ubuntu Sans Mono;
-	font-size: .8rem;
-}
 
 #bigArea {
 	position: fixed;
@@ -83,5 +74,59 @@
 }
 
 .shremove:hover {
+	opacity: 1;
+}
+
+
+#abinfo {
+	display: grid;
+	grid-template-columns: 100px 1fr;
+	align-items: baseline;
+}
+
+#abinfo p {
+	margin: .5rem;
+}
+
+#abinfo .label {
+	color: gray;
+	font-size: .9rem;
+}
+
+.abname {
+	font-family: Roboto;
+	font-size:1.2rem;
+}
+
+.abcode {
+	font-family: Ubuntu Sans Mono;
+	font-size: .8rem;
+}
+
+#addArea {
+	display: flex;
+	flex-direction: row;
+	align-items: baseline;
+}
+
+#addArea p {
+	font-size: .9rem;
+	margin: 0 5px;
+}
+
+#addArea input {
+	margin: 0 5px;
+}
+
+#bigButtons {
+	position: fixed;
+	bottom: 10px;
+	left: 10px;
+
+	opacity: 0.1;
+	transition: opacity 0.5s;
+}
+
+#bigButtons:hover {
 	opacity: 1;
 }
