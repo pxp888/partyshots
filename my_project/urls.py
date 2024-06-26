@@ -23,7 +23,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', shots_views.albums, name='home'),
     path('data/', shots_views.data, name='data'),
-    path('albums/', shots_views.albums, name='albums'),
     path('browse/<slug:slug>/', shots_views.browse, name='browse'),
 ]
 

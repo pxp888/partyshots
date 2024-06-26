@@ -5,7 +5,28 @@
 <link rel="stylesheet" href="{% static 'css/home.css' %}" />
 {% endblock %} 
 
+
 {% block content %}
 
+<form action="POST">
+	{% csrf_token %}
+</form>
+
+
+<div id="mainArea">
+    <div id="landingArea">
+        <div>
+            <h1>Because we don't all have to take the picture.</h1>
+            <p>Sign in to create albums and upload images.</p>
+            <p>Anyone with the album code can browse an album, </p>
+            <p>but you must sign in to add to albums.</p>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+<script src="{% static 'js/base.js' %}"></script>
+<script src="{% static 'js/albums.js' %}"></script>
 
 {% endblock %}

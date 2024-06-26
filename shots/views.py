@@ -23,9 +23,9 @@ def albums(request):
     context = {}
     return render(request, 'shots/albums.html', context)
 
+
 def browse(request, slug):
     context = {}
-    # album = get_object_or_404(Album, code=slug)
     return render(request, 'shots/browse.html', context)
 
 

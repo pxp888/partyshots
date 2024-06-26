@@ -1,5 +1,5 @@
 const csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
-
+const bigArea = $('#bigArea');
 
 
 // Get the thumbnail for a photo object
@@ -87,7 +87,14 @@ function showBig(code) {
         }
         $('#bigImage').attr('src', response.link);
         $('#bigid').text(code);
+        bigArea.show();
     });
+}
+
+
+// Hide the full size image
+function hideBig() {
+    bigArea.hide();
 }
 
 
@@ -219,6 +226,7 @@ function subscribe(event) {
 // show the next image in the list
 function nextPic(event) {
     event.preventDefault();
+
     let code = $('#bigid').text();
     let codes = $('.shot').not('.demo').find('.shid');
     let codelist = [];
@@ -237,6 +245,7 @@ function nextPic(event) {
 // show the previous image in the list
 function prevPic(event) {
     event.preventDefault();
+
     let code = $('#bigid').text();
     let codes = $('.shot').not('.demo').find('.shid');
     let codelist = [];
@@ -261,9 +270,32 @@ function getSlug() {
 }
 
 
+document.addEventListener('keydown', function(event) {
+    if (bigArea.is(':hidden')) {
+        if (event.key === 'Escape') {
+            window.location.href = '/';
+        }
+    }
+    else {
+        if (event.key === 'ArrowRight') {
+            nextPic(event);
+        }
+        if (event.key === 'ArrowLeft') {
+            prevPic(event);
+        }
+        if (event.key === 'Escape') {
+            hideBig();
+        }
+    }
+});
 
+$('#bigCloseButton').on('click', hideBig);
 $('#imfile').on('change', filesPicked);
 $('#searchButton').on('click', albumCodeEntered);
 $('#absubButton').on('click', subscribe);
+$('#nextButton').on('click', nextPic);
+$('#prevButton').on('click', prevPic);
+$('#showabsButton').on('click', function() {window.location.href = '/'});
 
 viewAlbum(getSlug());
+bigArea.hide();

@@ -28,9 +28,8 @@ function md5(blob) {
 }
 
 function codeEntered(){
-    const code = $('#searchline').val();
-    say(code);
-    // window.location.href = '/browse/' + code;
+    let code = $('#searchLine').val();
+    window.location.href = '/browse/' + code;
 }
 
 $('#searchButton').click(codeEntered);

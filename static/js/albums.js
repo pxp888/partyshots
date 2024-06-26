@@ -43,7 +43,7 @@ function getAlbum(code) {
         bum.find('.abts').text(response.timestamp);
         bum.find('.abremove').click(removeAlbum);
         
-        bum.click(function() {
+        bum.find('.abimage').click(function() {
             // viewAlbum(response.code);
             window.location.href = '/browse/' + response.code;
         });
@@ -98,5 +98,7 @@ function getAlbums() {
         }
     });
 }
+
+$('#createAlbumButton').click(createAlbum);
 
 getAlbums();
