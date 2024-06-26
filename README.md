@@ -6,3 +6,4 @@
 - postgres
 - styling
 - video handling
+- download album functionality

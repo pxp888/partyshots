@@ -15,7 +15,8 @@ function getThumb(photoid) {
         thumb.find('.shdate').text(response.created);
         thumb.find('.shid').text(data.photoid);
         thumb.find('.shdesc').text(response.description);
-        thumb.click(viewBig);
+        
+        thumb.find('.shimage').click(viewBig);
         thumb.find('.shremove').click(removeShot);
 
         let thumbs = $('.shot').not('.demo');
