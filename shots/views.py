@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse, FileResponse
+from django.http import JsonResponse
 from django.contrib.auth.models import User
 from .models import Album, Photo, Tag, Subs
 
@@ -13,6 +13,54 @@ import string
 import io 
 import os 
 import time 
+
+
+
+
+# s3 stuff 
+
+if os.path.exists('env.py'):
+    import env 
+
+
+def upload_bytes_to_s3(bytes_data, object_name):
+    bucket_name = 'pxp-imagestore'
+
+    s3_client = boto3.client('s3')
+    try:
+        response = s3_client.put_object(Body=bytes_data, Bucket=bucket_name, Key=object_name)
+    except ClientError as e:
+        print(e)
+        return False
+    return True
+
+
+def upload_file_to_s3(file_name, object_name):
+    bucket_name = 'pxp-imagestore'
+
+    # s3_client = boto3.client('s3')
+    s3_client = boto3.client('s3', region_name='eu-north-1')
+    try:
+        response = s3_client.upload_file(file_name, bucket_name, object_name)
+    except ClientError as e:
+        print(e)
+        return False
+    return True
+
+
+def create_presigned_url(object_name, expiration=604800):
+    bucket_name = 'pxp-imagestore'
+    # s3_client = boto3.client('s3')
+    s3_client = boto3.client('s3', region_name='eu-north-1')
+    try:
+        response = s3_client.generate_presigned_url('get_object', Params={'Bucket': bucket_name, 'Key': object_name}, ExpiresIn=expiration)
+    except ClientError as e:
+        print(e)
+        return None
+    except:
+        return None
+
+    return response
 
 
 funcs = {}
@@ -86,14 +134,23 @@ def getAlbum(request):
     user = request.user
     code = request.POST.get('code')
     album = get_object_or_404(Album, code=code)
+    
     response = {
         'name': album.name,
         'code': album.code,
         'user': album.user.username,
         'created_at': album.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-        'thumbnail': album.thumbnail,
         'timestamp': album.created_at.timestamp(),
     }
+
+    # try:
+    #     tnail = create_presigned_url(album.thumbnail)
+    # except:
+    #     tnail = None
+    tnail = create_presigned_url(album.thumbnail)
+    
+    if (tnail is not None):
+        response['thumbnail'] = tnail
     return JsonResponse(response)
 
 
@@ -113,7 +170,7 @@ def getThumb(request):
     msg = {
         'ecode': 0,
         'photoid': photoid,
-        'link': photo.tlink,
+        'link': create_presigned_url(photo.tlink),
         'user': user,
         'created': created,
         'description': description,
@@ -131,7 +188,7 @@ def getPhoto(request):
     msg = {
         'ecode': 0,
         'photoid': photoid,
-        'link': photo.link,
+        'link': create_presigned_url(photo.link),
         'user': user,
         'created': created,
         'filename': filename,
@@ -151,6 +208,7 @@ def processPhoto(target, meta):
     mt, encoded = data.split(',', 1)
     decoded = base64.b64decode(encoded)
 
+
     # create thumbnail
     try:
         image_bytes_io = io.BytesIO(decoded)
@@ -160,7 +218,10 @@ def processPhoto(target, meta):
         path='imagestore/thumbs/' + str(photo.id) + '.jpg'
         thumb.save(path)
 
-        tlink = 'http://localhost:8001/thumbs/' + str(photo.id) + '.jpg'
+        tlink = 'tn-' + str(photo.id)
+        if (upload_file_to_s3(path, tlink)):
+            os.remove(path)
+
         photo.tlink = tlink
         photo.save()
 
@@ -171,7 +232,6 @@ def processPhoto(target, meta):
     except Exception as e:
         print('thumbnail error', e)
 
-
     # save original
     path='imagestore/original/' + str(photo.id) + '/'
     if not os.path.exists(path):
@@ -180,7 +240,11 @@ def processPhoto(target, meta):
     with open(path, 'wb') as f:
         f.write(decoded)
 
-    link = 'http://localhost:8001/original/' + str(photo.id) +'/' + filename
+    link = 'of-' + str(photo.id)
+    if(upload_file_to_s3(path, link)):
+        os.remove(path)
+
+    # link = 'http://localhost:8001/original/' + str(photo.id) +'/' + filename
     photo.link = link
     photo.save()
     return photo.id
