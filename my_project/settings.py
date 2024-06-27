@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-zxm#(y24ig!3c*e*lm%cxm4&kjq9b3x@)k+4((!__fj_fi3few
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.herokuapp.com', 'localhost', ]
+ALLOWED_HOSTS = ['.herokuapp.com', 'localhost', '*']
 
 # Application definition
 
@@ -93,6 +93,13 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost",
+    "http://127.0.0.1",
+    "https://*.herokuapp.com"
+]
+
 
 
 # Password validation
