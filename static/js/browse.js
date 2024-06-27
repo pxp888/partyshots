@@ -68,6 +68,7 @@ function viewAlbum(code) {
 
 // Handle thumbnail click event
 function viewBig(event) {
+    say(event.target);
     event.preventDefault();
     let code = $(this).closest('.shot').find('.shid').text();
     showBig(code);
@@ -264,6 +265,7 @@ function prevPic(event) {
 }
 
 
+// Get the slug from the URL, which should match the album code
 function getSlug() {
     let url = window.location.href;
     let parts = url.split('/');
@@ -272,6 +274,7 @@ function getSlug() {
 }
 
 
+// check ownership of the album, and show the appropriate buttons
 function checkAlbums() {
     let data = {
         'action': 'getAlbums',
@@ -288,8 +291,6 @@ function checkAlbums() {
             $('#abremButton').hide();
         }
     });
-
-
 }
 
 

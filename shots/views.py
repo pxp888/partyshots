@@ -143,13 +143,9 @@ def getAlbum(request):
         'timestamp': album.created_at.timestamp(),
     }
 
-    # try:
-    #     tnail = create_presigned_url(album.thumbnail)
-    # except:
-    #     tnail = None
     tnail = create_presigned_url(album.thumbnail)
     
-    if (tnail is not None):
+    if (tnail):
         response['thumbnail'] = tnail
     return JsonResponse(response)
 
