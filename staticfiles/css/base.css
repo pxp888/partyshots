@@ -1,0 +1,108 @@
+:root {
+    --color1: #48456d;
+    --color2: #b8285c;
+}
+
+body {
+    margin: 0;
+    background-color: #212427;
+    font-family: Roboto;
+}
+
+.topbar {
+	background-color: #3e4246;
+    color: white;
+	border-bottom: 1px solid #122233;
+	padding: 0.5rem;
+
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: baseline;
+
+}
+
+.topbar ul {
+    list-style-type: none;
+    display: flex;
+    flex-direction: row;
+}
+
+.topbar ul li {
+	margin-right: 1rem;
+	color: white;
+}
+
+.topbar ul li a {
+    text-decoration: none;
+    color: white;
+}
+
+#toplist {
+    margin: 4px;
+}
+
+.logo {
+    font-size: 1.5rem;
+    text-decoration: none;
+    color: white;
+    margin-left: 1rem;
+}
+
+.hidden {
+	display: none;
+}
+
+.demo {
+	display: none;
+	background-color: rgb(58, 62, 92);
+}
+
+.vertical {
+    display: flex;
+    flex-direction: column;
+}
+
+.btn {
+    background-color: var(--color1);
+    color: white;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    margin: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: var(--color2);
+}
+
+
+/* .msgDiv {
+	border-radius: 0.5rem;
+	background-color: blue;
+	color: white;
+	padding: 0.5rem;
+	margin: 0.5rem;
+} */
+
+
+.sectionDiv {
+	border-radius: 0.25rem;
+	background-color: rgb(233, 233, 233);
+	color: black;
+	padding: 0.5rem;
+	margin: 0.7rem;
+}
+
+
+.listview {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: center;
+
+}
+
+

@@ -1,0 +1,132 @@
+
+
+#bigArea {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+
+	background-color: rgb(37, 37, 37);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+#bigimdiv {
+	display: flex;
+	flex-direction: column;
+	
+}
+
+#bigimdiv > img {
+	max-width: 100%;
+	max-height: 95vh;
+	object-fit: contain;
+}
+
+
+.shot {
+	margin: 0.5rem;
+	position: relative;
+}
+
+.shotinfo {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+
+	background-color: rgba(0, 0, 0, 0.8);
+	color: white;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	opacity: 0;
+	transition: opacity 0.5s;
+}
+
+.shotinfo:hover {
+	opacity: 1;
+}
+
+.shotinfo > p {
+	margin: 20px 0px 0 0;
+	font-size: 1rem;
+}
+
+.shotinfo > .label {
+	color: gray;
+	margin: 0;
+	font-size: .9rem;
+}
+
+.shremove {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+
+	opacity: .5;
+	transition: opacity 0.5s;
+}
+
+.shremove:hover {
+	opacity: 1;
+}
+
+
+#abinfo {
+	display: grid;
+	grid-template-columns: 100px 1fr;
+	align-items: baseline;
+}
+
+#abinfo p {
+	margin: .5rem;
+}
+
+#abinfo .label {
+	color: gray;
+	font-size: .9rem;
+}
+
+.abname {
+	font-family: Roboto;
+	font-size:1.2rem;
+}
+
+.abcode {
+	font-family: Ubuntu Sans Mono;
+	font-size: .8rem;
+}
+
+#addArea {
+	display: flex;
+	flex-direction: row;
+	align-items: baseline;
+}
+
+#addArea p {
+	font-size: .9rem;
+	margin: 0 5px;
+}
+
+#addArea input {
+	margin: 0 5px;
+}
+
+#bigButtons {
+	position: fixed;
+	bottom: 10px;
+	left: 10px;
+
+	opacity: 0.1;
+	transition: opacity 0.5s;
+}
+
+#bigButtons:hover {
+	opacity: 1;
+}

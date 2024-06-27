@@ -1,0 +1,55 @@
+.album {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px;
+    padding: 10px;
+
+    background-color: black;
+    color: white;
+}
+
+.album.demo {
+    display: none;
+}
+
+.album > p {
+    margin: 20px 0 0 0;
+}
+
+.album .label {
+    color: gray;
+    margin: 0;
+}
+
+.album .abcode {
+    font-size: .9rem;
+}
+
+.album .btn {
+    opacity: .25;
+    transition: opacity .5s;
+}
+
+.album:hover .btn {
+    opacity: 1;
+}
+
+#createArea {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    /* margin: 10px;
+    padding: 10px; */
+
+    /* background-color: black;
+    color: white; */
+}
+
+#createArea > input {
+    margin-left: 30px;
+}
+
+#createArea > p {
+    margin: 0;
+}
