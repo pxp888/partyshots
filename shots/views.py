@@ -162,11 +162,14 @@ def getThumb(request):
     msg = {
         'ecode': 0,
         'photoid': photoid,
-        'link': create_presigned_url(photo.tlink),
         'user': user,
         'created': created,
         'description': description,
     }
+
+    if (photo.tlink):
+        msg['link'] = create_presigned_url(photo.tlink)
+
     return JsonResponse(msg)
 
 
@@ -222,7 +225,9 @@ def processPhoto(target, meta):
             album.save()
 
     except Exception as e:
-        print('thumbnail error', e)
+        print('thumbnail error: ', e)
+        photo.tlink = None
+        photo.save()
 
     # save original
     path='imagestore/original/' + str(photo.id) + '/'
