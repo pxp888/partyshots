@@ -59,6 +59,9 @@ def create_presigned_url(object_name, expiration=604800):
     return response
 
 
+
+
+'''Views'''
 funcs = {}
 incoming = {}
 
@@ -368,6 +371,12 @@ def addDescription(request):
     return JsonResponse(response)
 
 
+def searchPage(request):
+    context = {}
+    return render(request, 'shots/search.html', context)
+
+
+
 funcs['createAlbum'] = createAlbum
 funcs['getAlbums'] = getAlbums
 funcs['getAlbum'] = getAlbum
@@ -381,7 +390,7 @@ funcs['subscribe'] = subscribe
 funcs['addDescription'] = addDescription
 
 
-# create storage paths, FOR TESTING ONLY
+# create storage paths, FOR SQLITE TESTING ONLY
 path='imagestore/original/'
 if not os.path.exists(path):
     os.makedirs(path)

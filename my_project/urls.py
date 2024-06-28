@@ -24,5 +24,6 @@ urlpatterns = [
     path('', shots_views.albums, name='home'),
     path('data/', shots_views.data, name='data'),
     path('browse/<slug:slug>/', shots_views.browse, name='browse'),
+    path('search/', shots_views.searchPage, name='search'),
 ]
 

@@ -1,0 +1,55 @@
+{% extends "base.html" %} 
+{% load static %} 
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/albums.css' %}" />
+<link rel="stylesheet" href="{% static 'css/search.css' %}" />
+{% endblock %} 
+
+
+{% block content %}
+
+<form action="POST">
+	{% csrf_token %}
+</form>
+
+
+<div id="mainArea">
+	<div id="albumArea">
+		<div id="createArea" class="sectionDiv">
+			<p>Browse by Username</p>
+			<input type="text" id="createNameLine" placeholder="Username">
+			<button id="searchUserButton">Search User</button>
+		</div>
+
+		<div id="albumList" class="listview">
+			<div class="album demo">
+				<img src="{% static 'images/blankimage.png' %}" alt="blank" class="abimage">
+				<p class="abname">Name</p>
+				<p class="label">name</p>
+
+				<p class="abcode">Code</p>
+				<p class="label">code</p>
+				
+				<p class="abuser">User</p>
+				<p class="label">user</p>
+
+				<p class="abdate">Created</p>
+				<p class="label">created</p>
+
+				<p class="abts demo">timestamp</p>
+				<!-- <div class="abremove"><p>Remove</p></div> -->
+                <button class="abremove btn">Remove</button>
+			</div>
+		</div>
+
+        <h2 id="nofindmessage" class="demo">Sorry, no user with that name exists.</h2>
+	</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+<script src="{% static 'js/base.js' %}"></script>
+<script src="{% static 'js/search.js' %}"></script>
+
+{% endblock %}
