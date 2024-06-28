@@ -13,8 +13,7 @@ This is a relatively simple photo sharing application that is meant to enable ea
 
 - **Album Subscription** Users can add other albums to their pages, to easily browse or upload media.
 - **Uploading media** - Users must be logged in to upload files. However, users can upload files to any album, not only their own.
-
-![photos](./static/images/screens/s4.webp)
+  ![photos](./static/images/screens/s4.webp)
 
 - **File Support** - There is actually no limitation on the kind of file that may be uploaded, however thumbnail generation currently only works for image files. Video should follow soon.
 - **Removing media** - A user can remove any album they create, and any files they have uploaded. Also, they can remove any file uploaded by another user to an album they have created. In this way they can curate albums.
@@ -22,7 +21,7 @@ This is a relatively simple photo sharing application that is meant to enable ea
 
 ## Structure
 
-The site is run on Django which is hosted on heroku. Data storage is handled by a heroku postgres database for metadata, and amazon AWS S3 storage for the photos themselves.
+The site is run on Django which is hosted on heroku. Data storage is handled by a heroku postgres database for metadata, and amazon AWS S3 storage for the files themselves.
 
 ## Information flow
 
