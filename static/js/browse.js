@@ -68,7 +68,7 @@ function viewAlbum(code) {
 
 // Handle thumbnail click event
 function viewBig(event) {
-    if (event.target.className === 'shremove') {return;}
+    if (event.target.className.includes('shremove')) {return;}
     event.preventDefault();
     let code = $(this).closest('.shot').find('.shid').text();
     showBig(code);
