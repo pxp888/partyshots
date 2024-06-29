@@ -9,19 +9,8 @@
 
 {% block content %}
 
-<form action="POST">
-	{% csrf_token %}
-</form>
-
-
 <div id="mainArea">
 	<div id="albumArea">
-		<div id="createArea" class="sectionDiv">
-			<p>Browse by Username</p>
-			<input type="text" id="usernameLine" placeholder="Username">
-			<button id="searchUserButton">Search User</button>
-		</div>
-
 		<div id="albumList" class="listview">
 			<div class="album demo">
 				<img src="{% static 'images/blankimage.png' %}" alt="blank" class="abimage">
@@ -38,11 +27,8 @@
 				<p class="label">created</p>
 
 				<p class="abts demo">timestamp</p>
-				<!-- <div class="abremove"><p>Remove</p></div> -->
-                <!-- <button class="abremove btn">Remove</button> -->
 			</div>
 		</div>
-
         <h2 id="searchmessage" class="demo">Sorry, no user with that name exists.</h2>
 	</div>
 </div>

@@ -78,6 +78,11 @@ def browse(request, slug):
     return render(request, 'shots/browse.html', context)
 
 
+def searchPage(request, slug):
+    context = {}
+    return render(request, 'shots/search.html', context)
+
+
 def homepage(request):
     context = {}
     return render(request, 'shots/home.html', context)
@@ -376,11 +381,6 @@ def addDescription(request):
     return JsonResponse(response)
 
 
-def searchPage(request):
-    context = {}
-    return render(request, 'shots/search.html', context)
-
-
 def getUserAlbums(request):
     username = request.POST.get('username')
     bums = []
@@ -391,6 +391,30 @@ def getUserAlbums(request):
         'albums': bums,
         'ecode': 0,
     }
+    return JsonResponse(response)
+
+
+def searchCode(request):
+    code = request.POST.get('code')
+    
+    try:
+        user = User.objects.get(username=code)
+    except User.DoesNotExist:
+        user = None
+    if not user is None:
+        response = {'ecode': 0, 'type': 'user' }
+        return JsonResponse(response)
+    
+    try:
+        album = Album.objects.get(code=code)
+    except Album.DoesNotExist:
+        album = None
+    if not album is None:
+        response = {'ecode': 0, 'type': 'album' }
+        return JsonResponse(response)
+        
+    response = {'ecode': 1, 'Error': 'Code not found.'}
+    print(response)
     return JsonResponse(response)
 
 
@@ -406,9 +430,10 @@ funcs['removeAlbum'] = removeAlbum
 funcs['subscribe'] = subscribe
 funcs['addDescription'] = addDescription
 funcs['getUserAlbums'] = getUserAlbums
+funcs['searchCode'] = searchCode
 
 
-# create storage paths, FOR SQLITE TESTING ONLY
+# create storage paths, 
 path='imagestore/original/'
 if not os.path.exists(path):
     os.makedirs(path)

@@ -8,9 +8,6 @@
 
 {% block content %}
 
-<form action="POST">
-	{% csrf_token %}
-</form>
 
 
 <div id="mainArea">
@@ -26,7 +23,8 @@
             <div class="sectionDiv">
                 <h2>Important Information</h2>
                 <p>partyShots is intended to provide a centralized repository for sharing photographs, not long term storage.</p>
-                <p>All images are <strong>openly public</strong> to anyone with the album code, or the URL of the album.  There is no assumption of privacy.</p>
+                <p>All images are <strong>openly public</strong> to anyone with the album code, the URL of the album, or a username.</p>
+                <p>There is no assumption of privacy.</p>
             </div>
         </div>
     </div>
@@ -36,6 +34,5 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
 <script src="{% static 'js/base.js' %}"></script>
-<!-- <script src="{% static 'js/albums.js' %}"></script> -->
 
 {% endblock %}

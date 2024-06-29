@@ -3,16 +3,12 @@
 
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/base.css' %}" />
-<!-- <link rel="stylesheet" href="{% static 'css/home.css' %}" /> -->
 <link rel="stylesheet" href="{% static 'css/browse.css' %}" />
 {% endblock %} 
 
 
 {% block content %}
 
-<form action="POST">
-	{% csrf_token %}
-</form>
 
 
 <div id="mainArea">

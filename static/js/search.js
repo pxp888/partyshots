@@ -1,4 +1,3 @@
-const csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
 
 
 // Get the shortcut for an album object
@@ -37,8 +36,11 @@ function getAlbum(code) {
 }
 
 
+// List the albums of the specified user
 function getUserAlbums(event) {
-    let uname = $('#usernameLine').val();
+    let uname = getSlug();
+    say(uname);
+
     let data = {
         'action': 'getUserAlbums',
         'username': uname,
@@ -56,4 +58,4 @@ function getUserAlbums(event) {
 }
 
 
-$('#searchUserButton').click(getUserAlbums);
+getUserAlbums();
