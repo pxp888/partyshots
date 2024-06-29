@@ -1,4 +1,3 @@
-const csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
 const bigArea = $('#bigArea');
 
 
@@ -262,15 +261,6 @@ function prevPic(event) {
     }
     let prev = codelist[index - 1];
     showBig(prev);
-}
-
-
-// Get the slug from the URL, which should match the album code
-function getSlug() {
-    let url = window.location.href;
-    let parts = url.split('/');
-    let slug = parts[parts.length - 2];
-    return slug;
 }
 
 

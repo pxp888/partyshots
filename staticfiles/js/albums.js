@@ -1,4 +1,3 @@
-const csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
 
 
 // Create a new album object and view its contents
