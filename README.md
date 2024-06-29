@@ -91,4 +91,3 @@ This table stores albums of other users that users may want easy access to.
 - user alerts for updated content.
 - updating content in real time.
 - S3 cleanup for deleted files.
-- Search by user page

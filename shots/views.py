@@ -61,11 +61,11 @@ def create_presigned_url(object_name, expiration=604800):
 
 
 
-'''Views'''
 funcs = {}
 incoming = {}
 
 
+'''The following functions handle page views'''
 def albums(request):
     context = {}
     if not request.user.is_authenticated:
@@ -83,12 +83,13 @@ def searchPage(request, slug):
     return render(request, 'shots/search.html', context)
 
 
-def homepage(request):
-    context = {}
-    return render(request, 'shots/home.html', context)
+# def homepage(request):
+#     context = {}
+#     return render(request, 'shots/home.html', context)
 
 
 def data(request):
+    '''This function handles ajax requests and calls functions defined in the funcs dictionary'''
     if request.method == 'POST':
         action = request.POST.get('action')
         try:
@@ -100,6 +101,7 @@ def data(request):
 
 
 def createAlbum(request):
+    '''This function creates a new album for the user. It generates a unique code for the album and returns it to the user.'''
     user = request.user
     name = request.POST.get('name')
     while True:
@@ -119,6 +121,7 @@ def createAlbum(request):
 
 
 def getAlbums(request):
+    '''This function returns a list of albums that the user has created or subscribed to.'''
     user = request.user
 
     bums = {}
@@ -135,6 +138,7 @@ def getAlbums(request):
 
 
 def getAlbum(request):
+    '''This function returns information about an album. It returns the name, code, user, creation date, and thumbnail of the album.'''
     user = request.user
     code = request.POST.get('code')
     album = get_object_or_404(Album, code=code)
@@ -155,6 +159,7 @@ def getAlbum(request):
 
 
 def getThumb(request):
+    '''This function returns information about a thumbnail. It returns the photoid, user, creation date, and description of the photo. It also returns a link to the thumbnail.'''
     photoid = request.POST.get('photoid')
     photo = get_object_or_404(Photo, id=photoid)
     user = photo.user.username
@@ -182,6 +187,7 @@ def getThumb(request):
 
 
 def getPhoto(request):
+    '''This function returns information about a photo. It returns the photoid, user, creation date, and filename of the photo. It also returns a link to the original photo.'''
     photoid = request.POST.get('photoid')
     photo = get_object_or_404(Photo, id=photoid)
     user = photo.user.username
@@ -200,6 +206,7 @@ def getPhoto(request):
 
 
 def processPhoto(target, meta):
+    '''This function processes the photo data and saves it to the database. It creates a thumbnail and saves the original photo. It returns the photoid of the photo.'''
     data = ''.join(target)
     
     user = User.objects.get(username=meta['user'])
@@ -210,7 +217,6 @@ def processPhoto(target, meta):
 
     mt, encoded = data.split(',', 1)
     decoded = base64.b64decode(encoded)
-
 
     # create thumbnail
     try:
@@ -249,13 +255,13 @@ def processPhoto(target, meta):
     if(upload_file_to_s3(path, link)):
         os.remove(path)
 
-    # link = 'http://localhost:8001/original/' + str(photo.id) +'/' + filename
     photo.link = link
     photo.save()
     return photo.id
 
 
 def addPhoto(request):
+    '''This function adds a photo to the database. It receives the photo data in chunks and processes it when all chunks have been received.'''
     user = request.user.username
     code = request.POST.get('code')
     album = get_object_or_404(Album, code=code)
@@ -297,6 +303,7 @@ def addPhoto(request):
 
 
 def getThumbs(request):
+    '''This function returns a list of thumbnails for an album. It returns the photoid of each thumbnail.'''
     code = request.POST.get('code')
     album = Album.objects.get(code=code)
     if album is None:
@@ -315,6 +322,7 @@ def getThumbs(request):
 
 
 def removePhoto(request):
+    '''This function removes a photo from the database. It checks if the user is the owner of the photo or the album.'''
     user = request.user
     photoid = request.POST.get('photoid')
     photo = get_object_or_404(Photo, id=photoid)
@@ -335,6 +343,7 @@ def removePhoto(request):
 
 
 def removeAlbum(request):
+    '''This function removes an album from the database. It checks if the user is the owner of the album.'''
     user = request.user
     code = request.POST.get('code')
     album = get_object_or_404(Album, code=code)
@@ -352,6 +361,7 @@ def removeAlbum(request):
 
 
 def subscribe(request):
+    '''This function subscribes the user to an album. It checks if the user is the owner of the album.'''
     user = request.user
     code = request.POST.get('code')
     album = get_object_or_404(Album, code=code)
@@ -365,6 +375,7 @@ def subscribe(request):
 
 
 def addDescription(request):
+    '''This function adds a description to a photo.'''
     user = request.user
     code = request.POST.get('code')
     description = request.POST.get('description')
@@ -382,6 +393,7 @@ def addDescription(request):
 
 
 def getUserAlbums(request):
+    '''This function returns a list of albums that a user has created.'''
     username = request.POST.get('username')
     bums = []
     albums = Album.objects.filter(user__username=username)
@@ -395,6 +407,7 @@ def getUserAlbums(request):
 
 
 def searchCode(request):
+    '''This function searches for either a username or an album code.'''
     code = request.POST.get('code')
     
     try:
@@ -418,6 +431,8 @@ def searchCode(request):
     return JsonResponse(response)
 
 
+
+'''These are defined ajax functions that are called from the frontend. They are stored in the funcs dictionary.'''
 funcs['createAlbum'] = createAlbum
 funcs['getAlbums'] = getAlbums
 funcs['getAlbum'] = getAlbum
