@@ -12,9 +12,7 @@ import random
 import string
 import io 
 import os 
-import time 
-
-
+import threading
 
 
 '''AWS S3 functions'''
@@ -59,6 +57,25 @@ def create_presigned_url(object_name, expiration=604800):
     return response
 
 
+def cleanup():
+    '''This function cleans up the S3 bucket by deleting any files that are not in the database.'''
+    bucket_name = 'pxp-imagestore'
+
+    s3_client = boto3.client('s3')
+    response = s3_client.list_objects_v2(Bucket=bucket_name)
+
+    current = {}
+    phots = Photo.objects.all()
+    for phot in phots:
+        current[phot.link] = True
+        current[phot.tlink] = True
+
+    for content in response.get('Contents', []):
+        if content['Key'] not in current:
+            print('Deleting: ', content['Key'])
+            s3_client.delete_object(Bucket=bucket_name, Key=content['Key'])
+
+    print('----------------------\n S3 Cleanup done. \n----------------------')
 
 
 funcs = {}
@@ -455,3 +472,6 @@ if not os.path.exists(path):
 path='imagestore/thumbs/'
 if not os.path.exists(path):
     os.makedirs(path)
+
+
+# cleanup()
