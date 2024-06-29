@@ -14,10 +14,8 @@ function getAlbum(code) {
         bum.find('.abname').text(response.name);
         bum.find('.abdate').text(response.created_at);
         bum.find('.abts').text(response.timestamp);
-        bum.find('.abremove').click(removeAlbum);
         
         bum.find('.abimage').click(function() {
-            // viewAlbum(response.code);
             window.location.href = '/browse/' + response.code;
         });
 
@@ -39,3 +37,23 @@ function getAlbum(code) {
 }
 
 
+function getUserAlbums(event) {
+    let uname = $('#usernameLine').val();
+    let data = {
+        'action': 'getUserAlbums',
+        'username': uname,
+    };
+    ajaxPost(data, function(response) {
+        if (response['ecode'] !== 0 ){
+            let msg = response['Error'];
+            alert(msg);
+            return;
+        }
+        for (let i = 0; i < response['albums'].length; i++) {
+            getAlbum(response['albums'][i]);
+        }
+    });
+}
+
+
+$('#searchUserButton').click(getUserAlbums);

@@ -381,6 +381,18 @@ def searchPage(request):
     return render(request, 'shots/search.html', context)
 
 
+def getUserAlbums(request):
+    username = request.POST.get('username')
+    bums = []
+    albums = Album.objects.filter(user__username=username)
+    for album in albums:
+        bums.append(album.code)
+    response = {
+        'albums': bums,
+        'ecode': 0,
+    }
+    return JsonResponse(response)
+
 
 funcs['createAlbum'] = createAlbum
 funcs['getAlbums'] = getAlbums
@@ -393,6 +405,7 @@ funcs['removePhoto'] = removePhoto
 funcs['removeAlbum'] = removeAlbum
 funcs['subscribe'] = subscribe
 funcs['addDescription'] = addDescription
+funcs['getUserAlbums'] = getUserAlbums
 
 
 # create storage paths, FOR SQLITE TESTING ONLY

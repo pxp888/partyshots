@@ -3,7 +3,6 @@ const say = (...msgs) => console.log(...msgs);
 
 // This is a convenience function for AJAX calls.  
 function ajaxPost(data, successfunc) {
-
     $.ajax({
         type: 'POST',
         url: '/data/',
@@ -26,6 +25,7 @@ function md5(blob) {
     const hash = CryptoJS.MD5(blob);
     return hash.toString(CryptoJS.enc.Hex);
 }
+
 
 function codeEntered(){
     let code = $('#searchLine').val();
