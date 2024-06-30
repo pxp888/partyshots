@@ -26,24 +26,18 @@
 
 			<p class="label">created</p>
 			<p class="abdate">Created</p>
-
+		</div>
+		
+		<div id="addArea" class="sectionDiv">
+			<!-- <button id="downloadButton" class="btn">Download</button> -->
 			{% if user.is_authenticated %}
 			<button id="absubButton" class="btn">Subscribe</button>
 			<button id="abremButton" class="btn">Remove</button>
-			{% endif %}
-
-			{% if user.is_authenticated %}
-			{% endif %}
-		</div>
-
-		{% if user.is_authenticated %}
-		<div id="addArea" class="sectionDiv">
 			<p>Add Photos : </p>
-
 			<input type="text" id="imdesc" placeholder="Description (needed)">
 			<input type="file" id="imfile" accept="image/*" multiple>
+			{% endif %}
 		</div>
-		{% endif %}
 
 		<div id="shotList" class="listview">
 			<div class="shot demo">
