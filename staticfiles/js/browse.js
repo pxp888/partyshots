@@ -1,8 +1,8 @@
 const bigArea = $('#bigArea');
 
 
-// Get the thumbnail for a photo object
 function getThumb(photoid) {
+    // Get the thumbnail for a photo object
     let data = {
         'action': 'getThumb',
         'photoid': photoid,
@@ -32,8 +32,8 @@ function getThumb(photoid) {
 }
 
 
-// View the contents of an album object
 function viewAlbum(code) {
+    // View the contents of an album object
     let data = {
         'action': 'getAlbum',
         'code': code,
@@ -65,8 +65,8 @@ function viewAlbum(code) {
 }
 
 
-// Handle thumbnail click event
 function viewBig(event) {
+    // Handle thumbnail click event
     if (event.target.className.includes('shremove')) {return;}
     event.preventDefault();
     let code = $(this).closest('.shot').find('.shid').text();
@@ -74,8 +74,8 @@ function viewBig(event) {
 }
 
 
-// View the full size image of a photo object
 function showBig(code) {
+    // View the full size image of a photo object
     let data = {
         'action': 'getPhoto',
         'photoid': code,
@@ -93,14 +93,14 @@ function showBig(code) {
 }
 
 
-// Hide the full size image
 function hideBig() {
+    // Hide the full size image
     bigArea.hide();
 }
 
 
-// Remove a photo object
 function removeShot(event) {
+    // Remove a photo object
     event.preventDefault();
     if (!confirm('Are you sure you want to delete this photo?')) {return;}
     
@@ -121,8 +121,8 @@ function removeShot(event) {
 }
 
 
-// Upload a single file to the server
 function uploadFile(file) {
+    // Upload a single file to the server
     const chunkSize = 1024 * 1024;
     const filename = file.name;
 
@@ -172,8 +172,8 @@ function uploadFile(file) {
 }
 
 
-// Handle the file selection event
 function filesPicked(event) {
+    // Handle the file selection event
     const imdesc = $('#imdesc');
     if (imdesc.val() === '') {
         alert('Please enter a description or label');
@@ -195,8 +195,8 @@ function filesPicked(event) {
 }
 
 
-// View the album with the given code
 function albumCodeEntered(event) {
+    // View the album with the given code
     let code = $('#searchLine').val();
     if (code === '') {
         alert('Please enter an album code');
@@ -206,8 +206,8 @@ function albumCodeEntered(event) {
 }
 
 
-// Subscribe to an album owned by another user
 function subscribe(event) {
+    // Subscribe to an album owned by another user
     event.preventDefault();
     let code = $('#abinfo').find('.abcode').text();
     let data = {
@@ -226,8 +226,8 @@ function subscribe(event) {
 }
 
 
-// show the next image in the list
 function nextPic(event) {
+    // show the next image in the list
     event.preventDefault();
 
     let code = $('#bigid').text();
@@ -245,8 +245,8 @@ function nextPic(event) {
 }
 
 
-// show the previous image in the list
 function prevPic(event) {
+    // show the previous image in the list
     event.preventDefault();
 
     let code = $('#bigid').text();
@@ -264,8 +264,8 @@ function prevPic(event) {
 }
 
 
-// check ownership of the album, and show the appropriate buttons
 function checkAlbums() {
+    // check ownership of the album, and show the appropriate buttons
     let data = {
         'action': 'getAlbums',
     };
@@ -285,6 +285,7 @@ function checkAlbums() {
 
 
 function removeAlbum(event) {
+    // Remove the album or subscription from a user's list
     event.preventDefault();
     if (!confirm('Are you sure you want to remove this album?')) {return;}
     let code = $('#abinfo').find('.abcode').text();
@@ -303,7 +304,11 @@ function removeAlbum(event) {
 }
 
 
+
+
+
 document.addEventListener('keydown', function(event) {
+    // handle keyboard events
     if (bigArea.is(':hidden')) {
         if (event.key === 'Escape') {
             window.location.href = '/';
