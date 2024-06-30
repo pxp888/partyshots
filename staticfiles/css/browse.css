@@ -80,7 +80,7 @@
 
 #abinfo {
 	display: grid;
-	grid-template-columns: 100px 1fr;
+	grid-template-columns: 100px 1fr 100px 1fr;
 	align-items: baseline;
 	margin: 3px;
 }
