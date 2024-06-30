@@ -448,6 +448,27 @@ def searchCode(request):
     return JsonResponse(response)
 
 
+def getAlbumLinks(request):
+    '''This function returns a list of full links for an album.'''
+    code = request.POST.get('code')
+    album = Album.objects.get(code=code)
+    if album is None:
+        response = {'ecode': 1, 'Error': 'Album not found.'}
+        return JsonResponse(response)
+    
+    links = []
+    names = []
+    photos = Photo.objects.filter(album=album)
+    for photo in photos:
+        links.append(create_presigned_url(photo.link))
+        names.append(photo.filename)
+    response = {
+        'ecode': 0,
+        'links': links,
+        'names': names,
+    }
+    return JsonResponse(response)
+
 
 '''These are defined ajax functions that are called from the frontend. They are stored in the funcs dictionary.'''
 funcs['createAlbum'] = createAlbum
@@ -463,6 +484,7 @@ funcs['subscribe'] = subscribe
 funcs['addDescription'] = addDescription
 funcs['getUserAlbums'] = getUserAlbums
 funcs['searchCode'] = searchCode
+funcs['getAlbumLinks'] = getAlbumLinks
 
 
 # create storage paths, 
@@ -475,3 +497,6 @@ if not os.path.exists(path):
 
 
 # cleanup()
+
+
+

@@ -304,8 +304,65 @@ function removeAlbum(event) {
 }
 
 
+async function downloadFilesAndZip(links, names, abname) {
+    // Helper function to download files and zip them
+    const zip = new JSZip();
+    const zipFileName = abname + '.zip';
+
+    async function addFileToZip(url, filename) {
+        try {
+            const response = await fetch(url);
+            const blob = await response.blob();
+            zip.file(filename, blob);
+            say('Added file to ZIP:', filename);
+        } catch (error) {
+            console.error('Error downloading or adding file to ZIP:', error);
+        }
+    }
+
+    for (let i=0; i < links.length; i++) {
+        await addFileToZip(links[i], names[i]);
+    }
+
+    zip.generateAsync({type: 'blob'}).then(function(content) {
+        const url = URL.createObjectURL(content);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = zipFileName;
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
+        URL.revokeObjectURL(url); // Clean up
+    });
+}
 
 
+function downloadAlbum(event) {
+    // Download all the files in the album
+    event.preventDefault();
+    let ok = confirm('Do you want to download all the files in this album?');
+    if (!ok) {return;}
+
+    let code = $('#abinfo').find('.abcode').text();
+    let abname = $('#abinfo').find('.abname').text();
+    let data = {
+        'action': 'getAlbumLinks',
+        'code': code,
+    };
+    ajaxPost(data, function(response) {
+        if (response.ecode !== 0) {
+            let msg = response.Error;
+            alert(msg);
+            return;
+        }
+        let links = response['links'];
+        let names = response['names'];
+        downloadFilesAndZip(links, names, abname);
+    });
+}
+
+
+// Event listeners
 
 document.addEventListener('keydown', function(event) {
     // handle keyboard events
@@ -327,6 +384,7 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
+
 $('#bigCloseButton').on('click', hideBig);
 $('#imfile').on('change', filesPicked);
 $('#searchButton').on('click', albumCodeEntered);
@@ -335,9 +393,10 @@ $('#nextButton').on('click', nextPic);
 $('#prevButton').on('click', prevPic);
 $('#abremButton').on('click', removeAlbum);
 $('#showabsButton').on('click', function() {window.location.href = '/'});
+$('#downloadButton').on('click', downloadAlbum);
 
-viewAlbum(getSlug());
 bigArea.hide();
+viewAlbum(getSlug());
 $('#abremButton').hide();
 checkAlbums();
 
