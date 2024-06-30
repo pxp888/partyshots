@@ -20,13 +20,17 @@ body {
     flex-direction: row;
     align-items: baseline;
 
+    position: fixed;
+    width: 100%;
+    z-index: 100;
+    top: 0;
 }
 
 .topbar ul {
     list-style-type: none;
     display: flex;
     flex-direction: row;
-    margin: 4px 0;
+    margin: 4px 10px;
 }
 
 .topbar ul li {
