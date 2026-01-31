@@ -1,0 +1,28 @@
+# Zed local configuration – keep this in the project root
+# -------------------------------------------------------
+# This file is read by Zed only for the current workspace.
+# It overrides the global defaults and is not checked in
+# by default, but you can commit it if you want the
+# same interpreter on every machine.
+
+# Specify the exact path to the Python interpreter.
+# Replace <path-to-venv> with the relative or absolute
+# path to the venv you use for this project.
+# Example for a venv named `venv` in the repo root:
+#   /var/home/pxperrine/Documents/code/web1/venv/bin/python
+# Example for a venv named `.venv` in the repo root:
+#   /var/home/pxperrine/Documents/code/web1/.venv/bin/python
+
+language_servers:
+  python:
+    interpreter: "/var/home/pxperrine/Documents/code/web1/.venv/bin/python"
+
+# Optional: set the working directory for the language server
+# (helps if your project uses relative imports).
+# working_directory: "/var/home/pxperrine/Documents/code/web1"
+
+# If you use a different virtual‑environment name,
+# just edit the path above.  No other Zed settings
+# are required for this to work – Zed will pick
+# up the interpreter for linting, autocompletion,
+# and other Python features.
