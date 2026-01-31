@@ -63,6 +63,7 @@ coverage/
 .zed/
 .zedcache/
 .zedconfig/
+.zedconfig
 .zedlock/
 
 # Miscellaneous
