@@ -1,16 +1,20 @@
-import React from "react";
+import { Link } from "react-router-dom";
 import "./Topbar.css";
 
-function Topbar({ user }) {
+function Topbar() {
   return (
     <div className="topbar">
-      {user ? (
-        <p>
-          Welcome, <strong>{user}</strong>!
-        </p>
-      ) : (
-        <p>No user logged in.</p>
-      )}
+      <div>
+        <Link to="/" style={{ textDecoration: "none" }}>
+          <h2>Logo</h2>
+        </Link>
+      </div>
+      <div>
+        <Link to="/login" style={{ marginRight: "1rem" }}>
+          Login
+        </Link>
+        <Link to="/register">Register</Link>
+      </div>
     </div>
   );
 }

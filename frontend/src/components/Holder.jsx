@@ -1,18 +1,18 @@
-import React from "react";
-import { useState } from "react";
-import "./Holder.css";
+import { Routes, Route } from "react-router-dom";
 import Topbar from "./Topbar";
 import Welcomepage from "./Welcomepage";
+import RegisterPage from "./RegisterPage";
+import LoginPage from "./LoginPage";
 
-function Holder({ children, className = "" }) {
-  const [User, setUser] = useState(null);
-  const [current, setCurrent] = useState("welcome");
-
+function Holder() {
   return (
-    <div className={`holder ${className}`}>
-      {/* Pass the User state down to Topbar */}
-      <Topbar user={User} />
-      {current === "welcome" && <Welcomepage />}
+    <div className="holder">
+      <Topbar />
+      <Routes>
+        <Route path="/" element={<Welcomepage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
+      </Routes>
     </div>
   );
 }

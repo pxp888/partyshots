@@ -23,12 +23,17 @@ function App() {
           count is {count}
         </button>
       </div>
-
-      <Holder>
-        <p>I am wrapped.</p>
-      </Holder>
+      <Holder />
     </>
   );
 }
 
 export default App;
+
+// <file_path>
+// web1/frontend/src/App.jsx
+// </file_path>
+
+// <edit_description>
+// Cleaned App.jsx – removed router imports and duplicated routes
+// </edit_description>
