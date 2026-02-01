@@ -10,6 +10,7 @@ function Holder() {
       <Topbar />
       <Routes>
         <Route path="/" element={<Welcomepage />} />
+        <Route path="/static" element={<Welcomepage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
       </Routes>
