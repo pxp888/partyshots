@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
+import Cookies from "js-cookie";
 import Topbar from "./Topbar";
 import Welcomepage from "./Welcomepage";
 import RegisterPage from "./RegisterPage";
@@ -7,7 +8,18 @@ import LoginPage from "./LoginPage";
 import Userview from "./Userview";
 
 function Holder() {
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(() => {
+    const savedUser = Cookies.get("currentUser");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+
+  useEffect(() => {
+    if (currentUser) {
+      Cookies.set("currentUser", JSON.stringify(currentUser), { expires: 7 }); // Expires in 7 days
+    } else {
+      Cookies.remove("currentUser");
+    }
+  }, [currentUser]);
 
   return (
     <div className="holder">
