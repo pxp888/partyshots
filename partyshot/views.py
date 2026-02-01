@@ -37,7 +37,7 @@ def login_user(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return JsonResponse({'message': 'Login successful', 'user': {'username': user.username, 'email': user.email}}, status=200)
+                return JsonResponse({'message': 'Login successful', 'user': {'id': user.id, 'username': user.username, 'email': user.email}}, status=200)
             else:
                 return JsonResponse({'error': 'Invalid credentials'}, status=400)
         except Exception as e:

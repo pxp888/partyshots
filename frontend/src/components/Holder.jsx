@@ -16,7 +16,7 @@ function Holder() {
         <Route path="/" element={<Welcomepage />} />
         <Route path="/register" element={<RegisterPage setCurrentUser={setCurrentUser} />} />
         <Route path="/login" element={<LoginPage setCurrentUser={setCurrentUser} />} />
-        <Route path="/user/:id" element={<Userview />} />
+        <Route path="/user/:username" element={<Userview currentUser={currentUser} />} />
       </Routes>
     </div>
   );

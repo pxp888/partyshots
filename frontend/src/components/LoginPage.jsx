@@ -30,7 +30,7 @@ function LoginPage({ setCurrentUser }) {
       if (response.ok) {
         alert("Login successful!");
         setCurrentUser(data.user);
-        navigate("/");
+        navigate(`/user/${data.user.username}`);
       } else {
         alert(`Login failed: ${data.error}`);
       }
