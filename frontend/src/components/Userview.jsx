@@ -6,6 +6,7 @@ function Userview({ currentUser }) {
   const { username } = useParams();
   const [albumName, setAlbumName] = useState("");
   const [albums, setAlbums] = useState([]);
+  const navigate = useNavigate();
 
   // Determine whether the logged‑in user is the same as the username in the URL
   const canCreate = currentUser && username === currentUser.username;
@@ -52,6 +53,7 @@ function Userview({ currentUser }) {
       if (response.ok) {
         alert(`Album "${data.album.name}" created!`);
         console.log(data);
+        navigate(`/album/${data.album.code}`);
       } else {
         alert(`Error creating album: ${data.error}`);
       }

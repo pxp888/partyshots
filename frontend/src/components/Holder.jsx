@@ -39,7 +39,10 @@ function Holder() {
           path="/user/:username"
           element={<Userview currentUser={currentUser} />}
         />
-        <Route path="/album/:albumCode" element={<Albumview />} />
+        <Route
+          path="/album/:albumCode"
+          element={<Albumview currentUser={currentUser} />}
+        />
       </Routes>
     </div>
   );
