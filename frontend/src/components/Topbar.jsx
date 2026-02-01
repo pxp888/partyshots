@@ -3,8 +3,8 @@ import "./Topbar.css";
 
 function Topbar({ currentUser, setCurrentUser }) {
   function logoutPressed(e) {
-    setCurrentUser(null);
     e.preventDefault();
+    setCurrentUser(null);
   }
 
   return (

@@ -59,6 +59,9 @@ function RegisterPage() {
 
         <button type="submit">Register</button>
       </form>
+      <div>
+        <p>Hello</p>
+      </div>
     </section>
   );
 }

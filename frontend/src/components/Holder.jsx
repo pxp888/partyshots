@@ -7,7 +7,7 @@ import LoginPage from "./LoginPage";
 import Userview from "./Userview";
 
 function Holder() {
-  const [currentUser, setCurrentUser] = useState("mike");
+  const [currentUser, setCurrentUser] = useState(null);
 
   return (
     <div className="holder">
