@@ -28,7 +28,7 @@ function LoginPage({ setCurrentUser }) {
       const data = await response.json();
 
       if (response.ok) {
-        alert("Login successful!");
+        // alert("Login successful!");
         setCurrentUser(data.user);
         navigate(`/user/${data.user.username}`);
       } else {

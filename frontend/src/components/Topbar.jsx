@@ -16,17 +16,17 @@ function Topbar({ currentUser, setCurrentUser }) {
       </div>
       <div>
         {currentUser ? (
-          <>
+          <nav>
             <Link to={`/user/${currentUser.username}`}>
               home {currentUser.username}{" "}
             </Link>
             <p onClick={logoutPressed}>Logout</p>
-          </>
+          </nav>
         ) : (
-          <>
+          <nav>
             <Link to="/login">Login</Link>
             <Link to="/register">Register</Link>
-          </>
+          </nav>
         )}
       </div>
     </div>
