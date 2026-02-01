@@ -6,7 +6,9 @@ function Userview({ currentUser }) {
   const { username } = useParams();
   const [albumName, setAlbumName] = useState("");
   const [albums, setAlbums] = useState([]);
-  const navigate = useNavigate();
+
+  // Determine whether the logged‑in user is the same as the username in the URL
+  const canCreate = currentUser && username === currentUser.username;
 
   // Fetch albums for the current user whenever the component mounts
   // or when the username changes.
@@ -19,7 +21,6 @@ function Userview({ currentUser }) {
         const data = await response.json();
 
         if (response.ok) {
-          // The API returns an array of objects with id, name, and code.
           setAlbums(data.albums || []);
         } else {
           console.error("Failed to fetch albums:", data.error);
@@ -51,8 +52,6 @@ function Userview({ currentUser }) {
       if (response.ok) {
         alert(`Album "${data.album.name}" created!`);
         console.log(data);
-        // Optionally navigate to the new album
-        // navigate(`/albums/${data.album.code}`);
       } else {
         alert(`Error creating album: ${data.error}`);
       }
@@ -67,18 +66,20 @@ function Userview({ currentUser }) {
       <h2>User View</h2>
       <p>User: {username}</p>
 
-      <form onSubmit={handleSubmit}>
-        <label>
-          Album Name:
-          <input
-            type="text"
-            value={albumName}
-            onChange={(e) => setAlbumName(e.target.value)}
-            required
-          />
-        </label>
-        <button type="submit">Submit</button>
-      </form>
+      {canCreate && (
+        <form onSubmit={handleSubmit}>
+          <label>
+            Album Name:
+            <input
+              type="text"
+              value={albumName}
+              onChange={(e) => setAlbumName(e.target.value)}
+              required
+            />
+          </label>
+          <button type="submit">Submit</button>
+        </form>
+      )}
 
       <div id="albumList">
         {albums.length > 0 ? (

@@ -1,11 +1,9 @@
-/* Apply a vertical grid layout to the entire page */
-body {
-    /* Make the body a grid container that takes up the full viewport */
+/*body {
     display: grid;
-    grid-template-rows: auto 1fr auto; /* header, main, footer */
+    grid-template-rows: auto 1fr auto;
     min-height: 100vh;
     margin: 0;
     padding: 0;
     gap: 1rem;
     background-color: black;
-}
+}*/
