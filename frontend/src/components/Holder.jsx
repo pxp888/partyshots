@@ -1,14 +1,20 @@
 import React from "react";
+import { useState } from "react";
 import "./Holder.css";
+import Topbar from "./Topbar";
+import Welcomepage from "./Welcomepage";
 
-const Holder = ({ children, className = "" }) => {
+function Holder({ children, className = "" }) {
+  const [User, setUser] = useState(null);
+  const [current, setCurrent] = useState("welcome");
+
   return (
     <div className={`holder ${className}`}>
-      <h2>I am inside a Holder!</h2>
-      <p>This is some content in the Holder component.</p>
-      {children}
+      {/* Pass the User state down to Topbar */}
+      <Topbar user={User} />
+      {current === "welcome" && <Welcomepage />}
     </div>
   );
-};
+}
 
 export default Holder;
