@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./RegisterPage.css";
 
-function RegisterPage() {
+function RegisterPage({ setCurrentUser }) {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -13,13 +15,30 @@ function RegisterPage() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Replace this with real registration logic
+    try {
+      const response = await fetch("/api/register/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
 
+      const data = await response.json();
 
-    console.log("Registering:", form);
-    alert(`Registered ${form.username}`);
+      if (response.ok) {
+        alert("Registration successful!");
+        setCurrentUser(data.user);
+        navigate("/");
+      } else {
+        alert(`Registration failed: ${data.error}`);
+      }
+    } catch (error) {
+      console.error("Error registering:", error);
+      alert("An error occurred during registration.");
+    }
   };
 
   return (

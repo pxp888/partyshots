@@ -14,8 +14,8 @@ function Holder() {
       <Topbar currentUser={currentUser} setCurrentUser={setCurrentUser} />
       <Routes>
         <Route path="/" element={<Welcomepage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage setCurrentUser={setCurrentUser} />} />
+        <Route path="/login" element={<LoginPage setCurrentUser={setCurrentUser} />} />
         <Route path="/user/:id" element={<Userview />} />
       </Routes>
     </div>

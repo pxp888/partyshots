@@ -17,6 +17,7 @@ function Topbar({ currentUser, setCurrentUser }) {
       <div>
         {currentUser ? (
           <>
+            <p>logged in as : {currentUser.username}</p>
             <p onClick={logoutPressed}>Logout</p>
           </>
         ) : (
