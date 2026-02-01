@@ -16,6 +16,8 @@ function RegisterPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Replace this with real registration logic
+
+
     console.log("Registering:", form);
     alert(`Registered ${form.username}`);
   };
