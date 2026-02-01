@@ -44,7 +44,6 @@ function Albumview({ currentUser }) {
       if (res.ok) {
         console.log("Uploaded:", data);
 
-        // ----- NEW -----
         // Update the album state with the newly‑uploaded photo
         setAlbum((prev) =>
           prev
@@ -54,7 +53,6 @@ function Albumview({ currentUser }) {
               }
             : prev,
         );
-        // ----------------
       } else {
         console.error("Upload failed:", data.error);
       }
@@ -71,7 +69,6 @@ function Albumview({ currentUser }) {
     for (let i = 0; i < files.length; i++) {
       uploadFile(files[i]);
     }
-    // Reset the file input so users can re‑select the same files if needed
     form.reset();
   }
 

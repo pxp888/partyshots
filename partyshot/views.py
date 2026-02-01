@@ -159,7 +159,6 @@ def upload_photo(request):
     if request.method != "POST":
         return JsonResponse({"error": "Invalid request method"}, status=405)
 
-    # 1) Resolve the uploader
     uploader_username = request.POST.get("username") or (
         request.user.username if request.user.is_authenticated else None
     )
@@ -171,7 +170,6 @@ def upload_photo(request):
     except User.DoesNotExist:
         return JsonResponse({"error": "User not found"}, status=404)
 
-    # 2) Resolve the target album
     album_code = request.POST.get("album")
     if not album_code:
         return JsonResponse({"error": "Album code is required"}, status=400)
@@ -196,7 +194,6 @@ def upload_photo(request):
         filename=uploaded_file.name,
     )
 
-    # 6) Debug output
     print(f"Upload received:")
     print(f"  Username    : {uploader_username}")
     print(f"  Album code  : {album_code}")
@@ -204,7 +201,6 @@ def upload_photo(request):
     print(f"  File size   : {uploaded_file.size} bytes")
     print(f"  File ID     : {file_id}")
 
-    # 7) Return the response the front‑end expects
     return JsonResponse(
         {
             "status": "ok",

@@ -3,15 +3,15 @@ import "./FileItem.css";
 import blank from "../assets/blank.jpg";
 
 function FileItem({ file }) {
-  // Use the thumbnail link if available, otherwise the placeholder
   const [src, setSrc] = useState(file.tlink || blank);
 
-  // If the thumbnail fails to load, switch to the placeholder
   const handleError = () => {
     if (src !== blank) {
       setSrc(blank);
     }
   };
+
+  console.log(file);
 
   return (
     <div className="file-item">
