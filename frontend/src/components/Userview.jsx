@@ -1,16 +1,50 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
+
+
+function albumItem(album) {
+  return (
+    <div>
+      <h2>{album.name}</h2>
+      <p>{album.code}</p>
+    </div>
+  );
+}
+
+
+
+
 function Userview({ currentUser }) {
   const { username } = useParams();
   const [albumName, setAlbumName] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(`Album name submitted: ${albumName}`);
-    // navigate(`/albums?name=${encodeURIComponent(albumName)}`);
+    try {
+      const response = await fetch("/api/albums/create/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name: albumName }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(`Album "${data.album.name}" created!`);
+        console.log(data);
+        // navigate(`/albums/${data.album.code}`);
+      } else {
+        alert(`Error creating album: ${data.error}`);
+      }
+    } catch (error) {
+      console.error("Error creating album:", error);
+      alert("An error occurred while creating the album.");
+    }
   };
 
   return (
@@ -30,6 +64,10 @@ function Userview({ currentUser }) {
         </label>
         <button type="submit">Submit</button>
       </form>
+
+      <div albumList>
+
+      </div>
     </div>
   );
 }

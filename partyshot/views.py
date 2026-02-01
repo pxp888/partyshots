@@ -43,3 +43,41 @@ def login_user(request):
         except Exception as e:
              return JsonResponse({'error': str(e)}, status=400)
     return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+def create_album(request):
+    if request.method == 'POST':
+        if not request.user.is_authenticated:
+             return JsonResponse({'error': 'User not authenticated'}, status=401)
+        try:
+            data = json.loads(request.body)
+            name = data.get('name')
+            if not name:
+                return JsonResponse({'error': 'Album name is required'}, status=400)
+            
+            import uuid
+            from .models import Album
+            
+            code = uuid.uuid4().hex[:8]
+            album = Album.objects.create(name=name, user=request.user, code=code)
+            
+            return JsonResponse({'message': 'Album created successfully', 'album': {'id': album.id, 'name': album.name, 'code': album.code}}, status=201)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+            return JsonResponse({'error': str(e)}, status=400)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+def get_albums(request):
+    if request.method == 'GET':
+        username = request.GET.get('username')
+        if not username:
+             return JsonResponse({'error': 'Username is required'}, status=400)
+        
+        try:
+            from .models import Album
+            albums = Album.objects.filter(user__username=username).values('id', 'name', 'code')
+            return JsonResponse({'albums': list(albums)}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
