@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Album  # import the model(s) you want to expose
+from .models import Album, Photo  # Import both models
 
 
 @admin.register(Album)
@@ -10,6 +10,9 @@ class AlbumAdmin(admin.ModelAdmin):
     list_filter = ("user",)
 
 
-# If you have more models, register them similarly
-# from .models import AnotherModel
-# admin.site.register(AnotherModel)
+@admin.register(Photo)
+class PhotoAdmin(admin.ModelAdmin):
+    list_display = ("id", "album", "user", "created_at")
+    search_fields = ("album__name", "user__username", "filename")
+    list_filter = ("album", "user", "created_at")
+    readonly_fields = ("created_at",)  # Prevent accidental edits to timestamps

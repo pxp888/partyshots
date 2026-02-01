@@ -39,7 +39,7 @@ function Albumview({ currentUser }) {
 
       const data = await res.json();
       if (res.ok) {
-        console.log("Uploaded:", data.photo);
+        console.log("Uploaded:", data);
       } else {
         console.error("Upload failed:", data.error);
       }
@@ -70,7 +70,7 @@ function Albumview({ currentUser }) {
 
           <form className="formdiv upform" onSubmit={uploadFiles}>
             <input type="file" name="file" multiple />
-            <input type="text" placeholder="description (optional)" />
+            {/* <input type="text" placeholder="description (optional)" />*/}
             <button>add to album</button>
           </form>
         </div>

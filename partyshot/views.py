@@ -1,9 +1,12 @@
 import json
+import uuid
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+
+from .models import Album, Photo
 
 
 @csrf_exempt
@@ -140,56 +143,71 @@ def get_album(request, album_code):
 @csrf_exempt
 def upload_photo(request):
     """
-    Handle file uploads from the front‑end.
-
-    Expected multipart form data:
-
-    * ``file``   – the file object
-    * ``description`` – optional textual description
-    * ``album`` – the album *code* the photo belongs to
-
-    Returns a JSON payload containing the created photo data.
+    Handles photo uploads.
+    • Any user (authenticated or specified by username in POST) can upload to any album.
+    • The uploader is resolved via a database lookup and stored in the Photo record.
+    • Returns a JSON payload that the front‑end can consume via `data.photo`.
     """
     if request.method != "POST":
         return JsonResponse({"error": "Invalid request method"}, status=405)
 
-    if not request.user.is_authenticated:
-        return JsonResponse({"error": "Authentication required"}, status=401)
+    # 1) Resolve the uploader
+    uploader_username = request.POST.get("username") or (
+        request.user.username if request.user.is_authenticated else None
+    )
+    if not uploader_username:
+        return JsonResponse({"error": "Username required"}, status=400)
 
-    # Pull the data from the multipart request
-    file_obj = request.FILES.get("file")
-    description = request.POST.get("description", "")
-    album_code = request.POST.get("album", "")
+    try:
+        uploader = User.objects.get(username=uploader_username)
+    except User.DoesNotExist:
+        return JsonResponse({"error": "User not found"}, status=404)
 
-    if not file_obj:
-        return JsonResponse({"error": "No file provided"}, status=400)
-
+    # 2) Resolve the target album
+    album_code = request.POST.get("album")
     if not album_code:
         return JsonResponse({"error": "Album code is required"}, status=400)
 
     try:
-        from .models import Album, Photo
-
         album = Album.objects.get(code=album_code)
     except Album.DoesNotExist:
         return JsonResponse({"error": "Album not found"}, status=404)
-    except Exception as e:
-        return JsonResponse({"error": f"Error retrieving album: {str(e)}"}, status=400)
 
-    try:
-        photo = Photo.objects.create(
-            file=file_obj,
-            description=description,
-            album=album,
-            uploaded_by=request.user,
-        )
-        photo_data = {
-            "id": photo.id,
-            "description": photo.description,
-            "url": request.build_absolute_uri(photo.file.url),
-            "album": photo.album.code,
-            "uploaded_by": photo.uploaded_by.username,
-        }
-        return JsonResponse({"photo": photo_data}, status=201)
-    except Exception as e:
-        return JsonResponse({"error": f"Failed to save photo: {str(e)}"}, status=400)
+    uploaded_file = request.FILES.get("file")
+    if not uploaded_file:
+        return JsonResponse({"error": "No file uploaded"}, status=400)
+
+    file_id = uuid.uuid4().hex
+
+    photo = Photo.objects.create(
+        code=file_id,
+        user=uploader,
+        album=album,
+        link="None",
+        tlink=None,
+        filename=uploaded_file.name,
+    )
+
+    # 6) Debug output
+    print(f"Upload received:")
+    print(f"  Username    : {uploader_username}")
+    print(f"  Album code  : {album_code}")
+    print(f"  File name   : {uploaded_file.name}")
+    print(f"  File size   : {uploaded_file.size} bytes")
+    print(f"  File ID     : {file_id}")
+
+    # 7) Return the response the front‑end expects
+    return JsonResponse(
+        {
+            "status": "ok",
+            "photo": {
+                "id": photo.id,
+                "file_id": file_id,
+                "file_name": uploaded_file.name,
+                "file_size": uploaded_file.size,
+                "username": uploader.username,
+                "album_code": album_code,
+            },
+        },
+        status=200,
+    )
