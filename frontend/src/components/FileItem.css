@@ -1,0 +1,12 @@
+.file-item {
+    width: 15%;
+    min-width: 150px;
+
+    border: solid 2px gray;
+
+    margin: 1px;
+}
+
+.file-item img {
+    width: 100%;
+}

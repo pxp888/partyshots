@@ -126,8 +126,9 @@ def get_album(request, album_code):
         return JsonResponse({"error": "Invalid request method"}, status=405)
 
     try:
-        from .models import Album
+        from .models import Album, Photo
 
+        # Basic album data
         album = (
             Album.objects.filter(code=album_code)
             .values("id", "name", "code", "user__username")
@@ -135,6 +136,13 @@ def get_album(request, album_code):
         )
         if not album:
             return JsonResponse({"error": "Album not found"}, status=404)
+
+        # Attach the photos that belong to this album
+        photos_qs = Photo.objects.filter(album__code=album_code).values(
+            "id", "filename", "link", "tlink", "user__username"
+        )
+        album["photos"] = list(photos_qs)
+
         return JsonResponse({"album": album}, status=200)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)

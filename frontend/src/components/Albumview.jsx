@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "./Albumview.css";
+import FileItem from "./FileItem";
 
 function Albumview({ currentUser }) {
   const { albumCode } = useParams(); // pulls :albumCode from the URL
@@ -13,6 +14,8 @@ function Albumview({ currentUser }) {
         const res = await fetch(`/api/albums/${albumCode}/`);
         const data = await res.json();
         if (res.ok) {
+          // The backend now returns an `album` object that contains
+          // a `photos` array.
           setAlbum(data.album);
         }
       } catch (err) {
@@ -40,6 +43,18 @@ function Albumview({ currentUser }) {
       const data = await res.json();
       if (res.ok) {
         console.log("Uploaded:", data);
+
+        // ----- NEW -----
+        // Update the album state with the newly‑uploaded photo
+        setAlbum((prev) =>
+          prev
+            ? {
+                ...prev,
+                photos: [...(prev.photos ?? []), data.photo],
+              }
+            : prev,
+        );
+        // ----------------
       } else {
         console.error("Upload failed:", data.error);
       }
@@ -56,6 +71,8 @@ function Albumview({ currentUser }) {
     for (let i = 0; i < files.length; i++) {
       uploadFile(files[i]);
     }
+    // Reset the file input so users can re‑select the same files if needed
+    form.reset();
   }
 
   return (
@@ -70,9 +87,14 @@ function Albumview({ currentUser }) {
 
           <form className="formdiv upform" onSubmit={uploadFiles}>
             <input type="file" name="file" multiple />
-            {/* <input type="text" placeholder="description (optional)" />*/}
             <button>add to album</button>
           </form>
+
+          <div className="photo-list">
+            {album.photos?.map((photo) => (
+              <FileItem key={photo.id} file={photo} />
+            ))}
+          </div>
         </div>
       )}
     </>
