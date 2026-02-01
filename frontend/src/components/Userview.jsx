@@ -1,24 +1,38 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
-
-
-
-function albumItem(album) {
-  return (
-    <div>
-      <h2>{album.name}</h2>
-      <p>{album.code}</p>
-    </div>
-  );
-}
-
-
-
+import { useState, useEffect } from "react";
+import AlbumItem from "./AlbumItem";
 
 function Userview({ currentUser }) {
   const { username } = useParams();
   const [albumName, setAlbumName] = useState("");
+  const [albums, setAlbums] = useState([]);
   const navigate = useNavigate();
+
+  // Fetch albums for the current user whenever the component mounts
+  // or when the username changes.
+  useEffect(() => {
+    const fetchAlbums = async () => {
+      try {
+        const response = await fetch(
+          `/api/albums/list/?username=${encodeURIComponent(username)}`,
+        );
+        const data = await response.json();
+
+        if (response.ok) {
+          // The API returns an array of objects with id, name, and code.
+          setAlbums(data.albums || []);
+        } else {
+          console.error("Failed to fetch albums:", data.error);
+        }
+      } catch (err) {
+        console.error("Error fetching albums:", err);
+      }
+    };
+
+    if (username) {
+      fetchAlbums();
+    }
+  }, [username]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,6 +51,7 @@ function Userview({ currentUser }) {
       if (response.ok) {
         alert(`Album "${data.album.name}" created!`);
         console.log(data);
+        // Optionally navigate to the new album
         // navigate(`/albums/${data.album.code}`);
       } else {
         alert(`Error creating album: ${data.error}`);
@@ -65,8 +80,12 @@ function Userview({ currentUser }) {
         <button type="submit">Submit</button>
       </form>
 
-      <div albumList>
-
+      <div id="albumList">
+        {albums.length > 0 ? (
+          albums.map((album) => <AlbumItem key={album.id} album={album} />)
+        ) : (
+          <p>No albums found.</p>
+        )}
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import Welcomepage from "./Welcomepage";
 import RegisterPage from "./RegisterPage";
 import LoginPage from "./LoginPage";
 import Userview from "./Userview";
+import Albumview from "./Albumview";
 
 function Holder() {
   const [currentUser, setCurrentUser] = useState(() => {
@@ -26,9 +27,19 @@ function Holder() {
       <Topbar currentUser={currentUser} setCurrentUser={setCurrentUser} />
       <Routes>
         <Route path="/" element={<Welcomepage />} />
-        <Route path="/register" element={<RegisterPage setCurrentUser={setCurrentUser} />} />
-        <Route path="/login" element={<LoginPage setCurrentUser={setCurrentUser} />} />
-        <Route path="/user/:username" element={<Userview currentUser={currentUser} />} />
+        <Route
+          path="/register"
+          element={<RegisterPage setCurrentUser={setCurrentUser} />}
+        />
+        <Route
+          path="/login"
+          element={<LoginPage setCurrentUser={setCurrentUser} />}
+        />
+        <Route
+          path="/user/:username"
+          element={<Userview currentUser={currentUser} />}
+        />
+        <Route path="/album/:albumCode" element={<Albumview />} />
       </Routes>
     </div>
   );

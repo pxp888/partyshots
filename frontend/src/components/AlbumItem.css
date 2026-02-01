@@ -1,0 +1,9 @@
+.album-item {
+    /* A subtle 2‑pixel solid white border around each album card */
+    border: 2px solid white;
+    /* Optional: add some spacing so the border is visible on dark backgrounds */
+    padding: 0.5rem;
+    margin: 0.5rem;
+    /* You can add a small radius if you like */
+    border-radius: 4px;
+}
