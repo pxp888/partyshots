@@ -135,3 +135,61 @@ def get_album(request, album_code):
         return JsonResponse({"album": album}, status=200)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
+
+
+@csrf_exempt
+def upload_photo(request):
+    """
+    Handle file uploads from the front‑end.
+
+    Expected multipart form data:
+
+    * ``file``   – the file object
+    * ``description`` – optional textual description
+    * ``album`` – the album *code* the photo belongs to
+
+    Returns a JSON payload containing the created photo data.
+    """
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request method"}, status=405)
+
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Authentication required"}, status=401)
+
+    # Pull the data from the multipart request
+    file_obj = request.FILES.get("file")
+    description = request.POST.get("description", "")
+    album_code = request.POST.get("album", "")
+
+    if not file_obj:
+        return JsonResponse({"error": "No file provided"}, status=400)
+
+    if not album_code:
+        return JsonResponse({"error": "Album code is required"}, status=400)
+
+    try:
+        from .models import Album, Photo
+
+        album = Album.objects.get(code=album_code)
+    except Album.DoesNotExist:
+        return JsonResponse({"error": "Album not found"}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": f"Error retrieving album: {str(e)}"}, status=400)
+
+    try:
+        photo = Photo.objects.create(
+            file=file_obj,
+            description=description,
+            album=album,
+            uploaded_by=request.user,
+        )
+        photo_data = {
+            "id": photo.id,
+            "description": photo.description,
+            "url": request.build_absolute_uri(photo.file.url),
+            "album": photo.album.code,
+            "uploaded_by": photo.uploaded_by.username,
+        }
+        return JsonResponse({"photo": photo_data}, status=201)
+    except Exception as e:
+        return JsonResponse({"error": f"Failed to save photo: {str(e)}"}, status=400)
