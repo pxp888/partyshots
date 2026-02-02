@@ -1,11 +1,12 @@
+import io
 import json
 import uuid
 
-import PIL
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from PIL import Image
 
 from .aws import *
 from .models import Album, Photo
@@ -152,7 +153,7 @@ def upload_photo(request):
         username  – optional; if omitted uses request.user
 
     The file is uploaded to S3 *without* being stored in the database.
-    A Photo record is created that only keeps the S3 key.
+    A Photo record is created that only keeps the S3 key(s).
     """
     if request.method != "POST":
         return JsonResponse({"error": "Invalid request method"}, status=405)
@@ -198,17 +199,42 @@ def upload_photo(request):
     if not upload_bytes_to_s3(file_bytes, s3_key):
         return JsonResponse({"error": "S3 upload failed"}, status=500)
 
-    # 6️⃣ Persist a Photo record that only holds the S3 key
+    # 6️⃣ Generate a thumbnail – graceful fallback on failure
+    thumb_key = None
+    try:
+        # Pillow needs the image module explicitly imported
+        image = Image.open(io.BytesIO(file_bytes))
+        image.thumbnail((200, 200))  # 200×200 max – tweak as needed
+        thumb_io = io.BytesIO()
+
+        # Preserve format: use JPEG for speed, fallback to PNG
+        try:
+            image.save(thumb_io, format="JPEG")
+            thumb_format = "image/jpeg"
+        except Exception:
+            image.save(thumb_io, format="PNG")
+            thumb_format = "image/png"
+
+        thumb_io.seek(0)
+        thumb_key = f"{album_code}/thumb_{file_id}_{uploaded_file.name}"
+        if not upload_bytes_to_s3(thumb_io.read(), thumb_key):
+            thumb_key = None
+    except Exception as e:
+        # Log the error but keep the main upload working
+        print(f"Thumbnail generation failed for {uploaded_file.name}: {e}")
+        thumb_key = None
+
+    # 7️⃣ Persist a Photo record that only holds the S3 key(s)
     photo = Photo.objects.create(
         code=file_id,
         user=uploader,
         album=album,
         link=create_presigned_url(s3_key),
-        tlink=None,
+        tlink=create_presigned_url(thumb_key) if thumb_key else None,
         filename=uploaded_file.name,
     )
 
-    # 7️⃣ Return a payload the front‑end can use
+    # 8️⃣ Return a payload the front‑end can use
     return JsonResponse(
         {
             "status": "ok",
@@ -219,8 +245,9 @@ def upload_photo(request):
                 "file_size": uploaded_file.size,
                 "username": uploader.username,
                 "album_code": album_code,
-                "s3_key": s3_key,
-                "presigned_url": photo.tlink,
+                # "s3_key": s3_key,
+                "link": photo.link,
+                "tlink": photo.tlink,
             },
         },
         status=200,

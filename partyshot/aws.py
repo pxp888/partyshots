@@ -18,7 +18,7 @@ if os.path.exists("env.py"):
 
 
 def upload_bytes_to_s3(bytes_data, object_name):
-    bucket_name = "web1-imagestore"
+    bucket_name = "pxp-imagestore"
     s3_client = boto3.client("s3")
     try:
         response = s3_client.put_object(
@@ -31,7 +31,7 @@ def upload_bytes_to_s3(bytes_data, object_name):
 
 
 def upload_file_to_s3(file_name, object_name):
-    bucket_name = "web1-imagestore"
+    bucket_name = "pxp-imagestore"
     s3_client = boto3.client("s3", region_name="eu-north-1")
     try:
         response = s3_client.upload_file(file_name, bucket_name, object_name)
@@ -42,7 +42,7 @@ def upload_file_to_s3(file_name, object_name):
 
 
 def create_presigned_url(object_name, expiration=604800):
-    bucket_name = "web1-imagestore"
+    bucket_name = "pxp-imagestore"
     s3_client = boto3.client("s3", region_name="eu-north-1")
     try:
         response = s3_client.generate_presigned_url(
@@ -60,7 +60,7 @@ def create_presigned_url(object_name, expiration=604800):
 
 
 def delete_file_from_s3(object_name):
-    bucket_name = "web1-imagestore"
+    bucket_name = "pxp-imagestore"
     s3_client = boto3.client("s3", region_name="eu-north-1")
     try:
         response = s3_client.delete_object(Bucket=bucket_name, Key=object_name)
@@ -72,7 +72,7 @@ def delete_file_from_s3(object_name):
 
 def cleanup():
     """This function cleans up the S3 bucket by deleting any files that are not in the database."""
-    bucket_name = "web1-imagestore"
+    bucket_name = "pxp-imagestore"
 
     s3_client = boto3.client("s3")
     response = s3_client.list_objects_v2(Bucket=bucket_name)
