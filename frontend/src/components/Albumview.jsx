@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "./Albumview.css";
 import FileItem from "./FileItem";
+import Imageview from "./Imageview";
 
 function Albumview({ currentUser }) {
   const { albumCode } = useParams(); // pulls :albumCode from the URL
   const [album, setAlbum] = useState(null);
-  const [togo, setTogo] = useState(0);
+  const [focus, setFocus] = useState(-1);
 
   useEffect(() => {
     const fetchAlbum = async () => {
@@ -14,8 +15,6 @@ function Albumview({ currentUser }) {
         const res = await fetch(`/api/albums/${albumCode}/`);
         const data = await res.json();
         if (res.ok) {
-          // The backend now returns an `album` object that contains
-          // a `photos` array.
           setAlbum(data.album);
         }
       } catch (err) {
@@ -65,7 +64,6 @@ function Albumview({ currentUser }) {
     event.preventDefault();
     const form = event.target;
     const files = form.file.files;
-    setTogo(files.length);
     for (let i = 0; i < files.length; i++) {
       uploadFile(files[i]);
     }
@@ -88,10 +86,18 @@ function Albumview({ currentUser }) {
           </form>
 
           <div className="photo-list">
-            {album.photos?.map((photo) => (
-              <FileItem key={photo.id} file={photo} />
+            {album.photos?.map((photo, index) => (
+              <FileItem
+                key={photo.id}
+                file={photo}
+                index={index}
+                setFocus={setFocus}
+              />
             ))}
           </div>
+          {focus !== -1 && (
+            <Imageview album={album} focus={focus} setFocus={setFocus} />
+          )}
         </div>
       )}
     </>

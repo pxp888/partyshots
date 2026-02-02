@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import "./FileItem.css";
 import blank from "../assets/blank.jpg";
 
-function FileItem({ file }) {
+function FileItem({ file, index, setFocus }) {
   const [src, setSrc] = useState(file.tlink || blank);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const handleError = () => {
     if (src !== blank) {
@@ -14,17 +14,19 @@ function FileItem({ file }) {
   };
 
   const handleClick = () => {
-    // navigate(`/view/${file.id}`);
+    setFocus(index);
   };
 
-  // console.log(file);
+  console.log(file);
 
   return (
     <div className="file-item" onClick={handleClick}>
       <div className="thumbnail">
         <img src={src} alt={file.filename} onError={handleError} />
       </div>
-      <p>{file.filename}</p>
+      <p>
+        {index + 1}. {file.filename}
+      </p>
     </div>
   );
 }
