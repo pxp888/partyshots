@@ -88,7 +88,8 @@ function Albumview({ currentUser }) {
           <div className="infoblock">
             <div className="info">
               <h2>{album.name}</h2>
-              {album.user__username && <p>Owner: {album.user__username}</p>}
+              <p>Owner: {album.user__username}</p>
+              <p>Created: {album.created_at}</p>
             </div>
 
             <div className="controlblock">

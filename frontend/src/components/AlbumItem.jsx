@@ -30,6 +30,8 @@ function AlbumItem({ album }) {
       </div>
       <div className="alabel">
         <h3>{album.name}</h3>
+        <p>{album.user__username}</p>
+        <p>{album.created_at}</p>
       </div>
     </div>
   );

@@ -103,7 +103,7 @@ def get_albums(request):
 
         try:
             albums = Album.objects.filter(user__username=username).values(
-                "id", "name", "code", "user__username", "thumbnail"
+                "id", "name", "code", "user__username", "thumbnail", "created_at"
             )
             return JsonResponse({"albums": list(albums)}, status=200)
         except Exception as e:
@@ -126,7 +126,7 @@ def get_album(request, album_code):
     try:
         album = (
             Album.objects.filter(code=album_code)
-            .values("id", "name", "code", "user__username")
+            .values("id", "name", "code", "user__username", "created_at")
             .first()
         )
         if not album:
@@ -158,7 +158,6 @@ def upload_photo(request):
     if request.method != "POST":
         return JsonResponse({"error": "Invalid request method"}, status=405)
 
-    # 1️⃣ Resolve who is uploading
     uploader_username = request.POST.get("username") or (
         request.user.username if request.user.is_authenticated else None
     )
@@ -170,7 +169,6 @@ def upload_photo(request):
     except User.DoesNotExist:
         return JsonResponse({"error": "User not found"}, status=404)
 
-    # 2️⃣ Locate the album
     album_code = request.POST.get("album")
     if not album_code:
         return JsonResponse({"error": "Album code is required"}, status=400)
@@ -180,17 +178,13 @@ def upload_photo(request):
     except Album.DoesNotExist:
         return JsonResponse({"error": "Album not found"}, status=404)
 
-    # 3️⃣ Grab the uploaded file
     uploaded_file = request.FILES.get("file")
     if not uploaded_file:
         return JsonResponse({"error": "No file uploaded"}, status=400)
 
-    # 4️⃣ Build an S3 key that is unique and preserves the original name
     file_id = uuid.uuid4().hex
     s3_key = f"{album_code}/{file_id}_{uploaded_file.name}"
 
-    # 5️⃣ Upload the *bytes* directly to S3
-    #     (no temporary file needed – we read the in‑memory file once)
     try:
         file_bytes = uploaded_file.read()
     except Exception as e:
@@ -199,15 +193,12 @@ def upload_photo(request):
     if not upload_bytes_to_s3(file_bytes, s3_key):
         return JsonResponse({"error": "S3 upload failed"}, status=500)
 
-    # 6️⃣ Generate a thumbnail – graceful fallback on failure
     thumb_key = None
     try:
-        # Pillow needs the image module explicitly imported
         image = Image.open(io.BytesIO(file_bytes))
-        image.thumbnail((200, 200))  # 200×200 max – tweak as needed
+        image.thumbnail((200, 200))
         thumb_io = io.BytesIO()
 
-        # Preserve format: use JPEG for speed, fallback to PNG
         try:
             image.save(thumb_io, format="JPEG")
             thumb_format = "image/jpeg"
@@ -220,11 +211,9 @@ def upload_photo(request):
         if not upload_bytes_to_s3(thumb_io.read(), thumb_key):
             thumb_key = None
     except Exception as e:
-        # Log the error but keep the main upload working
         print(f"Thumbnail generation failed for {uploaded_file.name}: {e}")
         thumb_key = None
 
-    # 7️⃣ Persist a Photo record that only holds the S3 key(s)
     photo = Photo.objects.create(
         code=file_id,
         user=uploader,
@@ -234,7 +223,10 @@ def upload_photo(request):
         filename=uploaded_file.name,
     )
 
-    # 8️⃣ Return a payload the front‑end can use
+    if thumb_key and not album.thumbnail:
+        album.thumbnail = photo.tlink
+        album.save(update_fields=["thumbnail"])
+
     return JsonResponse(
         {
             "status": "ok",
