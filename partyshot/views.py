@@ -75,10 +75,6 @@ def create_album(request):
             if not name:
                 return JsonResponse({"error": "Album name is required"}, status=400)
 
-            import uuid
-
-            from .models import Album
-
             code = uuid.uuid4().hex[:8]
             album = Album.objects.create(name=name, user=request.user, code=code)
 
@@ -103,8 +99,6 @@ def get_albums(request):
             return JsonResponse({"error": "Username is required"}, status=400)
 
         try:
-            from .models import Album
-
             albums = Album.objects.filter(user__username=username).values(
                 "id", "name", "code"
             )
@@ -114,6 +108,7 @@ def get_albums(request):
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
 
+@csrf_exempt
 def get_album(request, album_code):
     """
     Return a single album identified by its unique ``code``.
@@ -194,12 +189,12 @@ def upload_photo(request):
         filename=uploaded_file.name,
     )
 
-    print(f"Upload received:")
-    print(f"  Username    : {uploader_username}")
-    print(f"  Album code  : {album_code}")
-    print(f"  File name   : {uploaded_file.name}")
-    print(f"  File size   : {uploaded_file.size} bytes")
-    print(f"  File ID     : {file_id}")
+    # print(f"Upload received:")
+    # print(f"  Username    : {uploader_username}")
+    # print(f"  Album code  : {album_code}")
+    # print(f"  File name   : {uploaded_file.name}")
+    # print(f"  File size   : {uploaded_file.size} bytes")
+    # print(f"  File ID     : {file_id}")
 
     return JsonResponse(
         {
