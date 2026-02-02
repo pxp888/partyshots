@@ -1,6 +1,11 @@
 .album-item {
-    border: 2px solid gray;
-    max-width: 300px;
+    max-width: 200px;
+    width: 100%;
+}
+
+.ghostalbum {
+    max-width: 200px;
+    width: 100%;
 }
 
 .album-item img {

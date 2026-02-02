@@ -1,16 +1,5 @@
 #albumList {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-}
-
-.infoblock {
-    background-color: gray;
-}
-
-h2 {
-    margin: 0;
-}
-
-p {
-    margin: 0;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1px;
 }

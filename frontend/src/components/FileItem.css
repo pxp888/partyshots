@@ -1,6 +1,11 @@
 .file-item {
-    border: solid 2px gray;
-    max-width: 300px;
+    max-width: 200px;
+    width: 100%;
+}
+
+.ghostphoto {
+    max-width: 200px;
+    width: 100%;
 }
 
 .file-item img {

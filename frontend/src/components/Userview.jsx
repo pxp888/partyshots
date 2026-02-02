@@ -90,6 +90,19 @@ function Userview({ currentUser }) {
         ) : (
           <p>No albums found.</p>
         )}
+        <div className="ghostalbum"></div>
+        <div className="ghostalbum"></div>
+        <div className="ghostalbum"></div>
+        <div className="ghostalbum"></div>
+        <div className="ghostalbum"></div>
+        <div className="ghostalbum"></div>
+        <div className="ghostalbum"></div>
+        <div className="ghostalbum"></div>
+        <div className="ghostalbum"></div>
+        <div className="ghostalbum"></div>
+        <div className="ghostalbum"></div>
+        <div className="ghostalbum"></div>
+        <div className="ghostalbum"></div>
       </div>
     </div>
   );
