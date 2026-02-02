@@ -28,9 +28,9 @@ function AlbumItem({ album }) {
       <div className="thumbnail">
         <img src={src} alt={album.name} onError={handleError} />
       </div>
-      <h3>{album.name}</h3>
-      <p>Code: {album.code}</p>
-      <p>Owner: {album.user__username}</p>
+      <div className="alabel">
+        <h3>{album.name}</h3>
+      </div>
     </div>
   );
 }

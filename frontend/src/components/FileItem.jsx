@@ -24,9 +24,10 @@ function FileItem({ file, index, setFocus }) {
       <div className="thumbnail">
         <img src={src} alt={file.filename} onError={handleError} />
       </div>
-      <p>
-        {index + 1}. {file.filename}
-      </p>
+      <div className="fileinfo">
+        <p>{file.user__username}</p>
+        <p>{file.filename}</p>
+      </div>
     </div>
   );
 }
