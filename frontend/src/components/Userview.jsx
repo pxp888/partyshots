@@ -66,12 +66,11 @@ function Userview({ currentUser }) {
 
   return (
     <div className="userview">
-      <div className="infoblock">
-        <h2>{username}</h2>
-        {canCreate && (
+      {canCreate && (
+        <div className="albumtools">
           <form onSubmit={handleSubmit}>
             <label>
-              Album Name:
+              New Album Name:
               <input
                 type="text"
                 value={albumName}
@@ -79,10 +78,12 @@ function Userview({ currentUser }) {
                 required
               />
             </label>
-            <button type="submit">Submit</button>
+            <button className="btn" type="submit">
+              Create Album
+            </button>
           </form>
-        )}
-      </div>
+        </div>
+      )}
 
       <div id="albumList">
         {albums.length > 0 ? (

@@ -12,7 +12,7 @@ function Topbar({ currentUser, setCurrentUser }) {
       <div className="topbar">
         <div>
           <Link to="/" className="logo-link">
-            <h1>Partyshots</h1>
+            <h1>partyShots</h1>
           </Link>
         </div>
         <div>

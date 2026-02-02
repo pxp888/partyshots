@@ -1,25 +1,26 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap");
+
 .topbar {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     z-index: 10;
-    height: 60px;
+    height: 45px;
 
     display: flex;
     justify-content: space-between;
     align-items: center;
     /*width: 100%;*/
 
-    background-color: #ccc;
+    background-color: rgb(48, 48, 48);
     /*padding: 1rem;*/
     text-align: center;
-    color: black;
+    color: white;
 }
 
 .spacer {
-    min-height: 60px;
-
+    min-height: 45px;
     width: 100%;
 }
 
@@ -27,8 +28,15 @@
     text-decoration: none;
 
     margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: "Roboto", Arial, Helvetica, sans-serif;
+    font-weight: 100;
     font-size: 12px;
+    color: white;
+}
+
+.logo-link:hover {
+    color: salmon; /* Desired hover colour */
+    transition: color 0.2s ease; /* Optional smooth transition */
 }
 
 .logo-link h1 {
@@ -45,8 +53,20 @@ nav {
 nav a {
     margin: 0 1rem;
     text-decoration: none;
+    color: white;
 }
 
 nav p {
     margin: 0 1rem;
+    cursor: pointer;
+}
+
+nav a:hover {
+    color: salmon; /* Desired hover colour */
+    transition: color 0.2s ease; /* Optional smooth transition */
+}
+
+nav p:hover {
+    color: salmon; /* Desired hover colour */
+    transition: color 0.2s ease; /* Optional smooth transition */
 }
