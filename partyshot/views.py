@@ -1,11 +1,13 @@
 import json
 import uuid
 
+import PIL
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
+from .aws import *
 from .models import Album, Photo
 
 
@@ -143,14 +145,19 @@ def get_album(request, album_code):
 @csrf_exempt
 def upload_photo(request):
     """
-    Handles photo uploads.
-    • Any user (authenticated or specified by username in POST) can upload to any album.
-    • The uploader is resolved via a database lookup and stored in the Photo record.
-    • Returns a JSON payload that the front‑end can consume via `data.photo`.
+    Accepts a multipart/form‑data POST with the keys:
+
+        file      – the binary file to upload
+        album     – the album code (8‑char string)
+        username  – optional; if omitted uses request.user
+
+    The file is uploaded to S3 *without* being stored in the database.
+    A Photo record is created that only keeps the S3 key.
     """
     if request.method != "POST":
         return JsonResponse({"error": "Invalid request method"}, status=405)
 
+    # 1️⃣ Resolve who is uploading
     uploader_username = request.POST.get("username") or (
         request.user.username if request.user.is_authenticated else None
     )
@@ -162,6 +169,7 @@ def upload_photo(request):
     except User.DoesNotExist:
         return JsonResponse({"error": "User not found"}, status=404)
 
+    # 2️⃣ Locate the album
     album_code = request.POST.get("album")
     if not album_code:
         return JsonResponse({"error": "Album code is required"}, status=400)
@@ -171,28 +179,36 @@ def upload_photo(request):
     except Album.DoesNotExist:
         return JsonResponse({"error": "Album not found"}, status=404)
 
+    # 3️⃣ Grab the uploaded file
     uploaded_file = request.FILES.get("file")
     if not uploaded_file:
         return JsonResponse({"error": "No file uploaded"}, status=400)
 
+    # 4️⃣ Build an S3 key that is unique and preserves the original name
     file_id = uuid.uuid4().hex
+    s3_key = f"{album_code}/{file_id}_{uploaded_file.name}"
 
+    # 5️⃣ Upload the *bytes* directly to S3
+    #     (no temporary file needed – we read the in‑memory file once)
+    try:
+        file_bytes = uploaded_file.read()
+    except Exception as e:
+        return JsonResponse({"error": f"Could not read file: {e}"}, status=500)
+
+    if not upload_bytes_to_s3(file_bytes, s3_key):
+        return JsonResponse({"error": "S3 upload failed"}, status=500)
+
+    # 6️⃣ Persist a Photo record that only holds the S3 key
     photo = Photo.objects.create(
         code=file_id,
         user=uploader,
         album=album,
-        link="None",
+        link=create_presigned_url(s3_key),
         tlink=None,
         filename=uploaded_file.name,
     )
 
-    # print(f"Upload received:")
-    # print(f"  Username    : {uploader_username}")
-    # print(f"  Album code  : {album_code}")
-    # print(f"  File name   : {uploaded_file.name}")
-    # print(f"  File size   : {uploaded_file.size} bytes")
-    # print(f"  File ID     : {file_id}")
-
+    # 7️⃣ Return a payload the front‑end can use
     return JsonResponse(
         {
             "status": "ok",
@@ -203,6 +219,8 @@ def upload_photo(request):
                 "file_size": uploaded_file.size,
                 "username": uploader.username,
                 "album_code": album_code,
+                "s3_key": s3_key,
+                "presigned_url": photo.tlink,
             },
         },
         status=200,
