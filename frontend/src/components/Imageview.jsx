@@ -36,9 +36,9 @@ function Imageview({ album, focus, setFocus }) {
         alt={photo.filename}
         className="imageview-img"
       />*/}
-      <button onClick={next}>next</button>
       <button onClick={prev}>prev</button>
       <button onClick={hide}>done</button>
+      <button onClick={next}>next</button>
     </div>
   );
 }
