@@ -9,4 +9,17 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
+
+    margin-top: 1rem;
+}
+
+.formdiv {
+    border: solid 2px gray;
+    border-radius: 4px;
+}
+
+.albumcontrols {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
 }

@@ -70,22 +70,38 @@ function Albumview({ currentUser }) {
     form.reset();
   }
 
+  function downloadAll(e) {
+    e.preventDefault();
+    //get everything
+  }
+
+  function subscribe(e) {
+    e.preventDefault();
+    // todo later
+  }
+
   return (
     <>
       {!album ? (
         <p>Loading...</p>
       ) : (
         <div className="albumview">
-          <h3>{album.name}</h3>
-          <p>Code: {album.code}</p>
-          {album.user__username && <p>Owner: {album.user__username}</p>}
+          <div className="albuminfo">
+            <h3>{album.name}</h3>
+            <p>Code: {album.code}</p>
+            {album.user__username && <p>Owner: {album.user__username}</p>}
+          </div>
 
-          {currentUser && (
-            <form className="formdiv upform" onSubmit={uploadFiles}>
-              <input type="file" name="file" multiple />
-              <button>add to album</button>
-            </form>
-          )}
+          <div className="albumcontrols">
+            {currentUser && (
+              <form className="formdiv upform" onSubmit={uploadFiles}>
+                <input type="file" name="file" multiple />
+                <button>add to album</button>
+              </form>
+            )}
+            <button onClick={downloadAll}>Download all</button>
+            <button onClick={subscribe}>Subscribe</button>
+          </div>
 
           <div className="photo-list">
             {album.photos?.map((photo, index) => (

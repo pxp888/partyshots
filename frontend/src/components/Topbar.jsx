@@ -8,28 +8,31 @@ function Topbar({ currentUser, setCurrentUser }) {
   }
 
   return (
-    <div className="topbar">
-      <div>
-        <Link to="/" className="logo-link">
-          <h2>Logo</h2>
-        </Link>
+    <>
+      <div className="topbar">
+        <div>
+          <Link to="/" className="logo-link">
+            <h1>Partyshots</h1>
+          </Link>
+        </div>
+        <div>
+          {currentUser ? (
+            <nav>
+              <Link to={`/user/${currentUser.username}`}>
+                home {currentUser.username}{" "}
+              </Link>
+              <p onClick={logoutPressed}>Logout</p>
+            </nav>
+          ) : (
+            <nav>
+              <Link to="/login">Login</Link>
+              <Link to="/register">Register</Link>
+            </nav>
+          )}
+        </div>
       </div>
-      <div>
-        {currentUser ? (
-          <nav>
-            <Link to={`/user/${currentUser.username}`}>
-              home {currentUser.username}{" "}
-            </Link>
-            <p onClick={logoutPressed}>Logout</p>
-          </nav>
-        ) : (
-          <nav>
-            <Link to="/login">Login</Link>
-            <Link to="/register">Register</Link>
-          </nav>
-        )}
-      </div>
-    </div>
+      <div className="spacer"></div>
+    </>
   );
 }
 
