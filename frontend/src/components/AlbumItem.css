@@ -1,17 +1,18 @@
 .album-item {
-    max-width: 350px;
+    max-width: 300px;
     width: 100%;
     overflow: hidden;
+    margin: 8px;
 }
 
 .ghostalbum {
-    max-width: 350px;
+    max-width: 300px;
     width: 100%;
 }
 
 .thumbnail {
-    /*width: 400px;*/
-    height: 350px;
+    width: 300px;
+    height: 300px;
 }
 
 .album-item img {
@@ -23,12 +24,10 @@
 
 .alabel {
     width: 100%;
-
     background: rgba(0, 0, 0, 1);
     color: white;
     padding: 1rem;
     box-sizing: border-box;
-
     display: grid;
     grid-template-columns: 1fr 3fr;
 }
@@ -41,6 +40,7 @@
 
 .alabel .label {
     color: gray;
+    margin: 4px;
 }
 
 .alabel .value {

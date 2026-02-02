@@ -134,7 +134,7 @@ def get_album(request, album_code):
 
         # Attach the photos that belong to this album
         photos_qs = Photo.objects.filter(album__code=album_code).values(
-            "id", "filename", "link", "tlink", "user__username"
+            "id", "filename", "link", "tlink", "user__username", "created_at"
         )
         album["photos"] = list(photos_qs)
 

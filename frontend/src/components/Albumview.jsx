@@ -115,18 +115,6 @@ function Albumview({ currentUser }) {
                 setFocus={setFocus}
               />
             ))}
-            <div className="ghostphoto"></div>
-            <div className="ghostphoto"></div>
-            <div className="ghostphoto"></div>
-            <div className="ghostphoto"></div>
-            <div className="ghostphoto"></div>
-            <div className="ghostphoto"></div>
-            <div className="ghostphoto"></div>
-            <div className="ghostphoto"></div>
-            <div className="ghostphoto"></div>
-            <div className="ghostphoto"></div>
-            <div className="ghostphoto"></div>
-            <div className="ghostphoto"></div>
           </div>
           {focus !== -1 && (
             <Imageview album={album} focus={focus} setFocus={setFocus} />

@@ -17,6 +17,19 @@ function FileItem({ file, index, setFocus }) {
     setFocus(index);
   };
 
+  const formatCreatedAt = (isoString) => {
+    if (!isoString) return "N/A";
+    const date = new Date(isoString);
+    // You can customize the options below if you want a different format
+    return date.toLocaleString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   console.log(file);
 
   return (
@@ -25,8 +38,12 @@ function FileItem({ file, index, setFocus }) {
         <img src={src} alt={file.filename} onError={handleError} />
       </div>
       <div className="fileinfo">
-        <p>{file.user__username}</p>
-        <p>{file.filename}</p>
+        <p className="label">filename</p>
+        <p className="value">{file.filename}</p>
+        <p className="label">user</p>
+        <p className="value">{file.user__username}</p>
+        <p className="label">uploaded</p>
+        <p className="value">{formatCreatedAt(file.created_at)}</p>
       </div>
     </div>
   );

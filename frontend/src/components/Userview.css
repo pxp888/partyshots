@@ -1,13 +1,16 @@
 #albumList {
-    display: grid;
+    /*display: grid;
     grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-    gap: 1px;
+    gap: 1px;*/
     margin: 1rem;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .albumtools {
     background-color: rgb(200, 200, 200);
-    /*background-color: green;*/
     color: black;
     padding: 6px;
 }
