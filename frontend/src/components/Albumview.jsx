@@ -86,21 +86,25 @@ function Albumview({ currentUser }) {
         <p>Loading...</p>
       ) : (
         <div className="albumview">
-          <div className="albuminfo">
-            <h3>{album.name}</h3>
-            <p>Code: {album.code}</p>
-            {album.user__username && <p>Owner: {album.user__username}</p>}
-          </div>
+          <div className="infoblock">
+            <div className="albuminfo">
+              <h3>{album.name}</h3>
+              {/* <p>Code: {album.code}</p>*/}
+              {album.user__username && <p>Owner: {album.user__username}</p>}
+            </div>
 
-          <div className="albumcontrols">
-            {currentUser && (
-              <form className="formdiv upform" onSubmit={uploadFiles}>
-                <input type="file" name="file" multiple />
-                <button>add to album</button>
-              </form>
-            )}
-            <button onClick={downloadAll}>Download all</button>
-            <button onClick={subscribe}>Subscribe</button>
+            <div className="albumcontrols">
+              {currentUser && (
+                <form className="formdiv upform" onSubmit={uploadFiles}>
+                  <input type="file" name="file" multiple />
+                  <button>add to album</button>
+                </form>
+              )}
+              <div className="albumcontrols">
+                <button onClick={downloadAll}>Download all</button>
+                <button onClick={subscribe}>Subscribe</button>
+              </div>
+            </div>
           </div>
 
           <div className="photo-list">

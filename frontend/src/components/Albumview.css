@@ -1,16 +1,7 @@
 .albumview {
     background-color: #e0e0e0;
-    padding: 1rem;
     text-align: center;
-}
-
-.photo-list {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    margin-top: 1rem;
+    margin: 0;
 }
 
 .formdiv {
@@ -19,7 +10,32 @@
 }
 
 .albumcontrols {
-    display: flex;
-    flex-direction: row;
-    justify-content: left;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    justify-items: left;
+    align-items: center;
+}
+
+.infoblock {
+    background-color: gray;
+}
+
+.albuminfo {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    justify-items: left;
+    align-items: center;
+}
+
+.albuminfo h3 {
+    margin: 0;
+    margin-left: 1rem;
+}
+
+.photo-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    /*margin-top: 1rem*/
+
+    margin-top: 1rem;
 }

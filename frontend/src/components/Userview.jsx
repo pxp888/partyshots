@@ -66,23 +66,23 @@ function Userview({ currentUser }) {
 
   return (
     <div className="userview">
-      <h2>User View</h2>
-      <p>User: {username}</p>
-
-      {canCreate && (
-        <form onSubmit={handleSubmit}>
-          <label>
-            Album Name:
-            <input
-              type="text"
-              value={albumName}
-              onChange={(e) => setAlbumName(e.target.value)}
-              required
-            />
-          </label>
-          <button type="submit">Submit</button>
-        </form>
-      )}
+      <div className="infoblock">
+        <h2>User: {username}</h2>
+        {canCreate && (
+          <form onSubmit={handleSubmit}>
+            <label>
+              Album Name:
+              <input
+                type="text"
+                value={albumName}
+                onChange={(e) => setAlbumName(e.target.value)}
+                required
+              />
+            </label>
+            <button type="submit">Submit</button>
+          </form>
+        )}
+      </div>
 
       <div id="albumList">
         {albums.length > 0 ? (

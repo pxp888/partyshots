@@ -1,7 +1,17 @@
 #albumList {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     margin-top: 1rem;
+}
+
+.infoblock {
+    background-color: gray;
+}
+
+h2 {
+    margin: 0;
+}
+
+p {
+    margin: 0;
 }

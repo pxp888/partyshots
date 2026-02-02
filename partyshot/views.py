@@ -100,7 +100,7 @@ def get_albums(request):
 
         try:
             albums = Album.objects.filter(user__username=username).values(
-                "id", "name", "code", "user__username"
+                "id", "name", "code", "user__username", "thumbnail"
             )
             return JsonResponse({"albums": list(albums)}, status=200)
         except Exception as e:
