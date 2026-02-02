@@ -43,7 +43,6 @@ function Albumview({ currentUser }) {
       if (res.ok) {
         console.log("Uploaded:", data);
 
-        // Update the album state with the newly‑uploaded photo
         setAlbum((prev) =>
           prev
             ? {
@@ -87,20 +86,19 @@ function Albumview({ currentUser }) {
       ) : (
         <div className="albumview">
           <div className="infoblock">
-            <div className="albuminfo">
-              <h3>{album.name}</h3>
-              {/* <p>Code: {album.code}</p>*/}
+            <div className="info">
+              <h2>{album.name}</h2>
               {album.user__username && <p>Owner: {album.user__username}</p>}
             </div>
 
-            <div className="albumcontrols">
+            <div className="controlblock">
               {currentUser && (
-                <form className="formdiv upform" onSubmit={uploadFiles}>
+                <form className="controls" onSubmit={uploadFiles}>
                   <input type="file" name="file" multiple />
                   <button>add to album</button>
                 </form>
               )}
-              <div className="albumcontrols">
+              <div className="controls">
                 <button onClick={downloadAll}>Download all</button>
                 <button onClick={subscribe}>Subscribe</button>
               </div>

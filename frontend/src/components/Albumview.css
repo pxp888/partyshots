@@ -1,35 +1,11 @@
-.albumview {
-    background-color: #e0e0e0;
-    text-align: center;
-    margin: 0;
-}
-
-.formdiv {
-    border: solid 2px gray;
-    border-radius: 4px;
-}
-
-.albumcontrols {
+.controlblock {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    justify-items: left;
-    align-items: center;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
 }
 
-.infoblock {
-    background-color: gray;
-}
-
-.albuminfo {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    justify-items: left;
-    align-items: center;
-}
-
-.albuminfo h3 {
-    margin: 0;
-    margin-left: 1rem;
+.controls {
+    display: flex;
+    flex-direction: row;
 }
 
 .photo-list {

@@ -1,5 +1,6 @@
 .album-item {
     border: 2px solid gray;
+    max-width: 300px;
 }
 
 .album-item img {

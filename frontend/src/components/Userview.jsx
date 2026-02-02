@@ -67,7 +67,7 @@ function Userview({ currentUser }) {
   return (
     <div className="userview">
       <div className="infoblock">
-        <h2>User: {username}</h2>
+        <h2>{username}</h2>
         {canCreate && (
           <form onSubmit={handleSubmit}>
             <label>

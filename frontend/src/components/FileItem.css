@@ -1,5 +1,6 @@
 .file-item {
     border: solid 2px gray;
+    max-width: 300px;
 }
 
 .file-item img {
