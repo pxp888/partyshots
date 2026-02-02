@@ -5,7 +5,6 @@ function AlbumItem({ album }) {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    // Navigate to the album view using the album code in the URL
     navigate(`/album/${album.code}`);
   };
 
