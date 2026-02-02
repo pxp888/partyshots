@@ -80,10 +80,12 @@ function Albumview({ currentUser }) {
           <p>Code: {album.code}</p>
           {album.user__username && <p>Owner: {album.user__username}</p>}
 
-          <form className="formdiv upform" onSubmit={uploadFiles}>
-            <input type="file" name="file" multiple />
-            <button>add to album</button>
-          </form>
+          {currentUser && (
+            <form className="formdiv upform" onSubmit={uploadFiles}>
+              <input type="file" name="file" multiple />
+              <button>add to album</button>
+            </form>
+          )}
 
           <div className="photo-list">
             {album.photos?.map((photo, index) => (
