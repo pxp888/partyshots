@@ -8,6 +8,8 @@ function AlbumItem({ album }) {
     navigate(`/album/${album.code}`);
   };
 
+  console.log(album);
+
   return (
     <div
       className="album-item"
@@ -16,6 +18,7 @@ function AlbumItem({ album }) {
     >
       <h3>{album.name}</h3>
       <p>Code: {album.code}</p>
+      <p>Owner: {album.user__username}</p>
     </div>
   );
 }
