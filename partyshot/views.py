@@ -126,7 +126,7 @@ def get_album(request, album_code):
     try:
         album = (
             Album.objects.filter(code=album_code)
-            .values("id", "name", "code", "user__username", "created_at")
+            .values("id", "name", "code", "user__username", "created_at", "editable")
             .first()
         )
         if not album:
@@ -265,3 +265,29 @@ def searchbar_lookup(request):
 
     # 3️⃣ Neither matched
     return JsonResponse({"status": "not found"}, status=200)
+
+
+@csrf_exempt
+def delete_album(request, album_code):
+    """
+    Delete an album identified by its unique ``code``.
+    The caller must be authenticated **and** be the owner of the album.
+    """
+    if request.method not in ("POST", "DELETE"):
+        return JsonResponse({"error": "Only POST/DELETE allowed"}, status=405)
+
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Authentication required"}, status=401)
+
+    try:
+        album = Album.objects.get(code=album_code)
+    except Album.DoesNotExist:
+        return JsonResponse({"error": "Album not found"}, status=404)
+
+    # Only the owner can delete
+    if album.user != request.user:
+        return JsonResponse({"error": "Permission denied"}, status=403)
+
+    # Deleting the album cascades to photos (on_delete=models.CASCADE)
+    album.delete()
+    return JsonResponse({"message": "Album deleted"}, status=200)

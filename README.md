@@ -8,8 +8,6 @@
 
 ## Todo List
 
-* Search or Nav field in the topbar
 * Delete functionality
 * Bulk Download functionality
 * Lock Album (maybe)
-* Log in pop-up Window

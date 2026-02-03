@@ -80,10 +80,38 @@ function Albumview({ currentUser }) {
     // todo later
   }
 
-  function deleteAlbum(e) {
+  async function deleteAlbum(e) {
     e.preventDefault();
-    //todo later
+
+    if (!album) return;
+
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete the album "${album.name}"?`,
+    );
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch(`/api/albums/${album.code}/delete/`, {
+        method: "POST", // or "DELETE"
+        credentials: "include", // ensure cookies / session are sent
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        console.log("Deleted:", data);
+        // Optionally redirect to a list page
+        window.location.href = "/albums"; // adjust to your routing
+      } else {
+        console.error("Delete failed:", data.error);
+        alert(`Delete failed: ${data.error}`);
+      }
+    } catch (err) {
+      console.error("Network error during delete:", err);
+      alert("Network error while deleting the album.");
+    }
   }
+
+  // console.log(album);
 
   return (
     <>
@@ -107,6 +135,10 @@ function Albumview({ currentUser }) {
             <div className="initem">
               <p className="label">code</p>
               <p className="value">{album.code}</p>
+            </div>
+            <div className="initem">
+              <p className="label">open</p>
+              <p className="value">{album.editable ? "yes" : "no"}</p>
             </div>
           </div>
 
