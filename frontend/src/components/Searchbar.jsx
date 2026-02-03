@@ -8,6 +8,13 @@ function Searchbar() {
 
   const handleChange = (e) => setValue(e.target.value);
 
+  // Trigger submission on Enter key
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleClick();
+    }
+  };
+
   const handleClick = async () => {
     try {
       const resp = await fetch(
@@ -33,9 +40,11 @@ function Searchbar() {
   return (
     <div className="searchbar">
       <input
+        id="searchline"
         type="text"
         value={value}
         onChange={handleChange}
+        onKeyDown={handleKeyDown}
         placeholder="Type username or album code..."
       />
       <button className="btn" onClick={handleClick}>

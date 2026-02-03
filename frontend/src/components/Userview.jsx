@@ -72,6 +72,7 @@ function Userview({ currentUser }) {
             <label>
               New Album Name:
               <input
+                id="newalbumline"
                 type="text"
                 value={albumName}
                 onChange={(e) => setAlbumName(e.target.value)}
