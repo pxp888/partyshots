@@ -1,10 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./FileItem.css";
 import blank from "../assets/blank.jpg";
 import { formatCreatedAt } from "./helpers.js";
 
-function FileItem({ file, index, setFocus }) {
+function FileItem({
+  file,
+  index,
+  setFocus,
+  selectMode,
+  toggleSelect,
+  selected,
+}) {
   const [src, setSrc] = useState(file.tlink || blank);
+
+  const isSelected = selected.includes(file.id);
+
+  const [handup, sethandup] = useState(false);
+
+  useEffect(() => {
+    sethandup(isSelected);
+  }, [selected, isSelected]);
 
   const handleError = () => {
     if (src !== blank) {
@@ -12,11 +27,15 @@ function FileItem({ file, index, setFocus }) {
     }
   };
 
-  const handleClick = () => {
-    setFocus(index);
-  };
+  const handleClick = (e) => {
+    e.preventDefault();
 
-  // console.log(file);
+    if (!selectMode) {
+      setFocus(index);
+    } else {
+      toggleSelect(file.id);
+    }
+  };
 
   return (
     <div className="file-item" onClick={handleClick}>
@@ -31,6 +50,7 @@ function FileItem({ file, index, setFocus }) {
         <p className="label">uploaded</p>
         <p className="value">{formatCreatedAt(file.created_at)}</p>
       </div>
+      {handup && <div className="selected"></div>}
     </div>
   );
 }

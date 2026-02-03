@@ -9,6 +9,8 @@ function Albumview({ currentUser }) {
   const { albumCode } = useParams();
   const [album, setAlbum] = useState(null);
   const [focus, setFocus] = useState(-1);
+  const [selectMode, setSelectMode] = useState(false);
+  const [selected, setSelected] = useState([]);
 
   useEffect(() => {
     const fetchAlbum = async () => {
@@ -111,6 +113,43 @@ function Albumview({ currentUser }) {
     }
   }
 
+  function toggleSelectMode(e) {
+    e.preventDefault();
+    setSelectMode(!selectMode);
+  }
+
+  function toggleSelect(fid) {
+    setSelected((prev) => {
+      const idx = prev.indexOf(fid);
+      if (idx !== -1) {
+        const newSelected = [...prev.slice(0, idx), ...prev.slice(idx + 1)];
+        console.log("Updated selection (array):", newSelected);
+        return newSelected;
+      }
+      const newSelected = [...prev, fid];
+      console.log("Updated selection (array):", newSelected);
+      return newSelected;
+    });
+  }
+
+  function clearSelection() {
+    setSelected([]);
+  }
+
+  function selectAll() {
+    if (!album?.photos) return;
+    const allIds = album.photos.map((p) => p.id);
+    setSelected(allIds);
+  }
+
+  function deleteSelected() {
+    //todo
+  }
+
+  function downloadSelected() {
+    //todo
+  }
+
   // console.log(album);
 
   if (!album) return <p>Loading ...</p>;
@@ -142,43 +181,70 @@ function Albumview({ currentUser }) {
 
       {currentUser && (
         <div className="controlblock">
-          <div className="controls">
-            {/* Hidden file selector */}
-            <input
-              type="file"
-              name="file"
-              multiple
-              id="hiddenFileInput"
-              style={{ display: "none" }}
-              onChange={async (e) => {
-                const files = e.target.files;
-                for (let i = 0; i < files.length; i++) {
-                  await uploadFile(files[i]); // reuse the existing uploadFile helper
+          {!selectMode && (
+            <div className="controls">
+              {/* Hidden file selector */}
+              <input
+                type="file"
+                name="file"
+                multiple
+                id="hiddenFileInput"
+                style={{ display: "none" }}
+                onChange={async (e) => {
+                  const files = e.target.files;
+                  for (let i = 0; i < files.length; i++) {
+                    await uploadFile(files[i]); // reuse the existing uploadFile helper
+                  }
+                  // reset the input so the same file can be re‑selected if needed
+                  e.target.value = "";
+                }}
+              />
+              {/* Button that opens the selector */}
+              <button
+                className="btn"
+                onClick={() =>
+                  document.getElementById("hiddenFileInput").click()
                 }
-                // reset the input so the same file can be re‑selected if needed
-                e.target.value = "";
-              }}
-            />
-            {/* Button that opens the selector */}
-            <button
-              className="btn"
-              onClick={() => document.getElementById("hiddenFileInput").click()}
-            >
-              add to album
-            </button>
-          </div>
+              >
+                add to album
+              </button>
+            </div>
+          )}
 
-          <div className="controls">
-            <button className="btn" onClick={downloadAll}>
-              Download all
-            </button>
-            <button className="btn" onClick={subscribe}>
-              Subscribe
-            </button>
-            <button className="btn" onClick={deleteAlbum}>
-              delete album
-            </button>
-          </div>
+          {!selectMode ? (
+            <div className="controls">
+              <button className="btn" onClick={downloadAll}>
+                Download all
+              </button>
+              <button className="btn" onClick={subscribe}>
+                Subscribe
+              </button>
+              <button className="btn" onClick={deleteAlbum}>
+                delete album
+              </button>
+              <button className="btn" onClick={toggleSelectMode}>
+                select Mode
+              </button>
+            </div>
+          ) : (
+            <div className="controls">
+              <button className="btn" onClick={toggleSelectMode}>
+                select Mode off
+              </button>
+              <button className="btn" onClick={clearSelection}>
+                clear selection
+              </button>
+              <button className="btn" onClick={selectAll}>
+                select all
+              </button>
+              <button className="btn" onClick={deleteSelected}>
+                delete selected
+              </button>
+              <button className="btn" onClick={downloadSelected}>
+                download selected
+              </button>
+            </div>
+          )}
         </div>
       )}
       <div className="photo-list">
@@ -188,6 +254,9 @@ function Albumview({ currentUser }) {
             file={photo}
             index={index}
             setFocus={setFocus}
+            selectMode={selectMode}
+            toggleSelect={toggleSelect}
+            selected={selected}
           />
         ))}
       </div>
