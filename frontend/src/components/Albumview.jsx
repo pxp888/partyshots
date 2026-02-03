@@ -60,15 +60,15 @@ function Albumview({ currentUser }) {
     }
   }
 
-  function uploadFiles(event) {
-    event.preventDefault();
-    const form = event.target;
-    const files = form.file.files;
-    for (let i = 0; i < files.length; i++) {
-      uploadFile(files[i]);
-    }
-    form.reset();
-  }
+  // function uploadFiles(event) {
+  //   event.preventDefault();
+  //   const form = event.target;
+  //   const files = form.file.files;
+  //   for (let i = 0; i < files.length; i++) {
+  //     uploadFile(files[i]);
+  //   }
+  //   form.reset();
+  // }
 
   function downloadAll(e) {
     e.preventDefault();
