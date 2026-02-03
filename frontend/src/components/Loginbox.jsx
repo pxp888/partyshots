@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import "./Loginbox.css";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function Loginbox({ setCurrentUser, setShowLogin }) {
   const [credentials, setCredentials] = useState({
     username: "",
     password: "",
   });
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,6 +32,10 @@ function Loginbox({ setCurrentUser, setShowLogin }) {
       if (response.ok) {
         setCurrentUser(data.user);
         setShowLogin(null);
+        // If we are currently on the welcome page, redirect to the user's profile
+        if (location.pathname === "/") {
+          navigate(`/user/${data.user.username}`);
+        }
       } else {
         alert(`Login failed: ${data.error}`);
       }
