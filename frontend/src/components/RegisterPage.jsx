@@ -80,9 +80,6 @@ function RegisterPage({ setCurrentUser }) {
 
         <button type="submit">Register</button>
       </form>
-      <div>
-        <p>Hello</p>
-      </div>
     </section>
   );
 }
