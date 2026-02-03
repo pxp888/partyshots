@@ -136,14 +136,51 @@ function Albumview({ currentUser }) {
     setSelected([]);
   }
 
+  async function deleteSelected() {
+    if (selected.length === 0) return;
+
+    const confirmDelete = window.confirm(
+      `Delete ${selected.length} selected photo${selected.length > 1 ? "s" : ""}?`,
+    );
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch("/api/photos/delete/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ids: selected }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        console.log("Deleted:", data);
+        // Update the album state by removing the deleted photos
+        setAlbum((prev) =>
+          prev
+            ? {
+                ...prev,
+                photos: prev.photos.filter((p) => !selected.includes(p.id)),
+              }
+            : prev,
+        );
+        // Clear the selection
+        setSelected([]);
+      } else {
+        console.error("Delete failed:", data.error);
+        alert(`Delete failed: ${data.error}`);
+      }
+    } catch (err) {
+      console.error("Network error during delete:", err);
+      alert("Network error while deleting photos.");
+    }
+  }
+
   function selectAll() {
     if (!album?.photos) return;
     const allIds = album.photos.map((p) => p.id);
     setSelected(allIds);
-  }
-
-  function deleteSelected() {
-    //todo
   }
 
   function downloadSelected() {

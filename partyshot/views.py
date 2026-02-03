@@ -90,7 +90,6 @@ def create_album(request):
             )
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)
-            return JsonResponse({"error": str(e)}, status=400)
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
 
@@ -102,10 +101,15 @@ def get_albums(request):
             return JsonResponse({"error": "Username is required"}, status=400)
 
         try:
-            albums = Album.objects.filter(user__username=username).values(
+            albums_qs = Album.objects.filter(user__username=username).values(
                 "id", "name", "code", "user__username", "thumbnail", "created_at"
             )
-            return JsonResponse({"albums": list(albums)}, status=200)
+            albums = list(albums_qs)
+            # Convert any album thumbnails to presigned URLs before returning
+            for album in albums:
+                if album.get("thumbnail"):
+                    album["thumbnail"] = create_presigned_url(album["thumbnail"])
+            return JsonResponse({"albums": albums}, status=200)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)
     return JsonResponse({"error": "Invalid request method"}, status=405)
@@ -134,9 +138,22 @@ def get_album(request, album_code):
 
         # Attach the photos that belong to this album
         photos_qs = Photo.objects.filter(album__code=album_code).values(
-            "id", "filename", "link", "tlink", "user__username", "created_at"
+            "id", "filename", "s3_key", "thumb_key", "user__username", "created_at"
         )
-        album["photos"] = list(photos_qs)
+
+        photos = []
+        for p in photos_qs:
+            # Generate presigned URLs for client consumption
+            p["link"] = create_presigned_url(p["s3_key"])
+            p["tlink"] = (
+                create_presigned_url(p["thumb_key"]) if p["thumb_key"] else None
+            )
+            photos.append(p)
+        album["photos"] = photos
+
+        # Convert album thumbnail (currently a key) to a presigned URL
+        if album.get("thumbnail"):
+            album["thumbnail"] = create_presigned_url(album["thumbnail"])
 
         return JsonResponse({"album": album}, status=200)
     except Exception as e:
@@ -214,18 +231,24 @@ def upload_photo(request):
         print(f"Thumbnail generation failed for {uploaded_file.name}: {e}")
         thumb_key = None
 
+    # Store the raw S3 keys in the DB; the presigned URLs will be generated
+    # when the client requests them.
     photo = Photo.objects.create(
         code=file_id,
         user=uploader,
         album=album,
-        link=create_presigned_url(s3_key),
-        tlink=create_presigned_url(thumb_key) if thumb_key else None,
+        s3_key=s3_key,
+        thumb_key=thumb_key,
         filename=uploaded_file.name,
     )
 
     if thumb_key and not album.thumbnail:
-        album.thumbnail = photo.tlink
+        album.thumbnail = photo.thumb_key
         album.save(update_fields=["thumbnail"])
+
+    # Create presigned URLs for the response (client‑side use only).
+    link_url = create_presigned_url(s3_key) if s3_key else None
+    tlink_url = create_presigned_url(thumb_key) if thumb_key else None
 
     return JsonResponse(
         {
@@ -238,8 +261,8 @@ def upload_photo(request):
                 "username": uploader.username,
                 "album_code": album_code,
                 # "s3_key": s3_key,
-                "link": photo.link,
-                "tlink": photo.tlink,
+                "link": link_url,
+                "tlink": tlink_url,
             },
         },
         status=200,
@@ -272,6 +295,8 @@ def delete_album(request, album_code):
     """
     Delete an album identified by its unique ``code``.
     The caller must be authenticated **and** be the owner of the album.
+    This updated implementation also removes all S3 objects that belong
+    to the album before the database records are purged.
     """
     if request.method not in ("POST", "DELETE"):
         return JsonResponse({"error": "Only POST/DELETE allowed"}, status=405)
@@ -284,10 +309,73 @@ def delete_album(request, album_code):
     except Album.DoesNotExist:
         return JsonResponse({"error": "Album not found"}, status=404)
 
-    # Only the owner can delete
     if album.user != request.user:
         return JsonResponse({"error": "Permission denied"}, status=403)
 
-    # Deleting the album cascades to photos (on_delete=models.CASCADE)
+    # 1️⃣  Remove all photos' S3 objects from the bucket
+    photos = Photo.objects.filter(album=album).only("s3_key", "thumb_key")
+    for photo in photos:
+        # Main image
+        if photo.s3_key:
+            success = delete_file_from_s3(photo.s3_key)
+            if not success:
+                # Log a warning; the DB will still be cleaned up
+                print(f"[WARN] Failed to delete S3 object: {photo.s3_key}")
+
+        # Thumbnail (if it exists)
+        if photo.thumb_key:
+            success = delete_file_from_s3(photo.thumb_key)
+            if not success:
+                print(f"[WARN] Failed to delete S3 object: {photo.thumb_key}")
+
+    # 2️⃣  Delete the album (cascade deletes Photo rows)
     album.delete()
+
     return JsonResponse({"message": "Album deleted"}, status=200)
+
+
+@csrf_exempt
+def delete_photos(request):
+    """
+    Delete multiple photos identified by their database ids.
+
+    The user must be authenticated and be the owner of **every** photo
+    that is being deleted. If any photo does not belong to the user,
+    it is simply skipped – the request still succeeds for the others.
+    """
+    if request.method not in ("POST", "DELETE"):
+        return JsonResponse({"error": "Only POST/DELETE allowed"}, status=405)
+
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Authentication required"}, status=401)
+
+    try:
+        data = json.loads(request.body)
+        ids = data.get("ids", [])
+        if not isinstance(ids, list) or not ids:
+            return JsonResponse({"error": "ids list required"}, status=400)
+    except Exception:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    deleted_ids = []
+    for photo_id in ids:
+        try:
+            photo = Photo.objects.get(id=photo_id)
+        except Photo.DoesNotExist:
+            continue
+
+        # Ensure the requester owns the photo
+        if photo.album.user != request.user:
+            continue
+
+        # Remove S3 objects
+        if photo.s3_key:
+            delete_file_from_s3(photo.s3_key)
+        if photo.thumb_key:
+            delete_file_from_s3(photo.thumb_key)
+
+        photo_id = photo.id
+        photo.delete()
+        deleted_ids.append(photo_id)
+
+    return JsonResponse({"message": "Deleted", "deleted_ids": deleted_ids}, status=200)
