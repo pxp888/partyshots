@@ -1,0 +1,53 @@
+/* Full‑screen overlay that stays above everything else */
+.imageview {
+    position: fixed; /* sticks to the viewport */
+    inset: 0; /* top/right/bottom/left = 0 → covers full screen */
+    background: rgba(0, 0, 0, 0.8); /* semi‑transparent dark backdrop */
+    z-index: 9999; /* above all other content */
+    display: flex;
+    justify-content: center; /* horizontal centering */
+    align-items: center; /* vertical centering */
+    overflow: hidden; /* hide any overflow from the image */
+}
+
+/* Container that holds the image and automatically centers it */
+.imframe {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* The image itself – never bigger than the viewport */
+.imframe img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* keep aspect ratio, fit within container */
+    object-position: center;
+}
+
+/* Controls that sit on top of the image */
+.imcontrol {
+    position: absolute; /* overlay on top of .imageview */
+    bottom: 20px; /* distance from the bottom of the viewport */
+    left: 50%; /* center horizontally */
+    transform: translateX(-50%); /* offset by 50% of its own width */
+    display: flex;
+    gap: 1rem;
+}
+
+/* Simple button styling */
+.imcontrol button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.imcontrol button:hover {
+    background: rgba(255, 255, 255, 0.4);
+}

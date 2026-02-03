@@ -1,44 +1,81 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import "./Imageview.css";
+import blank from "../assets/blank.jpg";
 
 function Imageview({ album, focus, setFocus }) {
-  if (!album || !album.photos) return null;
+  const photo = album?.photos?.[focus] ?? null;
 
-  const photo = album.photos[focus];
-  if (!photo) return null;
+  const [imgSrc, setImgSrc] = useState("");
+  useEffect(() => {
+    if (photo?.link) setImgSrc(photo.link);
+    else setImgSrc("");
+  }, [photo]);
 
-  function next(e) {
+  /* -----------------------------------------------------------------
+     Keyboard handling
+     ----------------------------------------------------------------- */
+  useEffect(() => {
+    const handler = (e) => {
+      if (!album?.photos) return; // nothing to do without photos
+
+      switch (e.key) {
+        case "ArrowRight": // next
+          if (focus + 1 < album.photos.length) setFocus(focus + 1);
+          break;
+        case "ArrowLeft": // prev
+          if (focus > 0) setFocus(focus - 1);
+          break;
+        case "Escape": // hide
+          setFocus(-1);
+          break;
+        default:
+          return;
+      }
+    };
+
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [focus, album?.photos, setFocus]);
+
+  /* -----------------------------------------------------------------
+     Button helpers (kept for UI)
+     ----------------------------------------------------------------- */
+  const next = (e) => {
     e.preventDefault();
-    // Only advance if we’re not already at the last photo
-    if (focus + 1 < album.photos.length) {
-      setFocus(focus + 1);
-    }
-  }
+    if (focus + 1 < album.photos.length) setFocus(focus + 1);
+  };
 
-  function prev(e) {
+  const prev = (e) => {
     e.preventDefault();
-    // Only retreat if we’re not already at the first photo
-    if (focus > 0) {
-      setFocus(focus - 1);
-    }
-  }
+    if (focus > 0) setFocus(focus - 1);
+  };
 
-  function hide(e) {
+  const hide = (e) => {
     e.preventDefault();
     setFocus(-1);
-  }
+  };
+
+  /* -----------------------------------------------------------------
+     Render
+     ----------------------------------------------------------------- */
+  if (!album?.photos) return null;
+  if (!photo) return null;
+  if (focus === -1) return null;
 
   return (
     <div className="imageview">
-      <h4>{photo.filename}</h4>
-      {/* <img
-        src={photo.tlink || photo.thumbnail || photo.url}
-        alt={photo.filename}
-        className="imageview-img"
-      />*/}
-      <button onClick={prev}>prev</button>
-      <button onClick={hide}>done</button>
-      <button onClick={next}>next</button>
+      <div className="imframe">
+        <img
+          src={imgSrc}
+          alt={photo.filename}
+          onError={() => setImgSrc(blank)}
+        />
+      </div>
+      <div className="imcontrol">
+        <button onClick={prev}>prev</button>
+        <button onClick={hide}>done</button>
+        <button onClick={next}>next</button>
+      </div>
     </div>
   );
 }
