@@ -9,4 +9,5 @@ urlpatterns = [
     path("albums/list/", views.get_albums, name="list_albums"),
     path("albums/<str:album_code>/", views.get_album, name="album_detail"),
     path("photos/upload/", views.upload_photo, name="upload_photo"),
+    path("searchbar_lookup/", views.searchbar_lookup, name="searchbar_lookup"),
 ]

@@ -244,3 +244,24 @@ def upload_photo(request):
         },
         status=200,
     )
+
+
+@csrf_exempt
+def searchbar_lookup(request):
+    if request.method != "GET":
+        return JsonResponse({"error": "Only GET requests are allowed"}, status=405)
+
+    term = request.GET.get("q", "").strip()
+    if not term:
+        return JsonResponse({"error": "Search term required"}, status=400)
+
+    # 1️⃣ Check for a user with this username
+    if User.objects.filter(username=term).exists():
+        return JsonResponse({"status": "user"}, status=200)
+
+    # 2️⃣ If no user, check for an album with this code
+    if Album.objects.filter(code=term).exists():
+        return JsonResponse({"status": "album"}, status=200)
+
+    # 3️⃣ Neither matched
+    return JsonResponse({"status": "not found"}, status=200)

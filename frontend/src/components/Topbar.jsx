@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import "./Topbar.css";
 import Loginbox from "./Loginbox";
-import Registerbox from "./Registerbox"; // NEW import
+import Registerbox from "./Registerbox";
+import Searchbar from "./Searchbar";
 
 function Topbar({ currentUser, setCurrentUser }) {
   const [showLogin, setShowLogin] = useState(null);
@@ -19,7 +20,6 @@ function Topbar({ currentUser, setCurrentUser }) {
   }
 
   function registerPressed(e) {
-    // NEW handler
     e.preventDefault();
     setShowRegister(1);
   }
@@ -32,6 +32,7 @@ function Topbar({ currentUser, setCurrentUser }) {
             <h1>partyShots</h1>
           </Link>
         </div>
+        <Searchbar />
         <div>
           {currentUser ? (
             <nav>
