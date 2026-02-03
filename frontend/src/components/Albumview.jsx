@@ -4,6 +4,8 @@ import "./Albumview.css";
 import FileItem from "./FileItem";
 import Imageview from "./Imageview";
 import { formatCreatedAt } from "./helpers.js";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 
 function Albumview({ currentUser }) {
   const { albumCode } = useParams();
@@ -183,8 +185,49 @@ function Albumview({ currentUser }) {
     setSelected(allIds);
   }
 
-  function downloadSelected() {
-    //todo
+  async function downloadSelected() {
+    if (selected.length === 0) return;
+
+    // Find the full photo objects that correspond to the selected ids
+    const selectedPhotos = album.photos.filter((p) => selected.includes(p.id));
+
+    if (selectedPhotos.length === 0) {
+      alert("No valid photos found for the current selection.");
+      return;
+    }
+
+    const zip = new JSZip();
+
+    // Helper to fetch a photo's binary data
+    const fetchBlob = async (url, filename) => {
+      const res = await fetch(url, { mode: "cors" });
+      if (!res.ok) throw new Error(`Failed to fetch ${filename}`);
+      return await res.blob();
+    };
+
+    try {
+      // Show a simple spinner (optional)
+      setSelectMode(true); // you can toggle a “busy” state instead
+
+      // Download each file and add it to the zip
+      for (const photo of selectedPhotos) {
+        if (!photo.link) continue; // skip if no link present
+        const blob = await fetchBlob(photo.link, photo.filename);
+        zip.file(photo.filename, blob);
+      }
+
+      // Generate the zip file (as a blob)
+      const zipBlob = await zip.generateAsync({ type: "blob" });
+
+      // Trigger download – you can customise the filename
+      saveAs(zipBlob, `${album.name || "album"}_${selectedPhotos.length}.zip`);
+    } catch (err) {
+      console.error("Error while creating zip:", err);
+      alert("An error occurred while preparing the ZIP file.");
+    } finally {
+      // Reset any busy UI state you added
+      setSelectMode(false);
+    }
   }
 
   // console.log(album);
