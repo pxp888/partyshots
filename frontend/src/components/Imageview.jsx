@@ -11,9 +11,9 @@ function Imageview({ album, focus, setFocus }) {
     else setImgSrc("");
   }, [photo]);
 
-  /* -----------------------------------------------------------------
+  /* ---------------------------------------------------------------
      Keyboard handling
-     ----------------------------------------------------------------- */
+  --------------------------------------------------------------- */
   useEffect(() => {
     const handler = (e) => {
       if (!album?.photos) return; // nothing to do without photos
@@ -37,33 +37,45 @@ function Imageview({ album, focus, setFocus }) {
     return () => window.removeEventListener("keydown", handler);
   }, [focus, album?.photos, setFocus]);
 
-  /* -----------------------------------------------------------------
-     Button helpers (kept for UI)
-     ----------------------------------------------------------------- */
-  const next = (e) => {
-    e.preventDefault();
+  /* ---------------------------------------------------------------
+     Zone click helpers – no longer tied to button clicks.
+  --------------------------------------------------------------- */
+  const next = () => {
     if (focus + 1 < album.photos.length) setFocus(focus + 1);
   };
 
-  const prev = (e) => {
-    e.preventDefault();
+  const prev = () => {
     if (focus > 0) setFocus(focus - 1);
   };
 
-  const hide = (e) => {
-    e.preventDefault();
+  const hide = () => {
     setFocus(-1);
   };
 
-  /* -----------------------------------------------------------------
+  /* ---------------------------------------------------------------
      Render
-     ----------------------------------------------------------------- */
+  --------------------------------------------------------------- */
   if (!album?.photos) return null;
   if (!photo) return null;
   if (focus === -1) return null;
 
+  const handleZoneClick = (e) => {
+    const { clientX } = e;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const relativeX = clientX - rect.left;
+    const zoneWidth = rect.width / 3;
+
+    if (relativeX < zoneWidth) {
+      prev();
+    } else if (relativeX > 2 * zoneWidth) {
+      next();
+    } else {
+      hide();
+    }
+  };
+
   return (
-    <div className="imageview">
+    <div className="imageview" onClick={handleZoneClick}>
       <div className="imframe">
         <img
           src={imgSrc}
@@ -71,11 +83,7 @@ function Imageview({ album, focus, setFocus }) {
           onError={() => setImgSrc(blank)}
         />
       </div>
-      <div className="imcontrol">
-        <button onClick={prev}>prev</button>
-        <button onClick={hide}>done</button>
-        <button onClick={next}>next</button>
-      </div>
+      {/* Buttons removed – zone click handling takes over */}
     </div>
   );
 }
