@@ -74,11 +74,6 @@ function Albumview({ currentUser }) {
   //   form.reset();
   // }
 
-  function downloadAll(e) {
-    e.preventDefault();
-    //get everything
-  }
-
   function subscribe(e) {
     e.preventDefault();
     // todo later
@@ -117,6 +112,7 @@ function Albumview({ currentUser }) {
 
   function toggleSelectMode(e) {
     e.preventDefault();
+    if (selectMode) setSelected([]);
     setSelectMode(!selectMode);
   }
 
@@ -226,8 +222,46 @@ function Albumview({ currentUser }) {
       alert("An error occurred while preparing the ZIP file.");
     } finally {
       // Reset any busy UI state you added
+      setSelected([]);
       setSelectMode(false);
     }
+  }
+
+  function downloadAll(e) {
+    e.preventDefault();
+    if (!album || !album.photos || album.photos.length === 0) {
+      alert("No photos available to download.");
+      return;
+    }
+
+    const zip = new JSZip();
+
+    const fetchBlob = async (url, filename) => {
+      const res = await fetch(url, { mode: "cors" });
+      if (!res.ok) throw new Error(`Failed to fetch ${filename}`);
+      return await res.blob();
+    };
+
+    setSelectMode(true);
+
+    (async () => {
+      try {
+        for (const photo of album.photos) {
+          if (!photo.link) continue; // skip if the photo link is missing
+          const blob = await fetchBlob(photo.link, photo.filename);
+          zip.file(photo.filename, blob);
+        }
+
+        const zipBlob = await zip.generateAsync({ type: "blob" });
+        const zipName = `${album.name || "album"}_${album.photos.length}.zip`;
+        saveAs(zipBlob, zipName);
+      } catch (err) {
+        console.error("Error while creating ZIP:", err);
+        alert("An error occurred while preparing the ZIP file.");
+      } finally {
+        setSelectMode(false);
+      }
+    })();
   }
 
   // console.log(album);
@@ -261,38 +295,30 @@ function Albumview({ currentUser }) {
 
       {currentUser && (
         <div className="controlblock">
-          {!selectMode && (
-            <div className="controls">
-              {/* Hidden file selector */}
-              <input
-                type="file"
-                name="file"
-                multiple
-                id="hiddenFileInput"
-                style={{ display: "none" }}
-                onChange={async (e) => {
-                  const files = e.target.files;
-                  for (let i = 0; i < files.length; i++) {
-                    await uploadFile(files[i]); // reuse the existing uploadFile helper
-                  }
-                  // reset the input so the same file can be re‑selected if needed
-                  e.target.value = "";
-                }}
-              />
-              {/* Button that opens the selector */}
-              <button
-                className="btn"
-                onClick={() =>
-                  document.getElementById("hiddenFileInput").click()
+          <div className="controls">
+            {/* Hidden file selector */}
+            <input
+              type="file"
+              name="file"
+              multiple
+              id="hiddenFileInput"
+              style={{ display: "none" }}
+              onChange={async (e) => {
+                const files = e.target.files;
+                for (let i = 0; i < files.length; i++) {
+                  await uploadFile(files[i]); // reuse the existing uploadFile helper
                 }
-              >
-                add to album
-              </button>
-            </div>
-          )}
+                // reset the input so the same file can be re‑selected if needed
+                e.target.value = "";
+              }}
+            />
+          </div>
 
           {!selectMode ? (
             <div className="controls">
+              <button className="btn" onClick={toggleSelectMode}>
+                select Mode
+              </button>
               <button className="btn" onClick={downloadAll}>
                 Download all
               </button>
@@ -302,8 +328,13 @@ function Albumview({ currentUser }) {
               <button className="btn" onClick={deleteAlbum}>
                 delete album
               </button>
-              <button className="btn" onClick={toggleSelectMode}>
-                select Mode
+              <button
+                className="btn"
+                onClick={() =>
+                  document.getElementById("hiddenFileInput").click()
+                }
+              >
+                add to album
               </button>
             </div>
           ) : (
@@ -311,11 +342,11 @@ function Albumview({ currentUser }) {
               <button className="btn" onClick={toggleSelectMode}>
                 select Mode off
               </button>
-              <button className="btn" onClick={clearSelection}>
-                clear selection
-              </button>
               <button className="btn" onClick={selectAll}>
                 select all
+              </button>
+              <button className="btn" onClick={clearSelection}>
+                clear selection
               </button>
               <button className="btn" onClick={deleteSelected}>
                 delete selected

@@ -8,6 +8,5 @@
 
 ## Todo List
 
-* Delete functionality
-* Bulk Download functionality
 * Lock Album (maybe)
+* File Size Limits
