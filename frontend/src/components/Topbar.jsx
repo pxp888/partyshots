@@ -2,9 +2,11 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import "./Topbar.css";
 import Loginbox from "./Loginbox";
+import Registerbox from "./Registerbox"; // NEW import
 
 function Topbar({ currentUser, setCurrentUser }) {
   const [showLogin, setShowLogin] = useState(null);
+  const [showRegister, setShowRegister] = useState(null); // NEW state
 
   function logoutPressed(e) {
     e.preventDefault();
@@ -14,6 +16,12 @@ function Topbar({ currentUser, setCurrentUser }) {
   function loginPressed(e) {
     e.preventDefault();
     setShowLogin(1);
+  }
+
+  function registerPressed(e) {
+    // NEW handler
+    e.preventDefault();
+    setShowRegister(1);
   }
 
   return (
@@ -36,7 +44,7 @@ function Topbar({ currentUser, setCurrentUser }) {
             <nav>
               {/* <Link to="/login">Login</Link>*/}
               <p onClick={loginPressed}>Login</p>
-              <Link to="/register">Register</Link>
+              <p onClick={registerPressed}>Register</p> {/* replaced Link */}
             </nav>
           )}
         </div>
@@ -44,10 +52,15 @@ function Topbar({ currentUser, setCurrentUser }) {
       <div className="spacer"></div>
       {showLogin && (
         <Loginbox
-          currentUser={currentUser}
           setCurrentUser={setCurrentUser}
           setShowLogin={setShowLogin}
         ></Loginbox>
+      )}
+      {showRegister && ( // NEW overlay
+        <Registerbox
+          setCurrentUser={setCurrentUser}
+          setShowRegister={setShowRegister}
+        ></Registerbox>
       )}
     </>
   );
