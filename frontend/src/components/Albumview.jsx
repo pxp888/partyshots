@@ -6,7 +6,7 @@ import Imageview from "./Imageview";
 import { formatCreatedAt } from "./helpers.js";
 
 function Albumview({ currentUser }) {
-  const { albumCode } = useParams(); // pulls :albumCode from the URL
+  const { albumCode } = useParams();
   const [album, setAlbum] = useState(null);
   const [focus, setFocus] = useState(-1);
 
@@ -110,48 +110,49 @@ function Albumview({ currentUser }) {
             </div>
           </div>
 
-          <div className="controlblock">
-            <div className="controls">
-              {/* Hidden file selector */}
-              <input
-                type="file"
-                name="file"
-                multiple
-                id="hiddenFileInput"
-                style={{ display: "none" }}
-                onChange={async (e) => {
-                  const files = e.target.files;
-                  for (let i = 0; i < files.length; i++) {
-                    await uploadFile(files[i]); // reuse the existing uploadFile helper
+          {currentUser && (
+            <div className="controlblock">
+              <div className="controls">
+                {/* Hidden file selector */}
+                <input
+                  type="file"
+                  name="file"
+                  multiple
+                  id="hiddenFileInput"
+                  style={{ display: "none" }}
+                  onChange={async (e) => {
+                    const files = e.target.files;
+                    for (let i = 0; i < files.length; i++) {
+                      await uploadFile(files[i]); // reuse the existing uploadFile helper
+                    }
+                    // reset the input so the same file can be re‑selected if needed
+                    e.target.value = "";
+                  }}
+                />
+                {/* Button that opens the selector */}
+                <button
+                  className="btn"
+                  onClick={() =>
+                    document.getElementById("hiddenFileInput").click()
                   }
-                  // reset the input so the same file can be re‑selected if needed
-                  e.target.value = "";
-                }}
-              />
-              {/* Button that opens the selector */}
-              <button
-                className="btn"
-                onClick={() =>
-                  document.getElementById("hiddenFileInput").click()
-                }
-              >
-                add to album
-              </button>
-            </div>
+                >
+                  add to album
+                </button>
+              </div>
 
-            <div className="controls">
-              <button className="btn" onClick={downloadAll}>
-                Download all
-              </button>
-              <button className="btn" onClick={subscribe}>
-                Subscribe
-              </button>
-              <button className="btn" onClick={deleteAlbum}>
-                delete album
-              </button>
+              <div className="controls">
+                <button className="btn" onClick={downloadAll}>
+                  Download all
+                </button>
+                <button className="btn" onClick={subscribe}>
+                  Subscribe
+                </button>
+                <button className="btn" onClick={deleteAlbum}>
+                  delete album
+                </button>
+              </div>
             </div>
-          </div>
-
+          )}
           <div className="photo-list">
             {album.photos?.map((photo, index) => (
               <FileItem
