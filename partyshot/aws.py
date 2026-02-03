@@ -70,22 +70,22 @@ def delete_file_from_s3(object_name):
     return True
 
 
-def cleanup():
-    """This function cleans up the S3 bucket by deleting any files that are not in the database."""
-    bucket_name = "pxp-imagestore"
+# def cleanup():
+#     """This function cleans up the S3 bucket by deleting any files that are not in the database."""
+#     bucket_name = "pxp-imagestore"
 
-    s3_client = boto3.client("s3")
-    response = s3_client.list_objects_v2(Bucket=bucket_name)
+#     s3_client = boto3.client("s3")
+#     response = s3_client.list_objects_v2(Bucket=bucket_name)
 
-    current = {}
-    phots = Photo.objects.all()
-    for phot in phots:
-        current[phot.link] = True
-        current[phot.tlink] = True
+#     current = {}
+#     phots = Photo.objects.all()
+#     for phot in phots:
+#         current[phot.link] = True
+#         current[phot.tlink] = True
 
-    for content in response.get("Contents", []):
-        if content["Key"] not in current:
-            print("Deleting: ", content["Key"])
-            s3_client.delete_object(Bucket=bucket_name, Key=content["Key"])
+#     for content in response.get("Contents", []):
+#         if content["Key"] not in current:
+#             print("Deleting: ", content["Key"])
+#             s3_client.delete_object(Bucket=bucket_name, Key=content["Key"])
 
-    print("----------------------\n S3 Cleanup done. \n----------------------")
+#     print("----------------------\n S3 Cleanup done. \n----------------------")
