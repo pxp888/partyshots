@@ -113,94 +113,88 @@ function Albumview({ currentUser }) {
 
   // console.log(album);
 
+  if (!album) return <p>Loading ...</p>;
+
   return (
-    <>
-      {!album ? (
-        <p>Loading...</p>
-      ) : (
-        <div className="albumview">
-          <div className="albuminfo">
-            <div className="initem">
-              <p className="label">name</p>
-              <p className="value">{album.name}</p>
-            </div>
-            <div className="initem">
-              <p className="label">owner</p>
-              <p className="value">{album.user__username}</p>
-            </div>
-            <div className="initem">
-              <p className="label">created</p>
-              <p className="value">{formatCreatedAt(album.created_at)}</p>
-            </div>
-            <div className="initem">
-              <p className="label">code</p>
-              <p className="value">{album.code}</p>
-            </div>
-            <div className="initem">
-              <p className="label">open</p>
-              <p className="value">{album.editable ? "yes" : "no"}</p>
-            </div>
+    <div className="albumview">
+      <div className="albuminfo">
+        <div className="initem">
+          <p className="label">name</p>
+          <p className="value">{album.name}</p>
+        </div>
+        <div className="initem">
+          <p className="label">owner</p>
+          <p className="value">{album.user__username}</p>
+        </div>
+        <div className="initem">
+          <p className="label">created</p>
+          <p className="value">{formatCreatedAt(album.created_at)}</p>
+        </div>
+        <div className="initem">
+          <p className="label">code</p>
+          <p className="value">{album.code}</p>
+        </div>
+        <div className="initem">
+          <p className="label">open</p>
+          <p className="value">{album.editable ? "yes" : "no"}</p>
+        </div>
+      </div>
+
+      {currentUser && (
+        <div className="controlblock">
+          <div className="controls">
+            {/* Hidden file selector */}
+            <input
+              type="file"
+              name="file"
+              multiple
+              id="hiddenFileInput"
+              style={{ display: "none" }}
+              onChange={async (e) => {
+                const files = e.target.files;
+                for (let i = 0; i < files.length; i++) {
+                  await uploadFile(files[i]); // reuse the existing uploadFile helper
+                }
+                // reset the input so the same file can be re‑selected if needed
+                e.target.value = "";
+              }}
+            />
+            {/* Button that opens the selector */}
+            <button
+              className="btn"
+              onClick={() => document.getElementById("hiddenFileInput").click()}
+            >
+              add to album
+            </button>
           </div>
 
-          {currentUser && (
-            <div className="controlblock">
-              <div className="controls">
-                {/* Hidden file selector */}
-                <input
-                  type="file"
-                  name="file"
-                  multiple
-                  id="hiddenFileInput"
-                  style={{ display: "none" }}
-                  onChange={async (e) => {
-                    const files = e.target.files;
-                    for (let i = 0; i < files.length; i++) {
-                      await uploadFile(files[i]); // reuse the existing uploadFile helper
-                    }
-                    // reset the input so the same file can be re‑selected if needed
-                    e.target.value = "";
-                  }}
-                />
-                {/* Button that opens the selector */}
-                <button
-                  className="btn"
-                  onClick={() =>
-                    document.getElementById("hiddenFileInput").click()
-                  }
-                >
-                  add to album
-                </button>
-              </div>
-
-              <div className="controls">
-                <button className="btn" onClick={downloadAll}>
-                  Download all
-                </button>
-                <button className="btn" onClick={subscribe}>
-                  Subscribe
-                </button>
-                <button className="btn" onClick={deleteAlbum}>
-                  delete album
-                </button>
-              </div>
-            </div>
-          )}
-          <div className="photo-list">
-            {album.photos?.map((photo, index) => (
-              <FileItem
-                key={photo.id}
-                file={photo}
-                index={index}
-                setFocus={setFocus}
-              />
-            ))}
+          <div className="controls">
+            <button className="btn" onClick={downloadAll}>
+              Download all
+            </button>
+            <button className="btn" onClick={subscribe}>
+              Subscribe
+            </button>
+            <button className="btn" onClick={deleteAlbum}>
+              delete album
+            </button>
           </div>
-          {focus !== -1 && (
-            <Imageview album={album} focus={focus} setFocus={setFocus} />
-          )}
         </div>
       )}
-    </>
+      <div className="photo-list">
+        {album.photos?.map((photo, index) => (
+          <FileItem
+            key={photo.id}
+            file={photo}
+            index={index}
+            setFocus={setFocus}
+          />
+        ))}
+      </div>
+      {focus !== -1 && (
+        <Imageview album={album} focus={focus} setFocus={setFocus} />
+      )}
+    </div>
   );
 }
 
