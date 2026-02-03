@@ -21,8 +21,6 @@ class Photo(models.Model):
     album = models.ForeignKey(Album, on_delete=models.CASCADE)
     s3_key = models.CharField(max_length=512, null=True, blank=True)
     thumb_key = models.CharField(max_length=512, null=True, blank=True)
-    link = models.TextField()
-    tlink = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     filename = models.TextField()
 
