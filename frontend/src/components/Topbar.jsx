@@ -1,10 +1,19 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import "./Topbar.css";
+import Loginbox from "./Loginbox";
 
 function Topbar({ currentUser, setCurrentUser }) {
+  const [showLogin, setShowLogin] = useState(null);
+
   function logoutPressed(e) {
     e.preventDefault();
     setCurrentUser(null);
+  }
+
+  function loginPressed(e) {
+    e.preventDefault();
+    setShowLogin(1);
   }
 
   return (
@@ -25,13 +34,21 @@ function Topbar({ currentUser, setCurrentUser }) {
             </nav>
           ) : (
             <nav>
-              <Link to="/login">Login</Link>
+              {/* <Link to="/login">Login</Link>*/}
+              <p onClick={loginPressed}>Login</p>
               <Link to="/register">Register</Link>
             </nav>
           )}
         </div>
       </div>
       <div className="spacer"></div>
+      {showLogin && (
+        <Loginbox
+          currentUser={currentUser}
+          setCurrentUser={setCurrentUser}
+          setShowLogin={setShowLogin}
+        ></Loginbox>
+      )}
     </>
   );
 }
