@@ -10,3 +10,4 @@
 
 * Lock Album (maybe)
 * File Size Limits
+* Subscribe to Album

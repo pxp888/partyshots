@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from PIL import Image
 
 from .aws import *
-from .models import Album, Photo
+from .models import Album, Photo, Subscriber
 
 
 @csrf_exempt
@@ -379,3 +379,36 @@ def delete_photos(request):
         deleted_ids.append(photo_id)
 
     return JsonResponse({"message": "Deleted", "deleted_ids": deleted_ids}, status=200)
+
+
+@csrf_exempt
+def subscribe_album(request, album_code):
+    """
+    Allow an authenticated user to subscribe to an album identified by its
+    unique ``code``. A subscription is represented by a ``Subscriber`` record
+    linking the user to the album. The endpoint is idempotent – if the user
+    is already subscribed, the request simply returns a success response.
+    """
+    if request.method != "POST":
+        return JsonResponse({"error": "Only POST allowed"}, status=405)
+
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Authentication required"}, status=401)
+
+    try:
+        album = Album.objects.get(code=album_code)
+    except Album.DoesNotExist:
+        return JsonResponse({"error": "Album not found"}, status=404)
+
+    if album.user == request.user:
+        return JsonResponse(
+            {"error": "You cannot subscribe to your own album"},
+            status=400,
+        )
+
+    # Prevent duplicate subscriptions
+    if Subscriber.objects.filter(album=album, user=request.user).exists():
+        return JsonResponse({"message": "Already subscribed"}, status=200)
+
+    Subscriber.objects.create(album=album, user=request.user)
+    return JsonResponse({"message": "Subscribed successfully"}, status=201)

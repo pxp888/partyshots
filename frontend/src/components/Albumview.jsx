@@ -74,11 +74,6 @@ function Albumview({ currentUser }) {
   //   form.reset();
   // }
 
-  function subscribe(e) {
-    e.preventDefault();
-    // todo later
-  }
-
   async function deleteAlbum(e) {
     e.preventDefault();
 
@@ -262,6 +257,25 @@ function Albumview({ currentUser }) {
         setSelectMode(false);
       }
     })();
+  }
+
+  async function subscribe(e) {
+    e.preventDefault();
+    try {
+      const res = await fetch(`/api/albums/${albumCode}/subscribe/`, {
+        method: "POST",
+        credentials: "include", // ensure cookies / session are sent
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert("Subscribed successfully");
+      } else {
+        alert(`Subscribe failed: ${data.error || data.message}`);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Network error while subscribing.");
+    }
   }
 
   // console.log(album);
