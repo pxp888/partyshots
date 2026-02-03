@@ -1,31 +1,36 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./Imageview.css";
 import blank from "../assets/blank.jpg";
 
 function Imageview({ album, focus, setFocus }) {
   const photo = album?.photos?.[focus] ?? null;
 
-  const [imgSrc, setImgSrc] = useState("");
+  // Ref to the <img> element so we can manipulate its src directly
+  const imgRef = useRef(null);
+
+  // Derived source; updated whenever the focused photo changes
+  const src = photo?.link ?? "";
+
+  // Whenever src changes, update the img element’s src attribute
   useEffect(() => {
-    if (photo?.link) setImgSrc(photo.link);
-    else setImgSrc("");
-  }, [photo]);
+    if (imgRef.current) imgRef.current.src = src;
+  }, [src]);
 
   /* ---------------------------------------------------------------
      Keyboard handling
   --------------------------------------------------------------- */
   useEffect(() => {
     const handler = (e) => {
-      if (!album?.photos) return; // nothing to do without photos
+      if (!album?.photos) return;
 
       switch (e.key) {
-        case "ArrowRight": // next
+        case "ArrowRight":
           if (focus + 1 < album.photos.length) setFocus(focus + 1);
           break;
-        case "ArrowLeft": // prev
+        case "ArrowLeft":
           if (focus > 0) setFocus(focus - 1);
           break;
-        case "Escape": // hide
+        case "Escape":
           setFocus(-1);
           break;
         default:
@@ -65,22 +70,20 @@ function Imageview({ album, focus, setFocus }) {
     const relativeX = clientX - rect.left;
     const zoneWidth = rect.width / 3;
 
-    if (relativeX < zoneWidth) {
-      prev();
-    } else if (relativeX > 2 * zoneWidth) {
-      next();
-    } else {
-      hide();
-    }
+    if (relativeX < zoneWidth) prev();
+    else if (relativeX > 2 * zoneWidth) next();
+    else hide();
   };
 
   return (
     <div className="imageview" onClick={handleZoneClick}>
       <div className="imframe">
         <img
-          src={imgSrc}
+          ref={imgRef}
           alt={photo.filename}
-          onError={() => setImgSrc(blank)}
+          onError={() => {
+            if (imgRef.current) imgRef.current.src = blank;
+          }}
         />
       </div>
       {/* Buttons removed – zone click handling takes over */}

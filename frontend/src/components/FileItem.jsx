@@ -24,10 +24,10 @@ function FileItem({ file, index, setFocus }) {
         <img src={src} alt={file.filename} onError={handleError} />
       </div>
       <div className="fileinfo">
-        <p className="label">filename</p>
-        <p className="value">{file.filename}</p>
         <p className="label">user</p>
         <p className="value">{file.user__username}</p>
+        <p className="label">filename</p>
+        <p className="value">{file.filename}</p>
         <p className="label">uploaded</p>
         <p className="value">{formatCreatedAt(file.created_at)}</p>
       </div>
