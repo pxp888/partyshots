@@ -37,9 +37,11 @@
 
 .fileinfo .label {
     color: gray;
-    margin: 4px;
+    margin: 0;
 }
 
 .fileinfo .value {
     color: white;
+    margin: 8px;
+    margin-bottom: 12px;
 }

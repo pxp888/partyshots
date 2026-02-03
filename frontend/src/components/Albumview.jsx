@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import "./Albumview.css";
 import FileItem from "./FileItem";
 import Imageview from "./Imageview";
+import { formatCreatedAt } from "./helpers.js";
 
 function Albumview({ currentUser }) {
   const { albumCode } = useParams(); // pulls :albumCode from the URL
@@ -79,30 +80,55 @@ function Albumview({ currentUser }) {
     // todo later
   }
 
+  function deleteAlbum(e) {
+    e.preventDefault();
+    //todo later
+  }
+
   return (
     <>
       {!album ? (
         <p>Loading...</p>
       ) : (
         <div className="albumview">
-          <div className="infoblock">
-            <div className="info">
-              <h2>{album.name}</h2>
-              <p>Owner: {album.user__username}</p>
-              <p>Created: {album.created_at}</p>
+          <div className="albuminfo">
+            <div className="initem">
+              <p className="label">name</p>
+              <p className="value">{album.name}</p>
             </div>
+            <div className="initem">
+              <p className="label">owner</p>
+              <p className="value">{album.user__username}</p>
+            </div>
+            <div className="initem">
+              <p className="label">created</p>
+              <p className="value">{formatCreatedAt(album.created_at)}</p>
+            </div>
+            <div className="initem">
+              <p className="label">code</p>
+              <p className="value">{album.code}</p>
+            </div>
+          </div>
 
-            <div className="controlblock">
+          <div className="controlblock">
+            {currentUser && (
+              <form className="controls" onSubmit={uploadFiles}>
+                <input type="file" name="file" multiple />
+                <button className="btn">add to album</button>
+              </form>
+            )}
+            <div className="controls">
+              <button className="btn" onClick={downloadAll}>
+                Download all
+              </button>
+              <button className="btn" onClick={subscribe}>
+                Subscribe
+              </button>
               {currentUser && (
-                <form className="controls" onSubmit={uploadFiles}>
-                  <input type="file" name="file" multiple />
-                  <button>add to album</button>
-                </form>
+                <button className="btn" onClick={deleteAlbum}>
+                  delete album
+                </button>
               )}
-              <div className="controls">
-                <button onClick={downloadAll}>Download all</button>
-                <button onClick={subscribe}>Subscribe</button>
-              </div>
             </div>
           </div>
 
