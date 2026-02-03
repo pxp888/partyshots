@@ -3,7 +3,7 @@
     position: fixed; /* sticks to the viewport */
     inset: 0; /* top/right/bottom/left = 0 → covers full screen */
     background: rgba(0, 0, 0, 0.8); /* semi‑transparent dark backdrop */
-    z-index: 9999; /* above all other content */
+    z-index: 9900; /* above all other content */
     display: flex;
     justify-content: center; /* horizontal centering */
     align-items: center; /* vertical centering */

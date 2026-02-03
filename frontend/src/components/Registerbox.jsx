@@ -16,23 +16,43 @@ function Registerbox({ setCurrentUser, setShowRegister }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("/api/register/", {
+      // 1️⃣ Register the new user
+      const regRes = await fetch("/api/register/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
 
-      const data = await response.json();
+      const regData = await regRes.json();
 
-      if (response.ok) {
-        setCurrentUser(data.user);
-        setShowRegister(null);
-      } else {
-        alert(`Registration failed: ${data.error}`);
+      if (!regRes.ok) {
+        alert(`Registration failed: ${regData.error}`);
+        return;
       }
+
+      // 2️⃣ Immediately log them in
+      const loginRes = await fetch("/api/login/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: form.username,
+          password: form.password,
+        }),
+      });
+
+      const loginData = await loginRes.json();
+
+      if (!loginRes.ok) {
+        alert(`Login failed: ${loginData.error}`);
+        return;
+      }
+
+      // 3️⃣ Set the authenticated user in state
+      setCurrentUser(loginData.user);
+      setShowRegister(null);
     } catch (error) {
-      console.error("Error registering:", error);
-      alert("An error occurred during registration.");
+      console.error("Error during register/login:", error);
+      alert("An unexpected error occurred.");
     }
   };
 
