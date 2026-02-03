@@ -111,12 +111,34 @@ function Albumview({ currentUser }) {
           </div>
 
           <div className="controlblock">
-            {currentUser && (
-              <form className="controls" onSubmit={uploadFiles}>
-                <input type="file" name="file" multiple />
-                <button className="btn">add to album</button>
-              </form>
-            )}
+            <div className="controls">
+              {/* Hidden file selector */}
+              <input
+                type="file"
+                name="file"
+                multiple
+                id="hiddenFileInput"
+                style={{ display: "none" }}
+                onChange={async (e) => {
+                  const files = e.target.files;
+                  for (let i = 0; i < files.length; i++) {
+                    await uploadFile(files[i]); // reuse the existing uploadFile helper
+                  }
+                  // reset the input so the same file can be re‑selected if needed
+                  e.target.value = "";
+                }}
+              />
+              {/* Button that opens the selector */}
+              <button
+                className="btn"
+                onClick={() =>
+                  document.getElementById("hiddenFileInput").click()
+                }
+              >
+                add to album
+              </button>
+            </div>
+
             <div className="controls">
               <button className="btn" onClick={downloadAll}>
                 Download all
@@ -124,11 +146,9 @@ function Albumview({ currentUser }) {
               <button className="btn" onClick={subscribe}>
                 Subscribe
               </button>
-              {currentUser && (
-                <button className="btn" onClick={deleteAlbum}>
-                  delete album
-                </button>
-              )}
+              <button className="btn" onClick={deleteAlbum}>
+                delete album
+              </button>
             </div>
           </div>
 
