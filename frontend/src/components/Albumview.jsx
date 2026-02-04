@@ -64,16 +64,6 @@ function Albumview({ currentUser }) {
     }
   }
 
-  // function uploadFiles(event) {
-  //   event.preventDefault();
-  //   const form = event.target;
-  //   const files = form.file.files;
-  //   for (let i = 0; i < files.length; i++) {
-  //     uploadFile(files[i]);
-  //   }
-  //   form.reset();
-  // }
-
   async function deleteAlbum(e) {
     e.preventDefault();
 
@@ -86,15 +76,14 @@ function Albumview({ currentUser }) {
 
     try {
       const res = await fetch(`/api/albums/${album.code}/delete/`, {
-        method: "POST", // or "DELETE"
-        credentials: "include", // ensure cookies / session are sent
+        method: "POST",
+        credentials: "include",
       });
       const data = await res.json();
 
       if (res.ok) {
         console.log("Deleted:", data);
-        // Optionally redirect to a list page
-        window.location.href = "/albums"; // adjust to your routing
+        window.location.href = "/albums";
       } else {
         console.error("Delete failed:", data.error);
         alert(`Delete failed: ${data.error}`);
@@ -149,17 +138,18 @@ function Albumview({ currentUser }) {
       const data = await res.json();
       if (res.ok) {
         console.log("Deleted:", data);
-        // Update the album state by removing the deleted photos
+        // Update the album state by removing the photos whose ids were reported
+        const deletedIds = data.deleted_ids || [];
         setAlbum((prev) =>
           prev
             ? {
                 ...prev,
-                photos: prev.photos.filter((p) => !selected.includes(p.id)),
+                photos: prev.photos.filter((p) => !deletedIds.includes(p.id)),
               }
             : prev,
         );
-        // Clear the selection
-        setSelected([]);
+        // Keep only those selections that were not deleted
+        setSelected((prev) => prev.filter((id) => !deletedIds.includes(id)));
       } else {
         console.error("Delete failed:", data.error);
         alert(`Delete failed: ${data.error}`);
@@ -179,7 +169,6 @@ function Albumview({ currentUser }) {
   async function downloadSelected() {
     if (selected.length === 0) return;
 
-    // Find the full photo objects that correspond to the selected ids
     const selectedPhotos = album.photos.filter((p) => selected.includes(p.id));
 
     if (selectedPhotos.length === 0) {
@@ -189,7 +178,6 @@ function Albumview({ currentUser }) {
 
     const zip = new JSZip();
 
-    // Helper to fetch a photo's binary data
     const fetchBlob = async (url, filename) => {
       const res = await fetch(url, { mode: "cors" });
       if (!res.ok) throw new Error(`Failed to fetch ${filename}`);
@@ -197,26 +185,20 @@ function Albumview({ currentUser }) {
     };
 
     try {
-      // Show a simple spinner (optional)
-      setSelectMode(true); // you can toggle a “busy” state instead
+      setSelectMode(true);
 
-      // Download each file and add it to the zip
       for (const photo of selectedPhotos) {
-        if (!photo.link) continue; // skip if no link present
+        if (!photo.link) continue;
         const blob = await fetchBlob(photo.link, photo.filename);
         zip.file(photo.filename, blob);
       }
 
-      // Generate the zip file (as a blob)
       const zipBlob = await zip.generateAsync({ type: "blob" });
-
-      // Trigger download – you can customise the filename
       saveAs(zipBlob, `${album.name || "album"}_${selectedPhotos.length}.zip`);
     } catch (err) {
       console.error("Error while creating zip:", err);
       alert("An error occurred while preparing the ZIP file.");
     } finally {
-      // Reset any busy UI state you added
       setSelected([]);
       setSelectMode(false);
     }
@@ -242,7 +224,7 @@ function Albumview({ currentUser }) {
     (async () => {
       try {
         for (const photo of album.photos) {
-          if (!photo.link) continue; // skip if the photo link is missing
+          if (!photo.link) continue;
           const blob = await fetchBlob(photo.link, photo.filename);
           zip.file(photo.filename, blob);
         }
@@ -264,7 +246,7 @@ function Albumview({ currentUser }) {
     try {
       const res = await fetch(`/api/albums/${albumCode}/subscribe/`, {
         method: "POST",
-        credentials: "include", // ensure cookies / session are sent
+        credentials: "include",
       });
       const data = await res.json();
       if (res.ok) {
@@ -290,7 +272,7 @@ function Albumview({ currentUser }) {
     try {
       const res = await fetch(`/api/albums/${album.code}/unsubscribe/`, {
         method: "POST",
-        credentials: "include", // ensure session cookies are sent
+        credentials: "include",
       });
       const data = await res.json();
       if (res.ok) {
@@ -343,7 +325,6 @@ function Albumview({ currentUser }) {
       {currentUser && (
         <div className="controlblock">
           <div className="controls">
-            {/* Hidden file selector */}
             <input
               type="file"
               name="file"
@@ -353,9 +334,8 @@ function Albumview({ currentUser }) {
               onChange={async (e) => {
                 const files = e.target.files;
                 for (let i = 0; i < files.length; i++) {
-                  await uploadFile(files[i]); // reuse the existing uploadFile helper
+                  await uploadFile(files[i]);
                 }
-                // reset the input so the same file can be re‑selected if needed
                 e.target.value = "";
               }}
             />

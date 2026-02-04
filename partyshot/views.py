@@ -14,6 +14,30 @@ from .aws import *
 from .models import Album, Photo, Subscriber
 
 
+def rm_photo_s3(photo):
+    """
+    Delete the S3 objects associated with ``photo`` only if no other
+    ``Photo`` records reference the same ``s3_key`` or ``thumb_key``.
+    """
+    # Delete the main image only if it is unique
+    if photo.s3_key:
+        if not Photo.objects.filter(s3_key=photo.s3_key).exclude(id=photo.id).exists():
+            delete_file_from_s3(photo.s3_key)
+            print(f"Deleted S3 object: {photo.s3_key}")
+
+    # Delete the thumbnail only if it is unique
+    if photo.thumb_key:
+        if (
+            not Photo.objects.filter(thumb_key=photo.thumb_key)
+            .exclude(id=photo.id)
+            .exists()
+        ):
+            delete_file_from_s3(photo.thumb_key)
+            print(f"Deleted S3 object: {photo.thumb_key}")
+
+    return True
+
+
 @csrf_exempt
 def register_user(request):
     if request.method == "POST":
@@ -312,8 +336,6 @@ def delete_album(request, album_code):
     """
     Delete an album identified by its unique ``code``.
     The caller must be authenticated **and** be the owner of the album.
-    This updated implementation also removes all S3 objects that belong
-    to the album before the database records are purged.
     """
     if request.method not in ("POST", "DELETE"):
         return JsonResponse({"error": "Only POST/DELETE allowed"}, status=405)
@@ -329,23 +351,12 @@ def delete_album(request, album_code):
     if album.user != request.user:
         return JsonResponse({"error": "Permission denied"}, status=403)
 
-    # 1️⃣  Remove all photos' S3 objects from the bucket
-    photos = Photo.objects.filter(album=album).only("s3_key", "thumb_key")
+    # Delete all photos’ S3 objects via the helper
+    photos = Photo.objects.filter(album=album)
     for photo in photos:
-        # Main image
-        if photo.s3_key:
-            success = delete_file_from_s3(photo.s3_key)
-            if not success:
-                # Log a warning; the DB will still be cleaned up
-                print(f"[WARN] Failed to delete S3 object: {photo.s3_key}")
+        rm_photo_s3(photo)
 
-        # Thumbnail (if it exists)
-        if photo.thumb_key:
-            success = delete_file_from_s3(photo.thumb_key)
-            if not success:
-                print(f"[WARN] Failed to delete S3 object: {photo.thumb_key}")
-
-    # 2️⃣  Delete the album (cascade deletes Photo rows)
+    # Finally delete the album record (cascades to Photo rows)
     album.delete()
 
     return JsonResponse({"message": "Album deleted"}, status=200)
@@ -356,10 +367,10 @@ def delete_photos(request):
     """
     Delete multiple photos identified by their database ids.
 
-    The user must be authenticated and may delete any photo that is owned by
-    themselves or by the owner of the album containing the photo.  Photos
-    that do not satisfy either condition are skipped – the request still
-    succeeds for the others.
+    The caller must be authenticated and may delete any photo that is
+    either owned by themselves **or** owned by the album’s owner.
+    Photos that do not satisfy either condition are skipped – the request
+    still succeeds for the others.
     """
     if request.method not in ("POST", "DELETE"):
         return JsonResponse({"error": "Only POST/DELETE allowed"}, status=405)
@@ -382,15 +393,12 @@ def delete_photos(request):
         except Photo.DoesNotExist:
             continue
 
-        # Ensure the requester owns the photo or owns the album it belongs to
+        # Allow deletion if the requester owns the photo OR owns the album
         if photo.user != request.user and photo.album.user != request.user:
             continue
 
-        # Remove S3 objects
-        if photo.s3_key:
-            delete_file_from_s3(photo.s3_key)
-        if photo.thumb_key:
-            delete_file_from_s3(photo.thumb_key)
+        # Use the helper to delete any orphaned S3 objects
+        rm_photo_s3(photo)
 
         photo_id = photo.id
         photo.delete()

@@ -1,9 +1,3 @@
-# import time
-# from PIL import Image
-# import base64
-# import random
-# import string
-# import io
 import os
 
 import boto3
