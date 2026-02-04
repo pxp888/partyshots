@@ -70,22 +70,41 @@ def delete_file_from_s3(object_name):
     return True
 
 
-# def cleanup():
-#     """This function cleans up the S3 bucket by deleting any files that are not in the database."""
-#     bucket_name = "pxp-imagestore"
+def cleanup():
+    """
+    Clean up the S3 bucket by deleting objects that are no longer referenced in the database.
 
-#     s3_client = boto3.client("s3")
-#     response = s3_client.list_objects_v2(Bucket=bucket_name)
+    The original implementation only processed a single page of S3 objects and did not
+    handle pagination. If the bucket contains more than 1000 objects, many orphaned files
+    would remain. The updated implementation uses a paginator to iterate over *all* pages.
+    It also builds a set of all ``s3_key`` and ``thumb_key`` values from the
+    :class:`~partyshot.models.Photo` table so that we can quickly determine whether a file
+    is still in use.
+    """
+    bucket_name = "pxp-imagestore"
 
-#     current = {}
-#     phots = Photo.objects.all()
-#     for phot in phots:
-#         current[phot.link] = True
-#         current[phot.tlink] = True
+    # Build a set of keys that are still referenced in the database
+    in_use_keys = {photo.s3_key for photo in Photo.objects.all() if photo.s3_key}
+    in_use_keys.update(
+        {photo.thumb_key for photo in Photo.objects.all() if photo.thumb_key}
+    )
 
-#     for content in response.get("Contents", []):
-#         if content["Key"] not in current:
-#             print("Deleting: ", content["Key"])
-#             s3_client.delete_object(Bucket=bucket_name, Key=content["Key"])
+    s3_client = boto3.client("s3")
+    paginator = s3_client.get_paginator("list_objects_v2")
+    page_iterator = paginator.paginate(Bucket=bucket_name)
 
-#     print("----------------------\n S3 Cleanup done. \n----------------------")
+    deleted_count = 0
+    for page in page_iterator:
+        for obj in page.get("Contents", []):
+            key = obj.get("Key")
+            if key not in in_use_keys:
+                try:
+                    s3_client.delete_object(Bucket=bucket_name, Key=key)
+                    print(f"Deleted: {key}")
+                    deleted_count += 1
+                except ClientError as e:
+                    print(f"Error deleting {key}: {e}")
+
+    print(
+        f"----------------------\nS3 Cleanup done. Deleted {deleted_count} objects.\n----------------------"
+    )
