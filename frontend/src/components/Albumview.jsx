@@ -330,6 +330,10 @@ function Albumview({ currentUser }) {
           <p className="label">open</p>
           <p className="value">{album.editable ? "yes" : "no"}</p>
         </div>
+        <div className="initem">
+          <p className="label">subscribed</p>
+          <p className="value">{album.is_subscribed ? "yes" : "no"}</p>
+        </div>
       </div>
 
       {currentUser && (
@@ -366,12 +370,13 @@ function Albumview({ currentUser }) {
                   delete album
                 </button>
               )}
-              {currentUser.username !== album.user__username && (
-                <button className="btn" onClick={subscribe}>
-                  Subscribe
-                </button>
-              )}
-              {currentUser.username !== album.user__username && (
+              {!album.is_subscribed &&
+                currentUser.username !== album.user__username && (
+                  <button className="btn" onClick={subscribe}>
+                    Subscribe
+                  </button>
+                )}
+              {album.is_subscribed && (
                 <button className="btn" onClick={unsubscribe}>
                   Unsubscribe
                 </button>

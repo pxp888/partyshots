@@ -1,6 +1,7 @@
 import io
 import json
 import uuid
+from ast import Sub
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
@@ -143,6 +144,15 @@ def get_album(request, album_code):
         )
         if not album:
             return JsonResponse({"error": "Album not found"}, status=404)
+
+        # check if user is subscribed to the album
+        if request.user.is_authenticated:
+            is_subscribed = Subscriber.objects.filter(
+                album__code=album_code, user=request.user
+            ).exists()
+            album["is_subscribed"] = is_subscribed
+        else:
+            album["is_subscribed"] = False
 
         # Attach the photos that belong to this album
         photos_qs = Photo.objects.filter(album__code=album_code).values(
