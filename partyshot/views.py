@@ -373,7 +373,7 @@ def delete_photos(request):
             continue
 
         # Ensure the requester owns the photo
-        if photo.album.user != request.user:
+        if photo.user != request.user:
             continue
 
         # Remove S3 objects
