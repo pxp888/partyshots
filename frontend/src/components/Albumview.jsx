@@ -269,6 +269,8 @@ function Albumview({ currentUser }) {
       const data = await res.json();
       if (res.ok) {
         alert("Subscribed successfully");
+        album.is_subscribed = true;
+        setAlbum({ ...album });
       } else {
         alert(`Subscribe failed: ${data.error || data.message}`);
       }
@@ -293,6 +295,8 @@ function Albumview({ currentUser }) {
       const data = await res.json();
       if (res.ok) {
         alert("Unsubscribed successfully");
+        album.is_subscribed = false;
+        setAlbum({ ...album });
       } else {
         alert(`Unsubscribe failed: ${data.error || data.message}`);
       }
