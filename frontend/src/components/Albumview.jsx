@@ -36,26 +36,28 @@ function Albumview({ currentUser }) {
     formData.append("description", description);
     formData.append("album", album?.code || "");
 
+    /* ----------  TOKEN  ---------- */
+    const accessToken = localStorage.getItem("access");
+    if (!accessToken) {
+      console.error("No JWT in localStorage – you’re not logged in");
+      return;
+    }
+
     try {
-      const res = await fetch("/api/photos/upload/", {
-        method: "POST",
-        body: formData,
+      // NEW: use the API helper so we don’t duplicate header logic
+      const res = await api.post("/photos/upload/", formData, {
+        headers: { Authorization: `Bearer ${accessToken}` },
       });
 
-      const data = await res.json();
       if (res.ok) {
-        console.log("Uploaded:", data);
-
+        console.log("Uploaded:", res.data);
         setAlbum((prev) =>
           prev
-            ? {
-              ...prev,
-              photos: [...(prev.photos ?? []), data.photo],
-            }
+            ? { ...prev, photos: [...(prev.photos ?? []), res.data.photo] }
             : prev,
         );
       } else {
-        console.error("Upload failed:", data.error);
+        console.error("Upload failed:", res.data.error);
       }
     } catch (err) {
       console.error("Network error during upload:", err);
@@ -79,7 +81,8 @@ function Albumview({ currentUser }) {
       window.location.href = "/albums";
     } catch (err) {
       console.error("Network error during delete:", err);
-      const errorMsg = err.response?.data?.error || "Network error while deleting the album.";
+      const errorMsg =
+        err.response?.data?.error || "Network error while deleting the album.";
       alert(`Delete failed: ${errorMsg}`);
     }
   }
@@ -127,16 +130,17 @@ function Albumview({ currentUser }) {
       setAlbum((prev) =>
         prev
           ? {
-            ...prev,
-            photos: prev.photos.filter((p) => !deletedIds.includes(p.id)),
-          }
+              ...prev,
+              photos: prev.photos.filter((p) => !deletedIds.includes(p.id)),
+            }
           : prev,
       );
       // Keep only those selections that were not deleted
       setSelected((prev) => prev.filter((id) => !deletedIds.includes(id)));
     } catch (err) {
       console.error("Network error during delete:", err);
-      const errorMsg = err.response?.data?.error || "Network error while deleting photos.";
+      const errorMsg =
+        err.response?.data?.error || "Network error while deleting photos.";
       alert(`Delete failed: ${errorMsg}`);
     }
   }
@@ -231,7 +235,10 @@ function Albumview({ currentUser }) {
       setAlbum({ ...album });
     } catch (err) {
       console.error(err);
-      const errorMsg = err.response?.data?.error || err.response?.data?.message || "Network error while subscribing.";
+      const errorMsg =
+        err.response?.data?.error ||
+        err.response?.data?.message ||
+        "Network error while subscribing.";
       alert(`Subscribe failed: ${errorMsg}`);
     }
   }
@@ -250,7 +257,10 @@ function Albumview({ currentUser }) {
       setAlbum({ ...album });
     } catch (err) {
       console.error(err);
-      const errorMsg = err.response?.data?.error || err.response?.data?.message || "Network error while unsubscribing.";
+      const errorMsg =
+        err.response?.data?.error ||
+        err.response?.data?.message ||
+        "Network error while unsubscribing.";
       alert(`Unsubscribe failed: ${errorMsg}`);
     }
   }
