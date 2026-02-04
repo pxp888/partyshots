@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { setTokens, setUserData } from "../utils/auth";
 import "./RegisterPage.css";
 
 function RegisterPage({ setCurrentUser }) {
@@ -9,6 +10,7 @@ function RegisterPage({ setCurrentUser }) {
     email: "",
     password: "",
   });
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -17,6 +19,8 @@ function RegisterPage({ setCurrentUser }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
     try {
       const response = await fetch("/api/register/", {
         method: "POST",
@@ -29,21 +33,43 @@ function RegisterPage({ setCurrentUser }) {
       const data = await response.json();
 
       if (response.ok) {
-        alert("Registration successful!");
+        // Store JWT tokens
+        setTokens(data.tokens.access, data.tokens.refresh);
+
+        // Store user data
+        setUserData(data.user);
         setCurrentUser(data.user);
-        navigate("/");
+
+        // Auto-login and redirect to user page
+        navigate(`/user/${data.user.username}`);
       } else {
-        alert(`Registration failed: ${data.error}`);
+        // Handle validation errors from Django REST framework
+        let errorMessage = "Registration failed";
+
+        if (data.username) {
+          errorMessage = Array.isArray(data.username) ? data.username[0] : data.username;
+        } else if (data.password) {
+          errorMessage = Array.isArray(data.password) ? data.password[0] : data.password;
+        } else if (data.email) {
+          errorMessage = Array.isArray(data.email) ? data.email[0] : data.email;
+        } else if (data.error) {
+          errorMessage = data.error;
+        } else if (data.detail) {
+          errorMessage = data.detail;
+        }
+
+        setError(errorMessage);
       }
     } catch (error) {
       console.error("Error registering:", error);
-      alert("An error occurred during registration.");
+      setError("An error occurred during registration.");
     }
   };
 
   return (
     <section className="register-page">
       <h2>Create an Account</h2>
+      {error && <div className="error-message">{error}</div>}
       <form onSubmit={handleSubmit}>
         <label>
           Username

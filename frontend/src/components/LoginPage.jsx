@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { setTokens, setUserData } from "../utils/auth";
 import "./LoginPage.css";
 
 function LoginPage({ setCurrentUser }) {
@@ -8,6 +9,7 @@ function LoginPage({ setCurrentUser }) {
     username: "",
     password: "",
   });
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -16,6 +18,8 @@ function LoginPage({ setCurrentUser }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
     try {
       const response = await fetch("/api/login/", {
         method: "POST",
@@ -28,21 +32,27 @@ function LoginPage({ setCurrentUser }) {
       const data = await response.json();
 
       if (response.ok) {
-        // alert("Login successful!");
+        // Store JWT tokens
+        setTokens(data.tokens.access, data.tokens.refresh);
+
+        // Store user data
+        setUserData(data.user);
         setCurrentUser(data.user);
+
         navigate(`/user/${data.user.username}`);
       } else {
-        alert(`Login failed: ${data.error}`);
+        setError(data.error || "Login failed");
       }
     } catch (error) {
       console.error("Error logging in:", error);
-      alert("An error occurred during login.");
+      setError("An error occurred during login.");
     }
   };
 
   return (
     <section className="login-page">
       <h2>Sign In</h2>
+      {error && <div className="error-message">{error}</div>}
       <form onSubmit={handleSubmit}>
         <label>
           Username

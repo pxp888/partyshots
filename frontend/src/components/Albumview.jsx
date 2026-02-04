@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import api from "../utils/api";
 import "./Albumview.css";
 import FileItem from "./FileItem";
 import Imageview from "./Imageview";
@@ -17,11 +18,8 @@ function Albumview({ currentUser }) {
   useEffect(() => {
     const fetchAlbum = async () => {
       try {
-        const res = await fetch(`/api/albums/${albumCode}/`);
-        const data = await res.json();
-        if (res.ok) {
-          setAlbum(data.album);
-        }
+        const res = await api.get(`/albums/${albumCode}/`);
+        setAlbum(res.data.album);
       } catch (err) {
         console.error(err);
       }
@@ -51,9 +49,9 @@ function Albumview({ currentUser }) {
         setAlbum((prev) =>
           prev
             ? {
-                ...prev,
-                photos: [...(prev.photos ?? []), data.photo],
-              }
+              ...prev,
+              photos: [...(prev.photos ?? []), data.photo],
+            }
             : prev,
         );
       } else {
@@ -75,22 +73,14 @@ function Albumview({ currentUser }) {
     if (!confirmDelete) return;
 
     try {
-      const res = await fetch(`/api/albums/${album.code}/delete/`, {
-        method: "POST",
-        credentials: "include",
-      });
-      const data = await res.json();
+      const res = await api.delete(`/albums/${album.code}/delete/`);
 
-      if (res.ok) {
-        console.log("Deleted:", data);
-        window.location.href = "/albums";
-      } else {
-        console.error("Delete failed:", data.error);
-        alert(`Delete failed: ${data.error}`);
-      }
+      console.log("Deleted:", res.data);
+      window.location.href = "/albums";
     } catch (err) {
       console.error("Network error during delete:", err);
-      alert("Network error while deleting the album.");
+      const errorMsg = err.response?.data?.error || "Network error while deleting the album.";
+      alert(`Delete failed: ${errorMsg}`);
     }
   }
 
@@ -127,36 +117,27 @@ function Albumview({ currentUser }) {
     if (!confirmDelete) return;
 
     try {
-      const res = await fetch("/api/photos/delete/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ ids: selected }),
+      const res = await api.delete("/photos/delete/", {
+        data: { ids: selected },
       });
 
-      const data = await res.json();
-      if (res.ok) {
-        console.log("Deleted:", data);
-        // Update the album state by removing the photos whose ids were reported
-        const deletedIds = data.deleted_ids || [];
-        setAlbum((prev) =>
-          prev
-            ? {
-                ...prev,
-                photos: prev.photos.filter((p) => !deletedIds.includes(p.id)),
-              }
-            : prev,
-        );
-        // Keep only those selections that were not deleted
-        setSelected((prev) => prev.filter((id) => !deletedIds.includes(id)));
-      } else {
-        console.error("Delete failed:", data.error);
-        alert(`Delete failed: ${data.error}`);
-      }
+      console.log("Deleted:", res.data);
+      // Update the album state by removing the photos whose ids were reported
+      const deletedIds = res.data.deleted_ids || [];
+      setAlbum((prev) =>
+        prev
+          ? {
+            ...prev,
+            photos: prev.photos.filter((p) => !deletedIds.includes(p.id)),
+          }
+          : prev,
+      );
+      // Keep only those selections that were not deleted
+      setSelected((prev) => prev.filter((id) => !deletedIds.includes(id)));
     } catch (err) {
       console.error("Network error during delete:", err);
-      alert("Network error while deleting photos.");
+      const errorMsg = err.response?.data?.error || "Network error while deleting photos.";
+      alert(`Delete failed: ${errorMsg}`);
     }
   }
 
@@ -244,21 +225,14 @@ function Albumview({ currentUser }) {
   async function subscribe(e) {
     e.preventDefault();
     try {
-      const res = await fetch(`/api/albums/${albumCode}/subscribe/`, {
-        method: "POST",
-        credentials: "include",
-      });
-      const data = await res.json();
-      if (res.ok) {
-        alert("Subscribed successfully");
-        album.is_subscribed = true;
-        setAlbum({ ...album });
-      } else {
-        alert(`Subscribe failed: ${data.error || data.message}`);
-      }
+      const res = await api.post(`/albums/${albumCode}/subscribe/`);
+      alert("Subscribed successfully");
+      album.is_subscribed = true;
+      setAlbum({ ...album });
     } catch (err) {
       console.error(err);
-      alert("Network error while subscribing.");
+      const errorMsg = err.response?.data?.error || err.response?.data?.message || "Network error while subscribing.";
+      alert(`Subscribe failed: ${errorMsg}`);
     }
   }
 
@@ -270,21 +244,14 @@ function Albumview({ currentUser }) {
     }
 
     try {
-      const res = await fetch(`/api/albums/${album.code}/unsubscribe/`, {
-        method: "POST",
-        credentials: "include",
-      });
-      const data = await res.json();
-      if (res.ok) {
-        alert("Unsubscribed successfully");
-        album.is_subscribed = false;
-        setAlbum({ ...album });
-      } else {
-        alert(`Unsubscribe failed: ${data.error || data.message}`);
-      }
+      const res = await api.post(`/albums/${album.code}/unsubscribe/`);
+      alert("Unsubscribed successfully");
+      album.is_subscribed = false;
+      setAlbum({ ...album });
     } catch (err) {
       console.error(err);
-      alert("Network error while unsubscribing.");
+      const errorMsg = err.response?.data?.error || err.response?.data?.message || "Network error while unsubscribing.";
+      alert(`Unsubscribe failed: ${errorMsg}`);
     }
   }
 

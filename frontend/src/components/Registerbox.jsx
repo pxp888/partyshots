@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { setTokens, setUserData } from "../utils/auth";
 import "./Registerbox.css";
 
 function Registerbox({ setCurrentUser, setShowRegister }) {
@@ -7,6 +8,7 @@ function Registerbox({ setCurrentUser, setShowRegister }) {
     email: "",
     password: "",
   });
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -15,44 +17,47 @@ function Registerbox({ setCurrentUser, setShowRegister }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
     try {
-      // 1️⃣ Register the new user
-      const regRes = await fetch("/api/register/", {
+      const response = await fetch("/api/register/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
 
-      const regData = await regRes.json();
+      const data = await response.json();
 
-      if (!regRes.ok) {
-        alert(`Registration failed: ${regData.error}`);
-        return;
+      if (response.ok) {
+        // Store JWT tokens (registration now returns tokens)
+        setTokens(data.tokens.access, data.tokens.refresh);
+
+        // Store user data
+        setUserData(data.user);
+        setCurrentUser(data.user);
+
+        setShowRegister(null);
+      } else {
+        // Handle validation errors from Django REST framework
+        let errorMessage = "Registration failed";
+
+        if (data.username) {
+          errorMessage = Array.isArray(data.username) ? data.username[0] : data.username;
+        } else if (data.password) {
+          errorMessage = Array.isArray(data.password) ? data.password[0] : data.password;
+        } else if (data.email) {
+          errorMessage = Array.isArray(data.email) ? data.email[0] : data.email;
+        } else if (data.error) {
+          errorMessage = data.error;
+        } else if (data.detail) {
+          errorMessage = data.detail;
+        }
+
+        setError(errorMessage);
       }
-
-      // 2️⃣ Immediately log them in
-      const loginRes = await fetch("/api/login/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: form.username,
-          password: form.password,
-        }),
-      });
-
-      const loginData = await loginRes.json();
-
-      if (!loginRes.ok) {
-        alert(`Login failed: ${loginData.error}`);
-        return;
-      }
-
-      // 3️⃣ Set the authenticated user in state
-      setCurrentUser(loginData.user);
-      setShowRegister(null);
     } catch (error) {
-      console.error("Error during register/login:", error);
-      alert("An unexpected error occurred.");
+      console.error("Error during registration:", error);
+      setError("An unexpected error occurred.");
     }
   };
 
@@ -65,6 +70,7 @@ function Registerbox({ setCurrentUser, setShowRegister }) {
     <div className="registerback" onClick={backClicked}>
       <div className="registerbox" onClick={(e) => e.stopPropagation()}>
         <h2>Register</h2>
+        {error && <div className="error-message">{error}</div>}
         <form onSubmit={handleSubmit} onClick={(e) => e.stopPropagation()}>
           <div className="field">
             <label htmlFor="username">Username</label>

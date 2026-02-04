@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import api from "../utils/api";
 import "./Userview.css";
 import AlbumItem from "./AlbumItem";
 
@@ -17,16 +18,11 @@ function Userview({ currentUser }) {
   useEffect(() => {
     const fetchAlbums = async () => {
       try {
-        const response = await fetch(
-          `/api/albums/list/?username=${encodeURIComponent(username)}`,
+        const response = await api.get(
+          `/albums/list/?username=${encodeURIComponent(username)}`
         );
-        const data = await response.json();
 
-        if (response.ok) {
-          setAlbums(data.albums || []);
-        } else {
-          console.error("Failed to fetch albums:", data.error);
-        }
+        setAlbums(response.data.albums || []);
       } catch (err) {
         console.error("Error fetching albums:", err);
       }
@@ -41,26 +37,15 @@ function Userview({ currentUser }) {
     e.preventDefault();
 
     try {
-      const response = await fetch("/api/albums/create/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name: albumName }),
-      });
+      const response = await api.post("/albums/create/", { name: albumName });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        alert(`Album "${data.album.name}" created!`);
-        console.log(data);
-        navigate(`/album/${data.album.code}`);
-      } else {
-        alert(`Error creating album: ${data.error}`);
-      }
+      alert(`Album "${response.data.album.name}" created!`);
+      console.log(response.data);
+      navigate(`/album/${response.data.album.code}`);
     } catch (error) {
       console.error("Error creating album:", error);
-      alert("An error occurred while creating the album.");
+      const errorMsg = error.response?.data?.error || "An error occurred while creating the album.";
+      alert(`Error creating album: ${errorMsg}`);
     }
   };
 

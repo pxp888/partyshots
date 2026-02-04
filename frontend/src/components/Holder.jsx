@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
-import Cookies from "js-cookie";
+import { getUserData, removeTokens, isAuthenticated } from "../utils/auth";
 import Topbar from "./Topbar";
 import Welcomepage from "./Welcomepage";
 import RegisterPage from "./RegisterPage";
@@ -10,21 +10,23 @@ import Albumview from "./Albumview";
 
 function Holder() {
   const [currentUser, setCurrentUser] = useState(() => {
-    const savedUser = Cookies.get("currentUser");
-    return savedUser ? JSON.parse(savedUser) : null;
+    // Initialize from localStorage (JWT-based)
+    return isAuthenticated() ? getUserData() : null;
   });
 
-  useEffect(() => {
-    if (currentUser) {
-      Cookies.set("currentUser", JSON.stringify(currentUser), { expires: 7 }); // Expires in 7 days
-    } else {
-      Cookies.remove("currentUser");
-    }
-  }, [currentUser]);
+  // Logout handler
+  const handleLogout = () => {
+    removeTokens();
+    setCurrentUser(null);
+  };
 
   return (
     <div className="holder">
-      <Topbar currentUser={currentUser} setCurrentUser={setCurrentUser} />
+      <Topbar
+        currentUser={currentUser}
+        setCurrentUser={setCurrentUser}
+        onLogout={handleLogout}
+      />
       <Routes>
         <Route path="/" element={<Welcomepage />} />
         <Route

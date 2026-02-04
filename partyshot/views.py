@@ -9,9 +9,15 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from PIL import Image
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .aws import *
 from .models import Album, Photo, Subscriber
+from .serializers import RegisterSerializer, UserSerializer
 
 
 def rm_photo_s3(photo):
@@ -38,85 +44,88 @@ def rm_photo_s3(photo):
     return True
 
 
-@csrf_exempt
+@api_view(["POST"])
+@permission_classes([AllowAny])
 def register_user(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            username = data.get("username")
-            email = data.get("email")
-            password = data.get("password")
-
-            if not username or not password:
-                return JsonResponse(
-                    {"error": "Username and password are required"}, status=400
-                )
-
-            if User.objects.filter(username=username).exists():
-                return JsonResponse({"error": "Username already exists"}, status=400)
-
-            user = User.objects.create_user(
-                username=username, email=email, password=password
-            )
-            return JsonResponse({"message": "User registered successfully"}, status=201)
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=400)
-    return JsonResponse({"error": "Invalid request method"}, status=405)
-
-
-@csrf_exempt
-def login_user(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            username = data.get("username")
-            password = data.get("password")
-
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return JsonResponse(
-                    {
-                        "message": "Login successful",
-                        "user": {
-                            "id": user.id,
-                            "username": user.username,
-                            "email": user.email,
-                        },
-                    },
-                    status=200,
-                )
-            else:
-                return JsonResponse({"error": "Invalid credentials"}, status=400)
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=400)
-    return JsonResponse({"error": "Invalid request method"}, status=405)
-
-
-@csrf_exempt
-def create_album(request):
-    if request.method == "POST":
-        if not request.user.is_authenticated:
-            return JsonResponse({"error": "User not authenticated"}, status=401)
-        try:
-            data = json.loads(request.body)
-            name = data.get("name")
-            if not name:
-                return JsonResponse({"error": "Album name is required"}, status=400)
-
-            code = uuid.uuid4().hex[:8]
-            album = Album.objects.create(name=name, user=request.user, code=code)
-
-            return JsonResponse(
-                {
-                    "message": "Album created successfully",
-                    "album": {"id": album.id, "name": album.name, "code": album.code},
+    """Register a new user and return JWT tokens."""
+    serializer = RegisterSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        
+        # Generate JWT tokens
+        refresh = RefreshToken.for_user(user)
+        
+        return Response(
+            {
+                "message": "User registered successfully",
+                "user": UserSerializer(user).data,
+                "tokens": {
+                    "refresh": str(refresh),
+                    "access": str(refresh.access_token),
                 },
-                status=201,
-            )
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=400)
-    return JsonResponse({"error": "Invalid request method"}, status=405)
+            },
+            status=status.HTTP_201_CREATED,
+        )
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def login_user(request):
+    """Authenticate user and return JWT tokens."""
+    username = request.data.get("username")
+    password = request.data.get("password")
+
+    if not username or not password:
+        return Response(
+            {"error": "Username and password are required"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    user = authenticate(username=username, password=password)
+    
+    if user is not None:
+        # Generate JWT tokens
+        refresh = RefreshToken.for_user(user)
+        
+        return Response(
+            {
+                "message": "Login successful",
+                "user": UserSerializer(user).data,
+                "tokens": {
+                    "refresh": str(refresh),
+                    "access": str(refresh.access_token),
+                },
+            },
+            status=status.HTTP_200_OK,
+        )
+    
+    return Response(
+        {"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST
+    )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def create_album(request):
+    """Create a new album (requires JWT authentication)."""
+    name = request.data.get("name")
+    if not name:
+        return Response(
+            {"error": "Album name is required"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    code = uuid.uuid4().hex[:8]
+    album = Album.objects.create(name=name, user=request.user, code=code)
+
+    return Response(
+        {
+            "message": "Album created successfully",
+            "album": {"id": album.id, "name": album.name, "code": album.code},
+        },
+        status=status.HTTP_201_CREATED,
+    )
 
 
 @csrf_exempt
@@ -331,27 +340,22 @@ def searchbar_lookup(request):
     return JsonResponse({"status": "not found"}, status=200)
 
 
-@csrf_exempt
+@api_view(["POST", "DELETE"])
+@permission_classes([IsAuthenticated])
 def delete_album(request, album_code):
     """
     Delete an album identified by its unique ``code``.
     The caller must be authenticated **and** be the owner of the album.
     """
-    if request.method not in ("POST", "DELETE"):
-        return JsonResponse({"error": "Only POST/DELETE allowed"}, status=405)
-
-    if not request.user.is_authenticated:
-        return JsonResponse({"error": "Authentication required"}, status=401)
-
     try:
         album = Album.objects.get(code=album_code)
     except Album.DoesNotExist:
-        return JsonResponse({"error": "Album not found"}, status=404)
+        return Response({"error": "Album not found"}, status=status.HTTP_404_NOT_FOUND)
 
     if album.user != request.user:
-        return JsonResponse({"error": "Permission denied"}, status=403)
+        return Response({"error": "Permission denied"}, status=status.HTTP_403_FORBIDDEN)
 
-    # Delete all photos’ S3 objects via the helper
+    # Delete all photos' S3 objects via the helper
     photos = Photo.objects.filter(album=album)
     for photo in photos:
         rm_photo_s3(photo)
@@ -359,32 +363,23 @@ def delete_album(request, album_code):
     # Finally delete the album record (cascades to Photo rows)
     album.delete()
 
-    return JsonResponse({"message": "Album deleted"}, status=200)
+    return Response({"message": "Album deleted"}, status=status.HTTP_200_OK)
 
 
-@csrf_exempt
+@api_view(["POST", "DELETE"])
+@permission_classes([IsAuthenticated])
 def delete_photos(request):
     """
     Delete multiple photos identified by their database ids.
 
     The caller must be authenticated and may delete any photo that is
-    either owned by themselves **or** owned by the album’s owner.
+    either owned by themselves **or** owned by the album's owner.
     Photos that do not satisfy either condition are skipped – the request
     still succeeds for the others.
     """
-    if request.method not in ("POST", "DELETE"):
-        return JsonResponse({"error": "Only POST/DELETE allowed"}, status=405)
-
-    if not request.user.is_authenticated:
-        return JsonResponse({"error": "Authentication required"}, status=401)
-
-    try:
-        data = json.loads(request.body)
-        ids = data.get("ids", [])
-        if not isinstance(ids, list) or not ids:
-            return JsonResponse({"error": "ids list required"}, status=400)
-    except Exception:
-        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    ids = request.data.get("ids", [])
+    if not isinstance(ids, list) or not ids:
+        return Response({"error": "ids list required"}, status=status.HTTP_400_BAD_REQUEST)
 
     deleted_ids = []
     for photo_id in ids:
@@ -404,10 +399,11 @@ def delete_photos(request):
         photo.delete()
         deleted_ids.append(photo_id)
 
-    return JsonResponse({"message": "Deleted", "deleted_ids": deleted_ids}, status=200)
+    return Response({"message": "Deleted", "deleted_ids": deleted_ids}, status=status.HTTP_200_OK)
 
 
-@csrf_exempt
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
 def subscribe_album(request, album_code):
     """
     Allow an authenticated user to subscribe to an album identified by its
@@ -415,32 +411,27 @@ def subscribe_album(request, album_code):
     linking the user to the album. The endpoint is idempotent – if the user
     is already subscribed, the request simply returns a success response.
     """
-    if request.method != "POST":
-        return JsonResponse({"error": "Only POST allowed"}, status=405)
-
-    if not request.user.is_authenticated:
-        return JsonResponse({"error": "Authentication required"}, status=401)
-
     try:
         album = Album.objects.get(code=album_code)
     except Album.DoesNotExist:
-        return JsonResponse({"error": "Album not found"}, status=404)
+        return Response({"error": "Album not found"}, status=status.HTTP_404_NOT_FOUND)
 
     if album.user == request.user:
-        return JsonResponse(
+        return Response(
             {"error": "You cannot subscribe to your own album"},
-            status=400,
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
     # Prevent duplicate subscriptions
     if Subscriber.objects.filter(album=album, user=request.user).exists():
-        return JsonResponse({"message": "Already subscribed"}, status=200)
+        return Response({"message": "Already subscribed"}, status=status.HTTP_200_OK)
 
     Subscriber.objects.create(album=album, user=request.user)
-    return JsonResponse({"message": "Subscribed successfully"}, status=201)
+    return Response({"message": "Subscribed successfully"}, status=status.HTTP_201_CREATED)
 
 
-@csrf_exempt
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
 def unsubscribe_album(request, album_code):
     """
     Allow an authenticated user to unsubscribe from an album identified by its
@@ -449,23 +440,17 @@ def unsubscribe_album(request, album_code):
     404 error is returned. This endpoint is idempotent – calling it twice will
     result in the same final state.
     """
-    if request.method != "POST":
-        return JsonResponse({"error": "Only POST allowed"}, status=405)
-
-    if not request.user.is_authenticated:
-        return JsonResponse({"error": "Authentication required"}, status=401)
-
     try:
         album = Album.objects.get(code=album_code)
     except Album.DoesNotExist:
-        return JsonResponse({"error": "Album not found"}, status=404)
+        return Response({"error": "Album not found"}, status=status.HTTP_404_NOT_FOUND)
 
     try:
         subscription = Subscriber.objects.get(album=album, user=request.user)
     except Subscriber.DoesNotExist:
-        return JsonResponse(
-            {"error": "You are not subscribed to this album"}, status=404
+        return Response(
+            {"error": "You are not subscribed to this album"}, status=status.HTTP_404_NOT_FOUND
         )
 
     subscription.delete()
-    return JsonResponse({"message": "Unsubscribed successfully"}, status=200)
+    return Response({"message": "Unsubscribed successfully"}, status=status.HTTP_200_OK)

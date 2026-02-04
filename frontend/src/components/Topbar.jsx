@@ -5,13 +5,17 @@ import Loginbox from "./Loginbox";
 import Registerbox from "./Registerbox";
 import Searchbar from "./Searchbar";
 
-function Topbar({ currentUser, setCurrentUser }) {
+function Topbar({ currentUser, setCurrentUser, onLogout }) {
   const [showLogin, setShowLogin] = useState(null);
   const [showRegister, setShowRegister] = useState(null); // NEW state
 
   function logoutPressed(e) {
     e.preventDefault();
-    setCurrentUser(null);
+    if (onLogout) {
+      onLogout();
+    } else {
+      setCurrentUser(null);
+    }
   }
 
   function loginPressed(e) {
