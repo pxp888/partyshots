@@ -356,9 +356,10 @@ def delete_photos(request):
     """
     Delete multiple photos identified by their database ids.
 
-    The user must be authenticated and be the owner of **every** photo
-    that is being deleted. If any photo does not belong to the user,
-    it is simply skipped – the request still succeeds for the others.
+    The user must be authenticated and may delete any photo that is owned by
+    themselves or by the owner of the album containing the photo.  Photos
+    that do not satisfy either condition are skipped – the request still
+    succeeds for the others.
     """
     if request.method not in ("POST", "DELETE"):
         return JsonResponse({"error": "Only POST/DELETE allowed"}, status=405)
@@ -381,8 +382,8 @@ def delete_photos(request):
         except Photo.DoesNotExist:
             continue
 
-        # Ensure the requester owns the photo
-        if photo.user != request.user:
+        # Ensure the requester owns the photo or owns the album it belongs to
+        if photo.user != request.user and photo.album.user != request.user:
             continue
 
         # Remove S3 objects
