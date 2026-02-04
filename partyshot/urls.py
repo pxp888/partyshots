@@ -17,4 +17,9 @@ urlpatterns = [
         views.subscribe_album,
         name="subscribe_album",
     ),
+    path(
+        "albums/<str:album_code>/unsubscribe/",
+        views.unsubscribe_album,
+        name="unsubscribe_album",
+    ),
 ]

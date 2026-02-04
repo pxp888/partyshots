@@ -278,7 +278,32 @@ function Albumview({ currentUser }) {
     }
   }
 
-  // console.log(album);
+  async function unsubscribe(e) {
+    e.preventDefault();
+    if (!album || !album.code) {
+      alert("Album information is missing.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/albums/${album.code}/unsubscribe/`, {
+        method: "POST",
+        credentials: "include", // ensure session cookies are sent
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert("Unsubscribed successfully");
+      } else {
+        alert(`Unsubscribe failed: ${data.error || data.message}`);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Network error while unsubscribing.");
+    }
+  }
+
+  console.log(currentUser);
+  console.log(album);
 
   if (!album) return <p>Loading ...</p>;
 
@@ -336,12 +361,21 @@ function Albumview({ currentUser }) {
               <button className="btn" onClick={downloadAll}>
                 Download all
               </button>
-              <button className="btn" onClick={subscribe}>
-                Subscribe
-              </button>
-              <button className="btn" onClick={deleteAlbum}>
-                delete album
-              </button>
+              {currentUser.username === album.user__username && (
+                <button className="btn" onClick={deleteAlbum}>
+                  delete album
+                </button>
+              )}
+              {currentUser.username !== album.user__username && (
+                <button className="btn" onClick={subscribe}>
+                  Subscribe
+                </button>
+              )}
+              {currentUser.username !== album.user__username && (
+                <button className="btn" onClick={unsubscribe}>
+                  Unsubscribe
+                </button>
+              )}
               <button
                 className="btn"
                 onClick={() =>

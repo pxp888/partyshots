@@ -4,6 +4,7 @@ import uuid
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
+from django.db.models import Q
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from PIL import Image
@@ -101,8 +102,15 @@ def get_albums(request):
             return JsonResponse({"error": "Username is required"}, status=400)
 
         try:
-            albums_qs = Album.objects.filter(user__username=username).values(
-                "id", "name", "code", "user__username", "thumbnail", "created_at"
+            # Include albums owned by the user or those the user is subscribed to
+            albums_qs = (
+                Album.objects.filter(
+                    Q(user__username=username) | Q(subscriber__user__username=username)
+                )
+                .distinct()
+                .values(
+                    "id", "name", "code", "user__username", "thumbnail", "created_at"
+                )
             )
             albums = list(albums_qs)
             # Convert any album thumbnails to presigned URLs before returning
@@ -412,3 +420,34 @@ def subscribe_album(request, album_code):
 
     Subscriber.objects.create(album=album, user=request.user)
     return JsonResponse({"message": "Subscribed successfully"}, status=201)
+
+
+@csrf_exempt
+def unsubscribe_album(request, album_code):
+    """
+    Allow an authenticated user to unsubscribe from an album identified by its
+    unique ``code``. The subscription is represented by a ``Subscriber`` record
+    linking the user to the album. If the user is not currently subscribed, a
+    404 error is returned. This endpoint is idempotent – calling it twice will
+    result in the same final state.
+    """
+    if request.method != "POST":
+        return JsonResponse({"error": "Only POST allowed"}, status=405)
+
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Authentication required"}, status=401)
+
+    try:
+        album = Album.objects.get(code=album_code)
+    except Album.DoesNotExist:
+        return JsonResponse({"error": "Album not found"}, status=404)
+
+    try:
+        subscription = Subscriber.objects.get(album=album, user=request.user)
+    except Subscriber.DoesNotExist:
+        return JsonResponse(
+            {"error": "You are not subscribed to this album"}, status=404
+        )
+
+    subscription.delete()
+    return JsonResponse({"message": "Unsubscribed successfully"}, status=200)
