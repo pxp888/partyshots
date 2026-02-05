@@ -272,7 +272,7 @@ def upload_photo(request):
     thumb_key = None
     try:
         image = Image.open(io.BytesIO(file_bytes))
-        image.thumbnail((200, 200))
+        image.thumbnail((300, 300))
         thumb_io = io.BytesIO()
 
         try:

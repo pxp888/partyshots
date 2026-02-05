@@ -55,7 +55,6 @@ function Albumview({ currentUser }) {
         });
       }
 
-      // Forward the whole body to the caller.
       return response.data;
     } catch (err) {
       console.error("Upload error:", err);
