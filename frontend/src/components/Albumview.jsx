@@ -27,40 +27,32 @@ function Albumview({ currentUser }) {
     fetchAlbum();
   }, [albumCode]);
 
-  async function uploadFile(file) {
-    const description =
-      document.querySelector(".formdiv.upform input[type='text']")?.value || "";
+  async function uploadFile(file, username = null) {
+    const form = new FormData();
+    form.append("file", file);
+    // use the albumCode from the surrounding component
+    form.append("album", albumCode);
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("description", description);
-    formData.append("album", album?.code || "");
-
-    /* ----------  TOKEN  ---------- */
-    const accessToken = localStorage.getItem("access");
-    if (!accessToken) {
-      console.error("No JWT in localStorage – you’re not logged in");
-      return;
+    if (username) {
+      form.append("username", username);
     }
 
     try {
-      // NEW: use the API helper so we don’t duplicate header logic
-      const res = await api.post("/photos/upload/", formData, {
-        headers: { Authorization: `Bearer ${accessToken}` },
+      const response = await api.post("/photos/upload/", form, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
 
-      if (res.ok) {
-        console.log("Uploaded:", res.data);
-        setAlbum((prev) =>
-          prev
-            ? { ...prev, photos: [...(prev.photos ?? []), res.data.photo] }
-            : prev,
-        );
-      } else {
-        console.error("Upload failed:", res.data.error);
-      }
+      // The server returns a JSON payload with a `photo` field and a
+      // `status` string, so we forward the whole body to the caller.
+      return response.data;
     } catch (err) {
-      console.error("Network error during upload:", err);
+      console.error("Upload error:", err);
+      const errorMsg =
+        err.response?.data?.error || "Network error while uploading the file.";
+      alert(`Upload failed: ${errorMsg}`);
+      throw err;
     }
   }
 

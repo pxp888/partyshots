@@ -132,8 +132,22 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = "static/"
-STATICFILES_DIRS = [BASE_DIR / "frontend/dist"]
+# STATIC_URL = "static/"
+# STATICFILES_DIRS = [BASE_DIR / "frontend/dist"]
+
+# 1️⃣  Static URL that the React build will request
+STATIC_URL = "/assets/"  # <-- match the path in the error
+
+# 2️⃣  Where Django should look for static files during development
+STATICFILES_DIRS = [
+    BASE_DIR / "frontend" / "dist" / "assets",  # default CRA output
+    # If your build puts files in /assets instead of /static:
+    # BASE_DIR / "frontend" / "build" / "assets",
+]
+
+# 3️⃣  Production static root (used by collectstatic)
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
 
 # REST Framework configuration
 REST_FRAMEWORK = {
