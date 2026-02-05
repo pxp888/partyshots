@@ -4,6 +4,7 @@ import api from "../utils/api";
 import "./Albumview.css";
 import FileItem from "./FileItem";
 import Imageview from "./Imageview";
+import Mergebar from "./Mergebar.jsx";
 import { formatCreatedAt } from "./helpers.js";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
@@ -351,6 +352,7 @@ function Albumview({ currentUser }) {
               >
                 add to album
               </button>
+              <Mergebar albumCode={album.code} />
             </div>
           ) : (
             <div className="controls">

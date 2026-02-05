@@ -471,3 +471,79 @@ def unsubscribe_album(request, album_code):
 
     subscription.delete()
     return Response({"message": "Unsubscribed successfully"}, status=status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def mergeAlbums(request):
+    """
+    Merge photos from a *source* album into a *destination* album by **creating
+    new `Photo` rows**.  The original photos remain untouched.
+
+    The request body must contain:
+        source:     the album code of the album whose photos are to be copied.
+        destination: the album code of the album that will receive the copies.
+
+    The authenticated user becomes the owner of the new photo records.
+
+    Returns a list of the new photo IDs that were created.
+    """
+    print("------------------")
+    print(request.data)
+
+    source_code = request.data.get("source")
+    dest_code = request.data.get("destination")
+
+    if not source_code or not dest_code:
+        return Response(
+            {"error": "Both 'source' and 'destination' album codes are required"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if source_code == dest_code:
+        return Response(
+            {"error": "Source and destination albums must be different"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    try:
+        source_album = Album.objects.get(code=source_code)
+    except Album.DoesNotExist:
+        return Response(
+            {"error": "Source album not found"}, status=status.HTTP_404_NOT_FOUND
+        )
+
+    try:
+        dest_album = Album.objects.get(code=dest_code)
+    except Album.DoesNotExist:
+        return Response(
+            {"error": "Destination album not found"}, status=status.HTTP_404_NOT_FOUND
+        )
+
+    # Pull the columns we need to duplicate.
+    source_photos = Photo.objects.filter(album=source_album).values(
+        "s3_key", "thumb_key", "filename"
+    )
+
+    new_photo_ids = []
+    for sp in source_photos:
+        # Generate a fresh, unique code for the new photo.
+        new_code = uuid.uuid4().hex[:8]
+        new_photo = Photo.objects.create(
+            code=new_code,
+            user=request.user,
+            album=dest_album,
+            s3_key=sp["s3_key"],
+            thumb_key=sp["thumb_key"],
+            filename=sp["filename"],
+        )
+        new_photo_ids.append(new_photo.id)
+
+    return Response(
+        {
+            "message": f"Created {len(new_photo_ids)} duplicate photo(s) in album {dest_album.code}",
+            "new_photo_ids": new_photo_ids,
+            "destination_album_code": dest_album.code,
+        },
+        status=status.HTTP_200_OK,
+    )

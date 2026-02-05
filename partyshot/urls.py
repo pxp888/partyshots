@@ -25,4 +25,5 @@ urlpatterns = [
         views.unsubscribe_album,
         name="unsubscribe_album",
     ),
+    path("mergeAlbums/", views.mergeAlbums, name="mergeAlbums"),
 ]
