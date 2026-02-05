@@ -45,7 +45,17 @@ function Albumview({ currentUser }) {
       });
 
       // The server returns a JSON payload with a `photo` field and a
-      // `status` string, so we forward the whole body to the caller.
+      // `status` string. Update the album state so the UI shows the
+      // new photo immediately after a successful upload.
+      const newPhoto = response.data?.photo;
+      if (newPhoto) {
+        setAlbum((prev) => {
+          if (!prev) return prev;
+          return { ...prev, photos: [...prev.photos, newPhoto] };
+        });
+      }
+
+      // Forward the whole body to the caller.
       return response.data;
     } catch (err) {
       console.error("Upload error:", err);
