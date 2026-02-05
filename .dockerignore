@@ -1,0 +1,40 @@
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Python/Conda
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv
+venv/
+env/
+# This is crucial: don't copy your local miniconda env folder!
+lib/
+bin/
+include/
+
+# Django specific
+db.sqlite3
+media/
+staticfiles/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Secrets and Logs
+*.log
+.secrets
+*.swp
+
+
