@@ -1,6 +1,7 @@
 # partyShots
 
 
+![Screenshot 1](docs/ss1.jpg)
 
 
 
@@ -25,6 +26,8 @@ This is quite simple.  Users create albums, and albums have files.  Any user is 
 Files may be removed from an album only by the user who posted them, or the creator of the album.  
 
 Everything is public.  
+
+![Screenshot 2](docs/ss2.jpg)
 
 ### Users 
 Users can create albums, and add files to albums.  
