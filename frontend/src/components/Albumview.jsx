@@ -80,7 +80,7 @@ function Albumview({ currentUser }) {
       const res = await api.delete(`/albums/${album.code}/delete/`);
 
       console.log("Deleted:", res.data);
-      window.location.href = "/albums";
+      window.location.href = `/user/${currentUser.username}`;
     } catch (err) {
       console.error("Network error during delete:", err);
       const errorMsg =
