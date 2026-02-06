@@ -1,6 +1,6 @@
 /* Re‑use the same wrapper logic as the login overlay */
 .registerback {
-    position: absolute;
+    position: fixed;
     left: 0;
     top: 0;
     width: 100%;
