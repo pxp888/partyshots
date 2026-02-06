@@ -259,7 +259,7 @@ def upload_photo(request):
         return JsonResponse({"error": "No file uploaded"}, status=400)
 
     file_id = uuid.uuid4().hex
-    s3_key = f"{album_code}/{file_id}_{uploaded_file.name}"
+    s3_key = f"{album_code}/{file_id}"
 
     try:
         file_bytes = uploaded_file.read()
@@ -283,7 +283,7 @@ def upload_photo(request):
             thumb_format = "image/png"
 
         thumb_io.seek(0)
-        thumb_key = f"{album_code}/thumb_{file_id}_{uploaded_file.name}"
+        thumb_key = f"{album_code}/thumb_{file_id}"
         if not upload_bytes_to_s3(thumb_io.read(), thumb_key):
             thumb_key = None
     except Exception as e:
