@@ -254,12 +254,15 @@ def upload_photo(request):
     except Album.DoesNotExist:
         return JsonResponse({"error": "Album not found"}, status=404)
 
+    if not album.editable:
+        return JsonResponse({"error": "Album is not editable"}, status=403)
+
     uploaded_file = request.FILES.get("file")
     if not uploaded_file:
         return JsonResponse({"error": "No file uploaded"}, status=400)
 
     file_id = uuid.uuid4().hex
-    s3_key = f"{album_code}/{file_id}_{uploaded_file.name}"
+    s3_key = f"{album_code}/{file_id}"
 
     try:
         file_bytes = uploaded_file.read()
@@ -283,7 +286,7 @@ def upload_photo(request):
             thumb_format = "image/png"
 
         thumb_io.seek(0)
-        thumb_key = f"{album_code}/thumb_{file_id}_{uploaded_file.name}"
+        thumb_key = f"{album_code}/thumb_{file_id}"
         if not upload_bytes_to_s3(thumb_io.read(), thumb_key):
             thumb_key = None
     except Exception as e:
@@ -404,6 +407,9 @@ def delete_photos(request):
         if photo.user != request.user and photo.album.user != request.user:
             continue
 
+        if photo.album.editable is False:
+            continue
+
         # Use the helper to delete any orphaned S3 objects
         rm_photo_s3(photo)
 
@@ -520,6 +526,12 @@ def mergeAlbums(request):
             {"error": "Destination album not found"}, status=status.HTTP_404_NOT_FOUND
         )
 
+    if dest_album.editable is False:
+        return Response(
+            {"error": "Destination album is not editable"},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
     # Pull the columns we need to duplicate.
     source_photos = Photo.objects.filter(album=source_album).values(
         "s3_key", "thumb_key", "filename"
@@ -544,6 +556,55 @@ def mergeAlbums(request):
             "message": f"Created {len(new_photo_ids)} duplicate photo(s) in album {dest_album.code}",
             "new_photo_ids": new_photo_ids,
             "destination_album_code": dest_album.code,
+        },
+        status=status.HTTP_200_OK,
+    )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def set_editable(request):
+    """
+    Set the 'editable' flag on an album, which controls whether photos can
+    be added or removed. Only the album owner can change this setting.
+
+    Request body must contain:
+        album_code: the unique code of the album to update
+        editable:   boolean value to set (true or false)
+    """
+    album_code = request.data.get("album_code")
+    editable = request.data.get("editable")
+
+    if album_code is None or editable is None:
+        return Response(
+            {"error": "Both 'album_code' and 'editable' are required"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if not isinstance(editable, bool):
+        return Response(
+            {"error": "'editable' must be a boolean value"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    try:
+        album = Album.objects.get(code=album_code)
+    except Album.DoesNotExist:
+        return Response({"error": "Album not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if album.user != request.user:
+        return Response(
+            {"error": "Permission denied"}, status=status.HTTP_403_FORBIDDEN
+        )
+
+    album.editable = editable
+    album.save(update_fields=["editable"])
+
+    return Response(
+        {
+            "message": f"Album '{album.name}' editable set to {album.editable}",
+            "album_code": album.code,
+            "editable": album.editable,
         },
         status=status.HTTP_200_OK,
     )

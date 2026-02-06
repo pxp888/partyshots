@@ -1,6 +1,6 @@
 /* Wrapper that fills the viewport and centers the box */
 .loginback {
-    position: absolute;
+    position: fixed;
     left: 0;
     top: 0;
     width: 100%;

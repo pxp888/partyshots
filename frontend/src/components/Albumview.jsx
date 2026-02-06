@@ -80,7 +80,7 @@ function Albumview({ currentUser }) {
       const res = await api.delete(`/albums/${album.code}/delete/`);
 
       console.log("Deleted:", res.data);
-      window.location.href = "/albums";
+      window.location.href = `/user/${currentUser.username}`;
     } catch (err) {
       console.error("Network error during delete:", err);
       const errorMsg =
@@ -267,6 +267,48 @@ function Albumview({ currentUser }) {
     }
   }
 
+  async function unlockAlbum(e) {
+    e.preventDefault();
+    if (!album) return;
+    try {
+      const res = await api.post("/album/setedit/", {
+        album_code: album.code,
+        editable: true,
+      });
+      // Update local state
+      setAlbum((prev) => ({ ...prev, editable: true }));
+      // alert(res.data.message || "Album unlocked");
+    } catch (err) {
+      console.error("Failed to unlock album:", err);
+      const msg =
+        err.response?.data?.error ||
+        err.response?.data?.message ||
+        "Network error";
+      alert(`Unlock failed: ${msg}`);
+    }
+  }
+
+  async function lockAlbum(e) {
+    e.preventDefault();
+    if (!album) return;
+    try {
+      const res = await api.post("/album/setedit/", {
+        album_code: album.code,
+        editable: false,
+      });
+      // Update local state
+      setAlbum((prev) => ({ ...prev, editable: false }));
+      // alert(res.data.message || "Album locked");
+    } catch (err) {
+      console.error("Failed to lock album:", err);
+      const msg =
+        err.response?.data?.error ||
+        err.response?.data?.message ||
+        "Network error";
+      alert(`Lock failed: ${msg}`);
+    }
+  }
+
   console.log(currentUser);
   console.log(album);
 
@@ -352,7 +394,19 @@ function Albumview({ currentUser }) {
               >
                 add to album
               </button>
-              <Mergebar albumCode={album.code} />
+              {album.editable &&
+                album.user__username === currentUser.username && (
+                  <button className="btn" onClick={lockAlbum}>
+                    lock album
+                  </button>
+                )}
+              {!album.editable &&
+                album.user__username === currentUser.username && (
+                  <button className="btn" onClick={unlockAlbum}>
+                    unlock album
+                  </button>
+                )}
+              {/* <Mergebar albumCode={album.code} />*/}
             </div>
           ) : (
             <div className="controls">
@@ -376,17 +430,19 @@ function Albumview({ currentUser }) {
         </div>
       )}
       <div className="photo-list">
-        {album.photos?.map((photo, index) => (
-          <FileItem
-            key={photo.id}
-            file={photo}
-            index={index}
-            setFocus={setFocus}
-            selectMode={selectMode}
-            toggleSelect={toggleSelect}
-            selected={selected}
-          />
-        ))}
+        {album.photos
+          ?.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+          .map((photo, index) => (
+            <FileItem
+              key={photo.id}
+              file={photo}
+              index={index}
+              setFocus={setFocus}
+              selectMode={selectMode}
+              toggleSelect={toggleSelect}
+              selected={selected}
+            />
+          ))}
       </div>
       {focus !== -1 && (
         <Imageview album={album} focus={focus} setFocus={setFocus} />
