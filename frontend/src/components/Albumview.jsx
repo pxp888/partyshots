@@ -352,7 +352,7 @@ function Albumview({ currentUser }) {
               >
                 add to album
               </button>
-              <Mergebar albumCode={album.code} />
+              {/* <Mergebar albumCode={album.code} />*/}
             </div>
           ) : (
             <div className="controls">
@@ -376,17 +376,19 @@ function Albumview({ currentUser }) {
         </div>
       )}
       <div className="photo-list">
-        {album.photos?.map((photo, index) => (
-          <FileItem
-            key={photo.id}
-            file={photo}
-            index={index}
-            setFocus={setFocus}
-            selectMode={selectMode}
-            toggleSelect={toggleSelect}
-            selected={selected}
-          />
-        ))}
+        {album.photos
+          ?.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+          .map((photo, index) => (
+            <FileItem
+              key={photo.id}
+              file={photo}
+              index={index}
+              setFocus={setFocus}
+              selectMode={selectMode}
+              toggleSelect={toggleSelect}
+              selected={selected}
+            />
+          ))}
       </div>
       {focus !== -1 && (
         <Imageview album={album} focus={focus} setFocus={setFocus} />
