@@ -608,3 +608,26 @@ def set_editable(request):
         },
         status=status.HTTP_200_OK,
     )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def update_account(request):
+    """
+    Update the authenticated user's account information.
+    """
+    user = request.user
+    new_email = request.data.get("email")
+    new_password = request.data.get("password")
+
+    if new_email:
+        user.email = new_email
+
+    if new_password:
+        user.set_password(new_password)
+
+    user.save()
+    return Response(
+        {"message": "Account updated successfully", "user": UserSerializer(user).data},
+        status=status.HTTP_200_OK,
+    )
