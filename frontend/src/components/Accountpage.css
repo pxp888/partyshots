@@ -45,3 +45,7 @@
 .account-page button:hover {
     background: salmon;
 }
+
+#delete_button {
+    width: 100%;
+}

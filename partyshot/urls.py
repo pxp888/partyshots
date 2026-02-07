@@ -27,5 +27,6 @@ urlpatterns = [
     ),
     path("album/setedit/", views.set_editable, name="set_editable"),
     path("mergeAlbums/", views.mergeAlbums, name="mergeAlbums"),
-    path("account/", views.update_account, name="updateAccount"),
+    path("account/update/", views.update_account, name="updateAccount"),
+    path("account/delete/", views.delete_account, name="deleteAccount"),
 ]

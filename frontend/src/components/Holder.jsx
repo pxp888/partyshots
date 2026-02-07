@@ -48,7 +48,12 @@ function Holder() {
         />
         <Route
           path="/account"
-          element={<Accountpage currentUser={currentUser} />}
+          element={
+            <Accountpage
+              currentUser={currentUser}
+              setCurrentUser={setCurrentUser}
+            />
+          }
         />
       </Routes>
     </div>
