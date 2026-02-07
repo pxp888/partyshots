@@ -1,4 +1,4 @@
-import React from "react";
+// import React from "react";
 import "./Welcomepage.css";
 import cover1 from "../assets/cover1.webp";
 import cover2 from "../assets/cover2.webp";
@@ -79,20 +79,12 @@ function Welcomepage() {
         <div className="footer">
           <ul>
             <li>
-              <a
-                href="https://github.com/pxp888/partyshots-react"
-                target="_blank"
-              >
+              <a href="https://github.com/pxp888/partyshots" target="_blank">
                 about
               </a>
             </li>
             <li>
-              <a
-                href="#"
-                onClick={() => {
-                  setCurrent("contact");
-                }}
-              >
+              <a href="https://github.com/pxp888/partyshots" target="_blank">
                 contact
               </a>
             </li>

@@ -1,0 +1,51 @@
+.account-page {
+    max-width: 400px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fafafa;
+    color: black;
+}
+
+.account-page h2 {
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.account-page form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.account-page label {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+}
+
+.account-page input {
+    padding: 0.5rem;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.account-page button {
+    margin-top: 1rem;
+    padding: 0.6rem;
+    border: 1px solid rgb(65, 65, 65);
+    background-color: rgb(36, 36, 36);
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+.account-page button:hover {
+    background: salmon;
+}
+
+#delete_button {
+    width: 100%;
+}

@@ -19,7 +19,7 @@ function Userview({ currentUser }) {
     const fetchAlbums = async () => {
       try {
         const response = await api.get(
-          `/albums/list/?username=${encodeURIComponent(username)}`
+          `/albums/list/?username=${encodeURIComponent(username)}`,
         );
 
         setAlbums(response.data.albums || []);
@@ -44,7 +44,9 @@ function Userview({ currentUser }) {
       navigate(`/album/${response.data.album.code}`);
     } catch (error) {
       console.error("Error creating album:", error);
-      const errorMsg = error.response?.data?.error || "An error occurred while creating the album.";
+      const errorMsg =
+        error.response?.data?.error ||
+        "An error occurred while creating the album.";
       alert(`Error creating album: ${errorMsg}`);
     }
   };
@@ -68,6 +70,9 @@ function Userview({ currentUser }) {
               Create Album
             </button>
           </form>
+          <button className="btn" onClick={() => navigate("/account")}>
+            Account Settings
+          </button>
         </div>
       )}
 

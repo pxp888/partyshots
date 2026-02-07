@@ -608,3 +608,61 @@ def set_editable(request):
         },
         status=status.HTTP_200_OK,
     )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def update_account(request):
+    """
+    Update the authenticated user's account information.
+    """
+    user = request.user
+    new_email = request.data.get("email")
+    new_password = request.data.get("password")
+
+    if new_email:
+        user.email = new_email
+
+    if new_password:
+        if len(new_password) < 4:
+            return Response(
+                {"error": "Password must be at least 4 characters long"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        user.set_password(new_password)
+
+    user.save()
+    return Response(
+        {"message": "Account updated successfully", "user": UserSerializer(user).data},
+        status=status.HTTP_200_OK,
+    )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def delete_account(request):
+    """
+    Delete the authenticated user's account and all associated data.
+    This includes albums, photos, and subscriptions. S3 objects are also
+    deleted via the helper function to prevent orphaned files.
+    """
+    user = request.user
+
+    # Delete all albums owned by the user (cascades to photos)
+    albums = Album.objects.filter(user=user)
+    for album in albums:
+        photos = Photo.objects.filter(album=album)
+        for photo in photos:
+            rm_photo_s3(photo)
+        album.delete()
+
+    # Delete any subscriptions where the user is a subscriber
+    Subscriber.objects.filter(user=user).delete()
+
+    # Finally delete the user account
+    user.delete()
+
+    return Response(
+        {"message": "Account and all associated data deleted"},
+        status=status.HTTP_200_OK,
+    )

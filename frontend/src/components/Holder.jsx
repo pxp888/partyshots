@@ -7,6 +7,7 @@ import RegisterPage from "./RegisterPage";
 import LoginPage from "./LoginPage";
 import Userview from "./Userview";
 import Albumview from "./Albumview";
+import Accountpage from "./Accountpage";
 
 function Holder() {
   const [currentUser, setCurrentUser] = useState(() => {
@@ -44,6 +45,15 @@ function Holder() {
         <Route
           path="/album/:albumCode"
           element={<Albumview currentUser={currentUser} />}
+        />
+        <Route
+          path="/account"
+          element={
+            <Accountpage
+              currentUser={currentUser}
+              setCurrentUser={setCurrentUser}
+            />
+          }
         />
       </Routes>
     </div>
