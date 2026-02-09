@@ -15,4 +15,3 @@ USER myuser
 # Use a shell form for ENTRYPOINT to allow for variable expansion if needed, 
 # or stay with exec form:
 CMD ["gunicorn", "--workers", "3", "--bind", "0.0.0.0:8000", "backend.wsgi:application"]
-(base) [ec2-user@ip-172-31-32-44 partyshots]$ 
