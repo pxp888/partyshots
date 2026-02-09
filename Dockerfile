@@ -3,19 +3,16 @@ FROM docker.io/continuumio/miniconda3:latest
 WORKDIR /app
 COPY environment.yml .
 RUN conda env create -f environment.yml && conda clean -afy
-
-# Set path so we don't have to keep calling 'conda run'
 ENV PATH /opt/conda/envs/web1/bin:$PATH
 
 COPY . .
 
-# Run collectstatic
-RUN python manage.py collectstatic --noinput
+# Create the staticfiles directory and set permissions
+RUN mkdir -p /app/staticfiles && useradd -m myuser && chown -R myuser:myuser /app
 
-# Security: Create a non-privileged user and switch to it
-RUN useradd -m myuser
 USER myuser
 
-# Gunicorn with workers: 2 * CPU cores + 1 is the rule of thumb
-ENTRYPOINT ["gunicorn", "--workers", "3", "--bind", "0.0.0.0:8000", "backend.wsgi:application"]
-
+# Use a shell form for ENTRYPOINT to allow for variable expansion if needed, 
+# or stay with exec form:
+CMD ["gunicorn", "--workers", "3", "--bind", "0.0.0.0:8000", "backend.wsgi:application"]
+(base) [ec2-user@ip-172-31-32-44 partyshots]$ 
